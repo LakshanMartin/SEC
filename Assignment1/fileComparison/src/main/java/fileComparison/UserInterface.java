@@ -85,10 +85,12 @@ public class UserInterface
         DirectoryChooser dc = new DirectoryChooser();
         File directory; 
         
+        // Find directory to compare files
         dc.setInitialDirectory(new File("."));
         dc.setTitle("Choose directory");
         directory = dc.showDialog(stage);
 
+        // Find files in separate thread
         Runnable fileFinderTask = () ->
         {
             try 
@@ -116,12 +118,12 @@ public class UserInterface
 
         // Extremely fake way of demonstrating how to update the table (noting that this shouldn't
         // just happen once at the end, but progressively as each result is obtained.)
-        List<ComparisonResult> newResults = new ArrayList<>();
-        newResults.add(new ComparisonResult("Example File 1", "Example File 2", 0.75));
-        newResults.add(new ComparisonResult("Example File 1", "Example File 3", 0.31));
-        newResults.add(new ComparisonResult("Example File 2", "Example File 3", 0.45));
+        // List<ComparisonResult> newResults = new ArrayList<>();
+        // newResults.add(new ComparisonResult("Example File 1", "Example File 2", 0.75));
+        // newResults.add(new ComparisonResult("Example File 1", "Example File 3", 0.31));
+        // newResults.add(new ComparisonResult("Example File 2", "Example File 3", 0.45));
         
-        resultTable.getItems().setAll(newResults);        
+        // resultTable.getItems().setAll(newResults);        
         
         // progressBar.setProgress(0.0); // Reset progress bar after successful comparison?
     }
@@ -129,6 +131,11 @@ public class UserInterface
     private void stopComparison()
     {
         System.out.println("Stopping comparison...");
+    }
+
+    public void updateResultsTable(List<ComparisonResult> newResults)
+    {
+        resultTable.getItems().setAll(newResults);
     }
 
     /**
