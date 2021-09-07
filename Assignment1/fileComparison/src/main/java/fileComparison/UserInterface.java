@@ -8,17 +8,22 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
-public class UserInterface 
+public class UserInterface
 {
     // CLASS FIELDS
     private TableView<ComparisonResult> resultTable = new TableView<>();  
     private ProgressBar progressBar = new ProgressBar();
-    private Thread filterThread = null;
+    private Thread finderThread = null;
+    private FileFinder fileFinder;
 
     // CONSTRUCTOR
-    public UserInterface() {}
+    public UserInterface() 
+    {
+        fileFinder = new FileFinder(this);
+    }
 
     public void show(Stage stage)
     {
@@ -31,7 +36,8 @@ public class UserInterface
         ToolBar toolBar = new ToolBar(compareBtn, stopBtn);
         
         // Set up button event handlers.
-        compareBtn.setOnAction(event -> crossCompare(stage));
+        compareBtn.setOnAction(event -> findFiles(stage));
+
         stopBtn.setOnAction(event -> stopComparison());
         
         // Initialise progressbar
@@ -74,7 +80,7 @@ public class UserInterface
         stage.show();      
     }
 
-    private void crossCompare(Stage stage)
+    private void findFiles(Stage stage)
     {
         DirectoryChooser dc = new DirectoryChooser();
         File directory; 
@@ -82,6 +88,21 @@ public class UserInterface
         dc.setInitialDirectory(new File("."));
         dc.setTitle("Choose directory");
         directory = dc.showDialog(stage);
+
+        Runnable fileFinderTask = () ->
+        {
+            try 
+            {
+                fileFinder.findFiles(directory.toPath());
+            } 
+            catch(IOException e) 
+            {
+                e.printStackTrace();
+            }
+        };
+
+        finderThread = new Thread(fileFinderTask, "finder-thread");
+        finderThread.start();
         
         System.out.println("Comparing files within " + directory + "...");
         
