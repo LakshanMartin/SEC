@@ -47,11 +47,9 @@ public class CompareFiles
 
         // Calculate similarity between the two files
         similarity = ((double)LCS * 2.0) / (double)(f1Length + f2Length);
-        System.out.println("Rare Similarity: " + similarity);
 
         // Round similarity
         similarity = roundDouble(similarity);
-        System.out.println("Similarity: " + similarity);
 
         return similarity;
     }

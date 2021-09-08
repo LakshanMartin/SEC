@@ -95,7 +95,7 @@ public class UserInterface
         {
             try 
             {
-                fileFinder.findFiles(directory.toPath());
+                fileFinder.filesToCompare(directory.toPath());
             } 
             catch(IOException e) 
             {
@@ -133,10 +133,15 @@ public class UserInterface
         System.out.println("Stopping comparison...");
     }
 
-    public void updateResultsTable(List<ComparisonResult> newResults)
+    public void updateResultsTable(ComparisonResult newResult)
     {
-        resultTable.getItems().setAll(newResults);
+        resultTable.getItems().add(newResult);
     }
+
+    // public void updateResultsTable(List<ComparisonResult> newResults)
+    // {
+    //     resultTable.getItems().setAll(newResults);
+    // }
 
     /**
      * Update the progress bar with the imported value

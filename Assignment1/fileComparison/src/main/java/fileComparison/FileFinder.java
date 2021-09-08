@@ -26,10 +26,12 @@ public class FileFinder
      * @param path
      * @throws IOException
      */
-    public void findFiles(Path path) throws IOException
+    public void filesToCompare(Path path) throws IOException
     {
         List<ComparisonResult> newResults = new ArrayList<>();
         CompareFiles compare;
+        double similarity;
+        String filename1, filename2;
 
         try(Stream<Path> walk = Files.walk(path, 1))
         {
@@ -46,21 +48,37 @@ public class FileFinder
         {
             for(int j = i+1; j < result.size(); j++)
             {
+                // Compare file contents and calc similarity
                 compare = new CompareFiles(result.get(i).toString(), result.get(j).toString());
-                compare.getSimilarity();
+                similarity = compare.getSimilarity();
 
-                newResults.add(new ComparisonResult(
-                    result.get(i), 
-                    result.get(j), 0.75));
+                // Crop filename from path
+                filename1 = cropFilename(result.get(i));
+                filename2 = cropFilename(result.get(j));
+
+                ComparisonResult newResult = new ComparisonResult(filename1, filename2, similarity); 
+
+                Platform.runLater(() ->
+                {
+                    ui.updateResultsTable(newResult);
+                });
+
+                // newResults.add(
+                //     new ComparisonResult(filename1, filename2, similarity)); 
+
+                // Platform.runLater(() ->
+                // {
+                //     ui.updateResultsTable(newResults);
+                // });
             }
         }
-
-        Platform.runLater(() ->
-        {
-            ui.updateResultsTable(newResults);
-        });
     }
 
+    /**
+     * Confirm whether file is empty
+     * @param file
+     * @return
+     */
     private boolean checkEmpty(File file)
     {
         boolean result = true;
@@ -71,5 +89,21 @@ public class FileFinder
         }
 
         return result;
+    }
+
+    /**
+     * Extract the filename from the file path
+     * @param path
+     * @return
+     */
+    private String cropFilename(String path)
+    {
+        String filename;
+        String[] split;
+
+        split = path.split("/");
+        filename = split[split.length - 1];
+
+        return filename;
     }
 }
