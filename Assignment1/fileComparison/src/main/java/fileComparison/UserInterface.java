@@ -36,7 +36,7 @@ public class UserInterface
         ToolBar toolBar = new ToolBar(compareBtn, stopBtn);
         
         // Set up button event handlers.
-        compareBtn.setOnAction(event -> findFiles(stage));
+        compareBtn.setOnAction(event -> compareFiles(stage));
 
         stopBtn.setOnAction(event -> stopComparison());
         
@@ -80,7 +80,7 @@ public class UserInterface
         stage.show();      
     }
 
-    private void findFiles(Stage stage)
+    private void compareFiles(Stage stage)
     {
         DirectoryChooser dc = new DirectoryChooser();
         File directory; 

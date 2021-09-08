@@ -29,24 +29,31 @@ public class FileFinder
     public void findFiles(Path path) throws IOException
     {
         List<ComparisonResult> newResults = new ArrayList<>();
+        CompareFiles compare;
 
         try(Stream<Path> walk = Files.walk(path, 1))
         {
             result = walk
                         // .filter(p -> !Files.isDirectory(p))
                         .filter(p -> !checkEmpty(p.toFile()))
-                        .map(p -> p.getFileName().toString())
+                        // .map(p -> p.getFileName().toString())
+                        .map(p -> p.toString())
                         .filter(f -> Arrays.stream(fileExtensions).anyMatch(f::endsWith))
                         .collect(Collectors.toList());
         }
 
         for(int i = 0; i < result.size(); i++)
         {
-            System.out.println(result.get(i));
-        }
+            for(int j = i+1; j < result.size(); j++)
+            {
+                compare = new CompareFiles(result.get(i).toString(), result.get(j).toString());
+                compare.getSimilarity();
 
-        newResults.add(new ComparisonResult(result.get(0), result.get(1), 0.75));
-        newResults.add(new ComparisonResult(result.get(1), result.get(0), 0.45));
+                newResults.add(new ComparisonResult(
+                    result.get(i), 
+                    result.get(j), 0.75));
+            }
+        }
 
         Platform.runLater(() ->
         {
