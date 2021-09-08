@@ -1,5 +1,6 @@
 package fileComparison;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -10,18 +11,27 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
 
-public class CompareFiles 
+public class FilesComparer 
 {
     // CLASS FIELDS
     private String file1;
     private String file2;
 
-    public CompareFiles(String file1, String file2)
+    // CONSTRUCTOR
+    public FilesComparer(String file1, String file2)
     {
         this.file1 = file1;
         this.file2 = file2;
     }
+
+    // private BlockingQueue<File> queue;
+
+    // public FilesComparer(BlockingQueue<File> queue)
+    // {
+    //     this.queue = queue;
+    // }
 
     public double getSimilarity()
     {
@@ -53,6 +63,23 @@ public class CompareFiles
 
         return similarity;
     }
+
+    // public void compareFiles()
+    // {
+    //     while(true)
+    //     {
+    //         try
+    //         {
+    //             File file = queue.peek();
+
+    //             if(file != null && !file.getName().equals("END"))
+    //             {
+    //                 file = queue.take();
+    //                 rea
+    //             }
+    //         }
+    //     }
+    // }
 
     /**
      * REFERENCE: "How to read a file in one line in JDK 7 or Java 8? Example".

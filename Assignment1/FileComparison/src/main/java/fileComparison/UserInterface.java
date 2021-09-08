@@ -10,6 +10,10 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class UserInterface
 {
@@ -17,12 +21,16 @@ public class UserInterface
     private TableView<ComparisonResult> resultTable = new TableView<>();  
     private ProgressBar progressBar = new ProgressBar();
     private Thread finderThread = null;
-    private FileFinder fileFinder;
+    private FilesFinder filesFinder;
+    private ComparisonResult result;
+    private OutputResults output;
+    private File outputFile; 
+    private BlockingQueue<ComparisonResult> queue = new ArrayBlockingQueue<>(100);
 
     // CONSTRUCTOR
     public UserInterface() 
     {
-        fileFinder = new FileFinder(this);
+        filesFinder = new FilesFinder(this, queue);
     }
 
     public void show(Stage stage)
@@ -36,7 +44,11 @@ public class UserInterface
         ToolBar toolBar = new ToolBar(compareBtn, stopBtn);
         
         // Set up button event handlers.
-        compareBtn.setOnAction(event -> compareFiles(stage));
+        compareBtn.setOnAction((event) ->
+        { 
+            compareFiles(stage);
+            outputResults();
+        });
 
         stopBtn.setOnAction(event -> stopComparison());
         
@@ -90,20 +102,24 @@ public class UserInterface
         dc.setTitle("Choose directory");
         directory = dc.showDialog(stage);
 
-        // Find files in separate thread
+        // Find and compare files in separate thread
         Runnable fileFinderTask = () ->
         {
             try 
             {
-                fileFinder.filesToCompare(directory.toPath());
+                filesFinder.filesToCompare(directory.toPath());
             } 
             catch(IOException e) 
             {
-                e.printStackTrace();
+                System.out.println("IO ERROR: " + e.getMessage());
+            }
+            catch(InterruptedException e)
+            {
+                System.out.println(finderThread.getName() + ": TERMINATED");
             }
         };
 
-        finderThread = new Thread(fileFinderTask, "finder-thread");
+        finderThread = new Thread(fileFinderTask, "Finder-Thread");
         finderThread.start();
         
         System.out.println("Comparing files within " + directory + "...");
@@ -133,15 +149,14 @@ public class UserInterface
         System.out.println("Stopping comparison...");
     }
 
+    /**
+     * Add newResult data to results table
+     * @param newResult
+     */
     public void updateResultsTable(ComparisonResult newResult)
     {
         resultTable.getItems().add(newResult);
     }
-
-    // public void updateResultsTable(List<ComparisonResult> newResults)
-    // {
-    //     resultTable.getItems().setAll(newResults);
-    // }
 
     /**
      * Update the progress bar with the imported value
@@ -150,5 +165,46 @@ public class UserInterface
     public void updateProgressBar(double progress)
     {
         progressBar.setProgress(progress);
+    }
+
+    private void outputResults()
+    {
+        ExecutorService es = Executors.newFixedThreadPool(4);
+        outputFile = new File("src/main/output/", "results.csv");
+
+        while(true)
+        {
+            result = queue.peek();
+
+            if(!result.getIsPoison())
+            {
+                Runnable fileOutputTask = () ->
+                {
+                    try 
+                    {
+                        result = queue.take();
+                        output = new OutputResults(result, outputFile);
+                        output.writeFile();
+                        Thread.sleep(500);
+                    } 
+                    catch(IOException e)
+                    {
+                        System.out.println("IO ERROR: " + e.getMessage());
+                    }
+                    catch(InterruptedException e)
+                    {
+                        System.out.println("Thread in Pool: TERMINATED");
+                    } 
+                };
+
+                es.execute(fileOutputTask);
+            }
+            else
+            {
+                break;
+            }            
+        }
+
+        es.shutdown();
     }
 }
