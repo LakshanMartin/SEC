@@ -12,18 +12,10 @@ import java.util.Map;
 
 public class FilesComparer 
 {
-    // CLASS FIELDS
-    private String file1;
-    private String file2;
+    // EMPTY CONSTRUCTOR
+    public FilesComparer() {}
 
-    // CONSTRUCTOR
-    public FilesComparer(String file1, String file2)
-    {
-        this.file1 = file1;
-        this.file2 = file2;
-    }
-
-    public double getSimilarity()
+    public double getSimilarity(String file1, String file2)
     {
         String contents1, contents2;
         Map<String, Integer> lookup = new HashMap<>();
@@ -31,8 +23,8 @@ public class FilesComparer
         double similarity;
 
         // Get file contents
-        contents1 = readFile(file1);
-        contents2 = readFile(file2);
+        contents1 = extractContents(file1);
+        contents2 = extractContents(file2);
         
         f1Length = contents1.length();
         f2Length = contents2.length();
@@ -56,7 +48,7 @@ public class FilesComparer
      * @param file
      * @return
      */
-    private String readFile(String file)
+    private String extractContents(String file)
     {
         List<String> lines;
         StringBuilder sb;

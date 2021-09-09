@@ -1,94 +1,104 @@
 package fileComparison;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javafx.application.Platform;
 
-public class FilesFinder 
+public class FilesFinder implements Runnable
 {
     // CLASS FIELDS
     private UserInterface ui;
+    private Path path;
+    private Queue queue;
     private String[] fileExtensions = {"txt", "md", "java", "cs"};
     private List<String> result;
-    private BlockingQueue<ComparisonResult> queue;
-    private ComparisonResult POISON;
 
     // CONSTRUCTOR
-    public FilesFinder(UserInterface ui, BlockingQueue<ComparisonResult> queue) 
+    public FilesFinder(UserInterface ui, Path path, Queue queue) 
     {
         this.ui = ui;
+        this.path = path;
         this.queue = queue;
     }
 
     /**
+     * 
      * REFERENCE: https://mkyong.com/java/how-to-find-files-with-certain-extension-only/
-     * @param path
-     * @throws IOException
      */
-    public void filesToCompare(Path path) throws IOException, InterruptedException
+    @Override
+    public void run()
     {
-        FilesComparer compare;
         double similarity;
         String filename1, filename2;
 
-        try(Stream<Path> walk = Files.walk(path, 1))
+        try
         {
-            result = walk
-                        .filter(p -> !checkEmpty(p.toFile()))
-                        .map(p -> p.toString())
-                        .filter(f -> Arrays.stream(fileExtensions).anyMatch(f::endsWith))
-                        .collect(Collectors.toList());
-        }
-
-        for(int i = 0; i < result.size(); i++)
-        {
-            for(int j = i+1; j < result.size(); j++)
+            try(Stream<Path> walk = Files.walk(path, 1))
             {
-                // Calculate current progress of comparisons
-                calcProgress(i+1, result.size());
-
-                // Compare file contents and calc similarity
-                compare = new FilesComparer(result.get(i).toString(), result.get(j).toString());
-                similarity = compare.getSimilarity();
-
-                // Crop filename from path
-                filename1 = cropFilename(result.get(i));
-                filename2 = cropFilename(result.get(j));
-
-                // Create new ComparisonResult object
-                ComparisonResult newResult = new ComparisonResult(filename1, filename2, similarity, false); 
-                
-                // Add to BlockingQueue
-                queue.put(newResult);
-
-                // Update GUI with similarity results > 0.5
-                if(newResult.getSimilarity() > 0.5)
-                {
-                    Platform.runLater(() ->
-                    {
-                        ui.updateResultsTable(newResult);
-                    });
-                }
-
-                Thread.sleep(100);
+                result = walk
+                            .filter(p -> !checkEmpty(p.toFile()))
+                            .map(p -> p.toString())
+                            .filter(f -> Arrays.stream(fileExtensions).anyMatch(f::endsWith))
+                            .collect(Collectors.toList());
             }
+
+            for(int i = 0; i < result.size(); i++)
+            {
+                for(int j = i+1; j < result.size(); j++)
+                {
+                    // Calculate current progress of comparisons
+                    calcProgress(i+1, result.size());
+
+                    // Compare file contents and calc similarity
+                    similarity = new FilesComparer().getSimilarity(
+                                        result.get(i).toString(), 
+                                        result.get(j).toString());
+
+                    // Crop filename from path
+                    filename1 = cropFilename(result.get(i));
+                    filename2 = cropFilename(result.get(j));
+
+                    // Create new ComparisonResult object
+                    ComparisonResult newResult = new ComparisonResult(filename1, filename2, similarity, false); 
+                    
+                    // Add to BlockingQueue
+                    queue.put(newResult);
+
+                    // Update GUI with similarity results > 0.5
+                    if(newResult.getSimilarity() > 0.5)
+                    {
+                        Platform.runLater(() ->
+                        {
+                            ui.updateResultsTable(newResult);
+                        });
+                    }
+
+                    Thread.sleep(100);
+                }
+            }
+
+            // End of production
+            queue.stoppedProduction();
+            System.out.println("FileFinding Thread done");
+            
+            // Update progress upon completion of comparisons
+            calcProgress(result.size(), result.size());
         }
-        
-        // Update progress upon completion of comparisons
-        calcProgress(result.size(), result.size());
-
-        // Add Poison Pill to end of queue
-        POISON = new ComparisonResult(null, null, 0.0, true);
-        queue.put(POISON);
-
-        Thread.sleep(10000);
+        catch(IOException e)
+        {
+            System.out.println("IO ERROR: " + e.getMessage());
+        }
+        catch(InterruptedException e)
+        {
+            System.out.println("FileFinder Thread: TERMINATED");
+        }
     }
 
     /**
