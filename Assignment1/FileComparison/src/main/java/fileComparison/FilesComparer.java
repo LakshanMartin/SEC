@@ -1,17 +1,14 @@
 package fileComparison;
 
-import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
 
 public class FilesComparer 
 {
@@ -25,13 +22,6 @@ public class FilesComparer
         this.file1 = file1;
         this.file2 = file2;
     }
-
-    // private BlockingQueue<File> queue;
-
-    // public FilesComparer(BlockingQueue<File> queue)
-    // {
-    //     this.queue = queue;
-    // }
 
     public double getSimilarity()
     {
@@ -47,14 +37,9 @@ public class FilesComparer
         f1Length = contents1.length();
         f2Length = contents2.length();
 
-        System.out.println("Contents1: " + contents1);
-        System.out.println("Contents2: " + contents2);
-
         // Determine length of Longest Common Subsequence (LCS) of substring
         LCS = LCSLength(contents1, contents2, f1Length, f2Length, lookup);
         
-        System.out.println("LCS Length: " + LCS);
-
         // Calculate similarity between the two files
         similarity = ((double)LCS * 2.0) / (double)(f1Length + f2Length);
 
@@ -63,23 +48,6 @@ public class FilesComparer
 
         return similarity;
     }
-
-    // public void compareFiles()
-    // {
-    //     while(true)
-    //     {
-    //         try
-    //         {
-    //             File file = queue.peek();
-
-    //             if(file != null && !file.getName().equals("END"))
-    //             {
-    //                 file = queue.take();
-    //                 rea
-    //             }
-    //         }
-    //     }
-    // }
 
     /**
      * REFERENCE: "How to read a file in one line in JDK 7 or Java 8? Example".

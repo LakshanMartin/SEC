@@ -130,11 +130,11 @@ public class UserInterface
         
         // Extremely fake way of demonstrating how to use the progress bar (noting that it can 
         // actually only be set to one value, from 0-1, at a time.)
-        progressBar.setProgress(0.25);
-        progressBar.setProgress(0.5);
-        progressBar.setProgress(0.6);
-        progressBar.setProgress(0.85);
-        progressBar.setProgress(1.0);
+        // progressBar.setProgress(0.25);
+        // progressBar.setProgress(0.5);
+        // progressBar.setProgress(0.6);
+        // progressBar.setProgress(0.85);
+        // progressBar.setProgress(1.0);
 
         // Extremely fake way of demonstrating how to update the table (noting that this shouldn't
         // just happen once at the end, but progressively as each result is obtained.)
@@ -169,6 +169,7 @@ public class UserInterface
     public void updateProgressBar(double progress)
     {
         progressBar.setProgress(progress);
+        System.out.println("Progress: " + progress);
     }
 
     private void outputResults()

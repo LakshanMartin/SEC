@@ -52,8 +52,6 @@ public class OutputResults
                     {
                         result = queue.take();
                         writer = new FileWriter(outputFile.getAbsolutePath(), true);
-
-                        System.out.println("Writing");
         
                         writer.write(result.getFile1());
                         writer.write(",");

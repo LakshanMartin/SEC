@@ -41,9 +41,7 @@ public class FilesFinder
         try(Stream<Path> walk = Files.walk(path, 1))
         {
             result = walk
-                        // .filter(p -> !Files.isDirectory(p))
                         .filter(p -> !checkEmpty(p.toFile()))
-                        // .map(p -> p.getFileName().toString())
                         .map(p -> p.toString())
                         .filter(f -> Arrays.stream(fileExtensions).anyMatch(f::endsWith))
                         .collect(Collectors.toList());
@@ -53,6 +51,9 @@ public class FilesFinder
         {
             for(int j = i+1; j < result.size(); j++)
             {
+                // Calculate current progress of comparisons
+                calcProgress(i+1, result.size());
+
                 // Compare file contents and calc similarity
                 compare = new FilesComparer(result.get(i).toString(), result.get(j).toString());
                 similarity = compare.getSimilarity();
@@ -79,12 +80,34 @@ public class FilesFinder
                 Thread.sleep(100);
             }
         }
+        
+        // Update progress upon completion of comparisons
+        calcProgress(result.size(), result.size());
 
         // Add Poison Pill to end of queue
         POISON = new ComparisonResult(null, null, 0.0, true);
         queue.put(POISON);
 
         Thread.sleep(10000);
+    }
+
+    /**
+     * Calculate current progress and update GUI progress bar
+     * @param current
+     * @param end
+     * @throws InterruptedException
+     */
+    private void calcProgress(int current, int end) throws InterruptedException
+    {
+        double progress;
+
+        progress = (double)current / (double)end;
+
+        // Update GUI
+        Platform.runLater(() ->
+        {
+            ui.updateProgressBar(progress);
+        });
     }
 
     /**
