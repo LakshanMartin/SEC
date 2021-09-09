@@ -1,12 +1,9 @@
 package fileComparison;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 
 import javafx.beans.property.SimpleStringProperty;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ProgressBar;
@@ -16,24 +13,28 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 public class UserInterface
 {
     // CLASS FIELDS
     private TableView<ComparisonResult> resultTable = new TableView<>();  
     private ProgressBar progressBar = new ProgressBar();
-    private Thread finderThread = null;
-    private FilesFinder filesFinder;
-    private OutputResults output;
-    private int fileCount = 0;
-    private BlockingQueue<ComparisonResult> queue = new ArrayBlockingQueue<>(100);
+    private int fileCount = 0;;
+    private ProducerConsumer producerConsumer = null;
 
     // CONSTRUCTOR
-    public UserInterface() 
-    {
-        filesFinder = new FilesFinder(this, queue);
-    }
+    public UserInterface() {}
 
+    /**
+     * REFERENCE #1: Obtained from Dr David Cooper, uidemo. Majority of UI 
+     *               components are drawn from the uidemo program provided.
+     * REFERENCE #2: Obtained from mysteryHistery, 
+     *               https://stackoverflow.com/questions/38371117/close-event-in-java-fx-when-close-button-is-pressed
+     *               (Accessed on 10 September 2021).
+     *                
+     * @param stage
+     */
     public void show(Stage stage)
     {
         stage.setTitle("File Comparison App");
@@ -47,11 +48,14 @@ public class UserInterface
         // Set up button event handlers.
         compareBtn.setOnAction((event) ->
         { 
-            // Clear UI table of any entries
             resultTable.getItems().clear();
 
+            if(producerConsumer != null)
+            {
+                stopComparison();
+            }
+
             compareFiles(stage);
-            outputResults();
         });
 
         stopBtn.setOnAction(event -> stopComparison());
@@ -93,45 +97,53 @@ public class UserInterface
         Scene scene = new Scene(mainBox);
         stage.setScene(scene);
         stage.sizeToScene();
-        stage.show();      
+        stage.show();    
+
+        // Add Window closing event
+        // SEE REFERENCE #2
+        stage.setOnCloseRequest(new EventHandler<WindowEvent>()
+        {
+            @Override
+            public void handle(WindowEvent event) 
+            {
+                System.out.println("Window closed");
+
+                if(producerConsumer != null)
+                {
+                    producerConsumer.stop();
+                }
+            }
+        });  
     }
 
     private void compareFiles(Stage stage)
     {
         DirectoryChooser dc = new DirectoryChooser();
         File directory; 
-        
+
         // Find directory to compare files
         dc.setInitialDirectory(new File("."));
         dc.setTitle("Choose directory");
         directory = dc.showDialog(stage);
+        fileCount++;
 
-        // Find and compare files in separate thread
-        Runnable fileFinderTask = () ->
-        {
-            try 
-            {
-                filesFinder.filesToCompare(directory.toPath());
-            } 
-            catch(IOException e) 
-            {
-                System.out.println("IO ERROR: " + e.getMessage());
-            }
-            catch(InterruptedException e)
-            {
-                System.out.println(finderThread.getName() + ": TERMINATED");
-            }
-        };
-
-        finderThread = new Thread(fileFinderTask, "Finder-Thread");
-        finderThread.start();
-        
-        System.out.println("Comparing files within " + directory + "...");
+        producerConsumer = new ProducerConsumer(this, directory.toPath());
+        producerConsumer.start(fileCount);
     }
     
     private void stopComparison()
     {
-        System.out.println("Stopping comparison...");
+        if(producerConsumer != null)
+        {
+            System.out.println("Stopping comparison...");
+    
+            producerConsumer.stop();
+            producerConsumer = null;
+        }
+        else
+        {
+            System.out.println("No comparisons running...");
+        }
     }
 
     /**
@@ -151,18 +163,5 @@ public class UserInterface
     {
         progressBar.setProgress(progress);
         System.out.println("Progress: " + progress);
-    }
-
-    private void outputResults()
-    {
-        File outputFile;
-        String filename;
-
-        fileCount++;
-        filename = "results" + fileCount + ".csv";
-
-        outputFile = new File("src/main/output/", filename);
-        output = new OutputResults(queue, outputFile);
-        output.runTasks();
     }
 }
