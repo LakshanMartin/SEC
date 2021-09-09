@@ -13,7 +13,7 @@ public class ProducerConsumer
     // CLASS FIELDS
     private UserInterface ui;
     private Path path;
-    private int numThreads = 2;
+    private int numThreads = 7;
     private ExecutorService threadPool = Executors.newFixedThreadPool(numThreads);
 
     // EMPTY CONSTRUCTOR
@@ -23,14 +23,9 @@ public class ProducerConsumer
         this.path = path;
     }
     
-    public void start(int fileNum)
+    public void start(File outputFile)
     {
         Queue queue = new Queue();
-        String filename;
-        File outputFile;
-
-        filename = "results" + fileNum + ".csv";
-        outputFile = new File("src/main/output/", filename);
         
         // Create single Producer thread
         threadPool.execute(new FilesFinder(ui, path, queue));

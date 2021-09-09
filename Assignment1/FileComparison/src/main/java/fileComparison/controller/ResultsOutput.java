@@ -38,7 +38,9 @@ public class ResultsOutput implements Runnable
 
                 writer = new FileWriter(outputFile.getAbsolutePath(), true);
 
-                System.out.println("FileWriter Thread #" + this.id + ": WRITING");
+                System.out.println(
+                    "FileWriter Thread #" + this.id + ": WRITING TO - " +
+                    outputFile.getName());
 
                 // Write to file in CSV format
                 writer.write(result.getFile1());

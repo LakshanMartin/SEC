@@ -24,6 +24,7 @@ public class UserInterface
     private ProgressBar progressBar = new ProgressBar();
     private int fileCount = 0;;
     private ProducerConsumer producerConsumer = null;
+    private static final String OUTPUT_PATH = "src/main/output/";
 
     // CONSTRUCTOR
     public UserInterface() {}
@@ -122,15 +123,44 @@ public class UserInterface
     {
         DirectoryChooser dc = new DirectoryChooser();
         File directory; 
+        String filename;
+        File outputFile;
 
         // Find directory to compare files
         dc.setInitialDirectory(new File("."));
         dc.setTitle("Choose directory");
         directory = dc.showDialog(stage);
-        fileCount++;
+        
+        // Check that 'Cancel' button wasn't selected from dc
+        if(directory != null)
+        {
+            fileCount++;
+            filename = "results" + fileCount + ".csv";
+            outputFile = new File(OUTPUT_PATH, filename);
 
-        producerConsumer = new ProducerConsumer(this, directory.toPath());
-        producerConsumer.start(fileCount);
+            outputFile = checkFilename(filename, outputFile);
+
+            producerConsumer = new ProducerConsumer(this, directory.toPath());
+            producerConsumer.start(outputFile);
+        }
+    }
+
+    /**
+     * Rename filename with incremented fileCount if filename already exists
+     * @param filename
+     * @param outputFile
+     * @return
+     */
+    private File checkFilename(String filename, File outputFile)
+    {
+        while(outputFile.exists())
+        {
+            fileCount++;
+            filename = "results" + fileCount + ".csv";
+            outputFile = new File(OUTPUT_PATH, filename);
+        }
+
+        return outputFile;
     }
     
     private void stopComparison()
