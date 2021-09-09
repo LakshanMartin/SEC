@@ -7,13 +7,14 @@ import javafx.scene.Scene;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class UserInterface
 {
@@ -25,6 +26,8 @@ public class UserInterface
     private ComparisonResult result;
     private OutputResults output;
     private File outputFile; 
+    private FileWriter writer;
+    // private ExecutorService pool = Executors.newFixedThreadPool(4);
     private BlockingQueue<ComparisonResult> queue = new ArrayBlockingQueue<>(100);
 
     // CONSTRUCTOR
@@ -47,6 +50,7 @@ public class UserInterface
         compareBtn.setOnAction((event) ->
         { 
             compareFiles(stage);
+            // checkResults();
             outputResults();
         });
 
@@ -169,42 +173,8 @@ public class UserInterface
 
     private void outputResults()
     {
-        ExecutorService es = Executors.newFixedThreadPool(4);
         outputFile = new File("src/main/output/", "results.csv");
-
-        while(true)
-        {
-            result = queue.peek();
-
-            if(!result.getIsPoison())
-            {
-                Runnable fileOutputTask = () ->
-                {
-                    try 
-                    {
-                        result = queue.take();
-                        output = new OutputResults(result, outputFile);
-                        output.writeFile();
-                        Thread.sleep(500);
-                    } 
-                    catch(IOException e)
-                    {
-                        System.out.println("IO ERROR: " + e.getMessage());
-                    }
-                    catch(InterruptedException e)
-                    {
-                        System.out.println("Thread in Pool: TERMINATED");
-                    } 
-                };
-
-                es.execute(fileOutputTask);
-            }
-            else
-            {
-                break;
-            }            
-        }
-
-        es.shutdown();
+        output = new OutputResults(queue, outputFile);
+        output.runTasks();
     }
 }

@@ -83,41 +83,9 @@ public class FilesFinder
         // Add Poison Pill to end of queue
         POISON = new ComparisonResult(null, null, 0.0, true);
         queue.put(POISON);
+
+        Thread.sleep(10000);
     }
-
-    // public void filesToCompare(File dir) throws InterruptedException
-    // {
-    //     File[] files = dir.listFiles(new FileFilter()
-    //     {
-    //         @Override
-    //         public boolean accept(File pathname) 
-    //         {
-    //             boolean result = false;
-
-    //             for(String fileExtension : fileExtensions)
-    //             {
-    //                 if(pathname.toString().endsWith(fileExtension))
-    //                 {
-    //                     result = true;
-    //                     break;
-    //                 }
-    //             }
-
-    //             return result;
-    //         }        
-    //     });
-
-    //     if(files != null && files.length > 0)
-    //     {
-    //         for(File file : files)
-    //         {
-    //             if(!file.isDirectory())
-    //             {
-    //                 queue.put(file);
-    //             }
-    //         }
-    //     }
-    // }
 
     /**
      * Confirm whether file is empty
