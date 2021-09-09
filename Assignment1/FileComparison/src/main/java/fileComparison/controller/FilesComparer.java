@@ -1,4 +1,4 @@
-package fileComparison;
+package fileComparison.controller;
 
 import java.io.IOException;
 import java.math.BigDecimal;

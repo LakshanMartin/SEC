@@ -1,5 +1,6 @@
 package fileComparison;
 
+import fileComparison.view.UserInterface;
 import javafx.application.Application;
 import javafx.stage.Stage;
 

@@ -1,8 +1,11 @@
-package fileComparison;
+package fileComparison.controller;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+
+import fileComparison.model.ComparisonResult;
+import fileComparison.model.Queue;
 
 public class ResultsOutput implements Runnable
 {

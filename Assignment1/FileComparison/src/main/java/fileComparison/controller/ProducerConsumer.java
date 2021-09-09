@@ -1,16 +1,19 @@
-package fileComparison;
+package fileComparison.controller;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import fileComparison.model.Queue;
+import fileComparison.view.UserInterface;
+
 public class ProducerConsumer 
 {
     // CLASS FIELDS
     private UserInterface ui;
     private Path path;
-    private int numThreads = 4;
+    private int numThreads = 2;
     private ExecutorService threadPool = Executors.newFixedThreadPool(numThreads);
 
     // EMPTY CONSTRUCTOR

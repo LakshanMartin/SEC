@@ -1,4 +1,4 @@
-package fileComparison;
+package fileComparison.controller;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import fileComparison.model.ComparisonResult;
+import fileComparison.model.Queue;
+import fileComparison.view.UserInterface;
 import javafx.application.Platform;
 
 public class FilesFinder implements Runnable
@@ -90,6 +93,10 @@ public class FilesFinder implements Runnable
             
             // Update progress upon completion of comparisons
             calcProgress(result.size(), result.size());
+            Platform.runLater(() ->
+            {
+                ui.updateProgressBar(0.0);
+            });
         }
         catch(IOException e)
         {

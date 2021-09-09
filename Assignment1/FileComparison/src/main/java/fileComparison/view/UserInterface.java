@@ -1,7 +1,9 @@
-package fileComparison;
+package fileComparison.view;
 
 import java.io.File;
 
+import fileComparison.controller.ProducerConsumer;
+import fileComparison.model.ComparisonResult;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;

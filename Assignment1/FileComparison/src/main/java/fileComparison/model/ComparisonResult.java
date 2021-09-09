@@ -1,4 +1,4 @@
-package fileComparison;
+package fileComparison.model;
 
 public class ComparisonResult 
 {
