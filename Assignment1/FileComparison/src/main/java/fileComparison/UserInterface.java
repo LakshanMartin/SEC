@@ -1,20 +1,21 @@
 package fileComparison;
 
-import javafx.beans.property.*;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
-import javafx.scene.Scene;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.Stage;
-
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+
+import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.ToolBar;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.Stage;
 
 public class UserInterface
 {
@@ -23,11 +24,8 @@ public class UserInterface
     private ProgressBar progressBar = new ProgressBar();
     private Thread finderThread = null;
     private FilesFinder filesFinder;
-    private ComparisonResult result;
     private OutputResults output;
-    private File outputFile; 
-    private FileWriter writer;
-    // private ExecutorService pool = Executors.newFixedThreadPool(4);
+    private int fileCount = 0;
     private BlockingQueue<ComparisonResult> queue = new ArrayBlockingQueue<>(100);
 
     // CONSTRUCTOR
@@ -49,8 +47,10 @@ public class UserInterface
         // Set up button event handlers.
         compareBtn.setOnAction((event) ->
         { 
+            // Clear UI table of any entries
+            resultTable.getItems().clear();
+
             compareFiles(stage);
-            // checkResults();
             outputResults();
         });
 
@@ -127,25 +127,6 @@ public class UserInterface
         finderThread.start();
         
         System.out.println("Comparing files within " + directory + "...");
-        
-        // Extremely fake way of demonstrating how to use the progress bar (noting that it can 
-        // actually only be set to one value, from 0-1, at a time.)
-        // progressBar.setProgress(0.25);
-        // progressBar.setProgress(0.5);
-        // progressBar.setProgress(0.6);
-        // progressBar.setProgress(0.85);
-        // progressBar.setProgress(1.0);
-
-        // Extremely fake way of demonstrating how to update the table (noting that this shouldn't
-        // just happen once at the end, but progressively as each result is obtained.)
-        // List<ComparisonResult> newResults = new ArrayList<>();
-        // newResults.add(new ComparisonResult("Example File 1", "Example File 2", 0.75));
-        // newResults.add(new ComparisonResult("Example File 1", "Example File 3", 0.31));
-        // newResults.add(new ComparisonResult("Example File 2", "Example File 3", 0.45));
-        
-        // resultTable.getItems().setAll(newResults);        
-        
-        // progressBar.setProgress(0.0); // Reset progress bar after successful comparison?
     }
     
     private void stopComparison()
@@ -174,7 +155,13 @@ public class UserInterface
 
     private void outputResults()
     {
-        outputFile = new File("src/main/output/", "results.csv");
+        File outputFile;
+        String filename;
+
+        fileCount++;
+        filename = "results" + fileCount + ".csv";
+
+        outputFile = new File("src/main/output/", filename);
         output = new OutputResults(queue, outputFile);
         output.runTasks();
     }

@@ -53,6 +53,7 @@ public class OutputResults
                         result = queue.take();
                         writer = new FileWriter(outputFile.getAbsolutePath(), true);
         
+                        // Write to file in CSV format
                         writer.write(result.getFile1());
                         writer.write(",");
                         writer.write(result.getFile2());
