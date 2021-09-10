@@ -127,7 +127,7 @@ public class UserInterface
         File outputFile;
 
         // Find directory to compare files
-        dc.setInitialDirectory(new File("."));
+        dc.setInitialDirectory(new File("src/main/resources"));
         dc.setTitle("Choose directory");
         directory = dc.showDialog(stage);
         
