@@ -34,7 +34,7 @@ public class ResultsOutput implements Runnable
 
             while(queue.checkProduction() || result != null)
             {
-                Thread.sleep(1000);
+                // Thread.sleep(1000);
 
                 writer = new FileWriter(outputFile.getAbsolutePath(), true);
 

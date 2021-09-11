@@ -56,6 +56,16 @@ public class FilesFinder implements Runnable
             {
                 for(int j = i+1; j < result.size(); j++)
                 {
+                    // Crop filename from path
+                    filename1 = cropFilename(result.get(i));
+                    filename2 = cropFilename(result.get(j));
+
+                    // Check if these two files have been compared already
+                    if(queue.checkProcessed(filename1 + filename2))
+                    {
+                        continue;
+                    }
+
                     // Calculate current progress of comparisons
                     calcProgress(i+1, result.size());
 
@@ -63,10 +73,6 @@ public class FilesFinder implements Runnable
                     similarity = new FilesComparer().getSimilarity(
                                         result.get(i).toString(), 
                                         result.get(j).toString());
-
-                    // Crop filename from path
-                    filename1 = cropFilename(result.get(i));
-                    filename2 = cropFilename(result.get(j));
 
                     // Create new ComparisonResult object
                     ComparisonResult newResult = new ComparisonResult(filename1, filename2, similarity, false); 
@@ -89,7 +95,7 @@ public class FilesFinder implements Runnable
 
             // End of production
             queue.stoppedProduction();
-            System.out.println("FileFinding Thread done");
+            System.out.println("FileFinding Thread#" + Thread.currentThread().getName() + " done");
             
             // Update progress upon completion of comparisons
             calcProgress(result.size(), result.size());
@@ -97,6 +103,8 @@ public class FilesFinder implements Runnable
             {
                 ui.updateProgressBar(0.0);
             });
+
+            Thread.sleep(1000);
         }
         catch(IOException e)
         {

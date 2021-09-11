@@ -1,6 +1,7 @@
 package fileComparison.view;
 
 import java.io.File;
+import java.util.concurrent.ExecutionException;
 
 import fileComparison.controller.ProducerConsumer;
 import fileComparison.model.ComparisonResult;
@@ -141,7 +142,9 @@ public class UserInterface
             outputFile = checkFilename(filename, outputFile);
 
             producerConsumer = new ProducerConsumer(this, directory.toPath());
+            
             producerConsumer.start(outputFile);
+            
         }
     }
 
