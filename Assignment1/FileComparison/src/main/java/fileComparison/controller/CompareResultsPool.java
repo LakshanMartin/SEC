@@ -27,12 +27,12 @@ public class CompareResultsPool
     {
         ResultsQueue resultsQueue = new ResultsQueue();
 
-        for(int i = 0; i < 200; i++)
+        for(int i = 0; i < 300; i++)
         {
             threadPool.execute(new FilesComparer(ui, filesQueue, resultsQueue));
         }
 
-        for(int i = 0; i < 150; i++)
+        for(int i = 0; i < 200; i++)
         {
             threadPool.execute(new ResultsOutput(resultsQueue, outputFile));
         }

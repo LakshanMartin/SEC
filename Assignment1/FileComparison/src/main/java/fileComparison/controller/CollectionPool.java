@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import fileComparison.model.Files;
 import fileComparison.model.FilesQueue;
 
 public class CollectionPool 
