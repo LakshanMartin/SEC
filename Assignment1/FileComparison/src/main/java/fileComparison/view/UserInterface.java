@@ -4,7 +4,9 @@ import java.io.File;
 import java.util.concurrent.ExecutionException;
 
 import fileComparison.controller.ProducerConsumer;
+import fileComparison.controller.TestFinder;
 import fileComparison.model.ComparisonResult;
+import fileComparison.model.FilesQueue;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -23,12 +25,18 @@ public class UserInterface
     // CLASS FIELDS
     private TableView<ComparisonResult> resultTable = new TableView<>();  
     private ProgressBar progressBar = new ProgressBar();
-    private int fileCount = 0;;
+    private String[] threads;
+    private Thread finderThread = null;
+    private int fileCount = 0;
+    private FilesQueue filesQueue = new FilesQueue();
     private ProducerConsumer producerConsumer = null;
     private static final String OUTPUT_PATH = "src/main/output/";
 
     // CONSTRUCTOR
-    public UserInterface() {}
+    public UserInterface() 
+    {
+        // this.threads = threads;
+    }
 
     /**
      * REFERENCE #1: Obtained from Dr David Cooper, uidemo. Majority of UI 
@@ -116,6 +124,8 @@ public class UserInterface
                 {
                     producerConsumer.stop();
                 }
+
+                finderThread.interrupt();
             }
         });  
     }
@@ -131,7 +141,7 @@ public class UserInterface
         dc.setInitialDirectory(new File("src/main/resources"));
         dc.setTitle("Choose directory");
         directory = dc.showDialog(stage);
-        
+
         // Check that 'Cancel' button wasn't selected from dc
         if(directory != null)
         {
@@ -141,7 +151,11 @@ public class UserInterface
 
             outputFile = checkFilename(filename, outputFile);
 
-            producerConsumer = new ProducerConsumer(this, directory.toPath());
+            finderThread = new Thread(new TestFinder(filesQueue, directory.toPath()));
+            finderThread.start();
+
+            producerConsumer = new ProducerConsumer(
+                this, directory.toPath(), filesQueue);
             
             producerConsumer.start(outputFile);
             
@@ -197,6 +211,5 @@ public class UserInterface
     public void updateProgressBar(double progress)
     {
         progressBar.setProgress(progress);
-        System.out.println("Progress: " + progress);
     }
 }

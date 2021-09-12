@@ -1,15 +1,9 @@
 package fileComparison.controller;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import fileComparison.model.ComparisonResult;
+import fileComparison.model.FilesQueue;
 import fileComparison.model.Queue;
 import fileComparison.view.UserInterface;
 import javafx.application.Platform;
@@ -18,16 +12,14 @@ public class FilesFinder implements Runnable
 {
     // CLASS FIELDS
     private UserInterface ui;
-    private Path path;
+    private FilesQueue filesQueue;
     private Queue queue;
-    private String[] fileExtensions = {"txt", "md", "java", "cs"};
-    private List<String> result;
 
     // CONSTRUCTOR
-    public FilesFinder(UserInterface ui, Path path, Queue queue) 
+    public FilesFinder(UserInterface ui, FilesQueue filesQueue, Queue queue) 
     {
         this.ui = ui;
-        this.path = path;
+        this.filesQueue = filesQueue;
         this.queue = queue;
     }
 
@@ -38,81 +30,60 @@ public class FilesFinder implements Runnable
     @Override
     public void run()
     {
+        String[] filesToComp;
         double similarity;
         String filename1, filename2;
+        ComparisonResult POISON_PILL = new ComparisonResult("POISON", "PILL", 4.4);
 
-        try
+        try 
         {
-            try(Stream<Path> walk = Files.walk(path, 1))
-            {
-                result = walk
-                            .filter(p -> !checkEmpty(p.toFile()))
-                            .map(p -> p.toString())
-                            .filter(f -> Arrays.stream(fileExtensions).anyMatch(f::endsWith))
-                            .collect(Collectors.toList());
-            }
+            // filesToComp = filesQueue.get();
 
-            for(int i = 0; i < result.size(); i++)
+            // while(filesToComp != null)
+            while(true)
             {
-                for(int j = i+1; j < result.size(); j++)
+                filesToComp = filesQueue.get();
+
+                if(filesToComp[0].equals("POISON") && filesToComp[1].equals("PILL"))
                 {
-                    // Crop filename from path
-                    filename1 = cropFilename(result.get(i));
-                    filename2 = cropFilename(result.get(j));
-
-                    // Check if these two files have been compared already
-                    if(queue.checkProcessed(filename1 + filename2))
-                    {
-                        continue;
-                    }
-
-                    // Calculate current progress of comparisons
-                    calcProgress(i+1, result.size());
-
-                    // Compare file contents and calc similarity
-                    similarity = new FilesComparer().getSimilarity(
-                                        result.get(i).toString(), 
-                                        result.get(j).toString());
-
-                    // Create new ComparisonResult object
-                    ComparisonResult newResult = new ComparisonResult(filename1, filename2, similarity, false); 
-                    
-                    // Add to BlockingQueue
-                    queue.put(newResult);
-
-                    // Update GUI with similarity results > 0.5
-                    if(newResult.getSimilarity() > 0.5)
-                    {
-                        Platform.runLater(() ->
-                        {
-                            ui.updateResultsTable(newResult);
-                        });
-                    }
-
-                    Thread.sleep(100);
+                    filesQueue.put(filesToComp); // POISON other threads
+                    // System.out.println(Thread.currentThread().getName() + " Done comparing");
+                    break;
                 }
+                // Compare file contents and calc similarity
+                similarity = new FilesComparer().getSimilarity(
+                    filesToComp[0], 
+                    filesToComp[1]);
+
+                // Crop filename from path
+                filename1 = cropFilename(filesToComp[0]);
+                filename2 = cropFilename(filesToComp[1]);
+
+                // Create new ComparisonResult object
+                ComparisonResult newResult = new ComparisonResult(filename1, filename2, similarity);
+
+                // Add to BlockingQueue
+                queue.put(newResult);
+
+                // Update GUI with similarity results > 0.5
+                if(newResult.getSimilarity() > 0.5)
+                {
+                    Platform.runLater(() ->
+                    {
+                        ui.updateResultsTable(newResult);
+                    });
+                }
+
+                Thread.sleep(100);
             }
 
-            // End of production
-            queue.stoppedProduction();
-            System.out.println("FileFinding Thread#" + Thread.currentThread().getName() + " done");
-            
-            // Update progress upon completion of comparisons
-            calcProgress(result.size(), result.size());
-            Platform.runLater(() ->
-            {
-                ui.updateProgressBar(0.0);
-            });
-
-            Thread.sleep(1000);
-        }
-        catch(IOException e)
+            // System.out.println("Compared all files");
+            queue.put(POISON_PILL);
+            Thread.currentThread().interrupt();
+        } 
+        catch(InterruptedException e) 
         {
-            System.out.println("IO ERROR: " + e.getMessage());
-        }
-        catch(InterruptedException e)
-        {
-            System.out.println("FileFinder Thread: TERMINATED");
+            // System.out.println("FileFinder Thread: TERMINATED");
         }
     }
 

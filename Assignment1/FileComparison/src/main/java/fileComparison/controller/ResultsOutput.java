@@ -10,14 +10,12 @@ import fileComparison.model.Queue;
 public class ResultsOutput implements Runnable
 {
     // CLASS FIELDS
-    private int id;
     private Queue queue;
     private File outputFile;
 
     // CONSTRUCTOR
-    public ResultsOutput(int id, Queue queue, File outputFile)
+    public ResultsOutput(Queue queue, File outputFile)
     {
-        this.id = id;
         this.queue = queue;
         this.outputFile = outputFile;
     }
@@ -30,18 +28,28 @@ public class ResultsOutput implements Runnable
         
         try
         {
-            result = queue.get();
+            // result = queue.get();
+            // result = queue.peek();
 
-            while(queue.checkProduction() || result != null)
+            // while(result != null)// || !queue.checkProduction())
+            // while(!result.getFile1().equals("POISON") && !result.getFile2().equals("PILL"))
+            while(true)
             {
-                // Thread.sleep(1000);
+                result = queue.get();
+
+                if(result.getFile1().equals("POISON") && result.getFile2().equals("PILL"))
+                {
+                    queue.put(result); // POISON other threads
+                    // System.out.println(Thread.currentThread().getName() + " POISONED");
+                    break;
+                }
 
                 writer = new FileWriter(outputFile.getAbsolutePath(), true);
-
-                System.out.println(
-                    "FileWriter Thread #" + this.id + ": WRITING TO - " +
-                    outputFile.getName());
-
+                
+                // System.out.println(
+                //     Thread.currentThread().getName() + ": WRITING TO - " +
+                //     outputFile.getName());
+                    
                 // Write to file in CSV format
                 writer.write(result.getFile1());
                 writer.write(",");
@@ -49,13 +57,15 @@ public class ResultsOutput implements Runnable
                 writer.write(",");
                 writer.write(String.valueOf(result.getSimilarity()));  
                 writer.write("\n"); 
-
+                
                 writer.close();
-      
-                result = queue.get();                  
+                
+                // result = queue.get();  
+
+                Thread.sleep(100);
             } 
 
-            System.out.println("FileWriter Thread #" + this.id + " done");
+            // System.out.println(Thread.currentThread().getName() + " done");
         }
         catch(IOException e)
         {
@@ -63,7 +73,7 @@ public class ResultsOutput implements Runnable
         }
         catch(InterruptedException e)
         {
-            System.out.println("FileWriter Thread #" + this.id + ": TERMINATED");
+            // System.out.println(Thread.currentThread().getName()+ ": TERMINATED");
         } 
     }
 }
