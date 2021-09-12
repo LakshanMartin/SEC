@@ -5,18 +5,18 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import fileComparison.model.ComparisonResult;
-import fileComparison.model.Queue;
+import fileComparison.model.ResultsQueue;
 
 public class ResultsOutput implements Runnable
 {
     // CLASS FIELDS
-    private Queue queue;
+    private ResultsQueue resultsQueue;
     private File outputFile;
 
     // CONSTRUCTOR
-    public ResultsOutput(Queue queue, File outputFile)
+    public ResultsOutput(ResultsQueue resultsQueue, File outputFile)
     {
-        this.queue = queue;
+        this.resultsQueue = resultsQueue;
         this.outputFile = outputFile;
     }
 
@@ -28,28 +28,19 @@ public class ResultsOutput implements Runnable
         
         try
         {
-            // result = queue.get();
-            // result = queue.peek();
-
-            // while(result != null)// || !queue.checkProduction())
-            // while(!result.getFile1().equals("POISON") && !result.getFile2().equals("PILL"))
             while(true)
             {
-                result = queue.get();
+                result = resultsQueue.get();
 
                 if(result.getFile1().equals("POISON") && result.getFile2().equals("PILL"))
                 {
-                    queue.put(result); // POISON other threads
-                    // System.out.println(Thread.currentThread().getName() + " POISONED");
+                    resultsQueue.put(result); // POISON other threads
+
                     break;
                 }
-
+                
                 writer = new FileWriter(outputFile.getAbsolutePath(), true);
                 
-                // System.out.println(
-                //     Thread.currentThread().getName() + ": WRITING TO - " +
-                //     outputFile.getName());
-                    
                 // Write to file in CSV format
                 writer.write(result.getFile1());
                 writer.write(",");
@@ -58,14 +49,12 @@ public class ResultsOutput implements Runnable
                 writer.write(String.valueOf(result.getSimilarity()));  
                 writer.write("\n"); 
                 
-                writer.close();
+                writer.close(); 
                 
-                // result = queue.get();  
-
                 Thread.sleep(100);
             } 
-
-            // System.out.println(Thread.currentThread().getName() + " done");
+            
+            Thread.currentThread().interrupt();
         }
         catch(IOException e)
         {
@@ -73,7 +62,7 @@ public class ResultsOutput implements Runnable
         }
         catch(InterruptedException e)
         {
-            // System.out.println(Thread.currentThread().getName()+ ": TERMINATED");
+            System.out.println("Results output done");
         } 
     }
 }

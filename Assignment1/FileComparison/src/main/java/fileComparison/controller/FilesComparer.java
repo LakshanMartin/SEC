@@ -1,123 +1,131 @@
 package fileComparison.controller;
 
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.File;
 
-public class FilesComparer 
+import fileComparison.model.ComparisonResult;
+import fileComparison.model.Files;
+import fileComparison.model.FilesQueue;
+import fileComparison.model.ResultsQueue;
+import fileComparison.view.UserInterface;
+import javafx.application.Platform;
+
+public class FilesComparer implements Runnable
 {
-    // EMPTY CONSTRUCTOR
-    public FilesComparer() {}
+    // CLASS FIELDS
+    private UserInterface ui;
+    private FilesQueue filesQueue;
+    private ResultsQueue resultsQueue;
 
-    public double getSimilarity(String file1, String file2)
+    // CONSTRUCTOR
+    public FilesComparer(UserInterface ui, FilesQueue filesQueue, ResultsQueue resultsQueue) 
     {
-        String contents1, contents2;
-        Map<String, Integer> lookup = new HashMap<>();
-        int LCS, f1Length, f2Length;
+        this.ui = ui;
+        this.filesQueue = filesQueue;
+        this.resultsQueue = resultsQueue;
+    }
+
+    /**
+     * 
+     * REFERENCE: https://mkyong.com/java/how-to-find-files-with-certain-extension-only/
+     */
+    @Override
+    public void run()
+    {
+        // String[] filesToComp;
+        Files filesToComp;
         double similarity;
+        String filename1, filename2;
+        ComparisonResult POISON_PILL = new ComparisonResult("POISON", "PILL", 4.4);
 
-        // Get file contents
-        contents1 = extractContents(file1);
-        contents2 = extractContents(file2);
-        
-        f1Length = contents1.length();
-        f2Length = contents2.length();
+        try 
+        {
+            while(true)
+            {
+                filesToComp = filesQueue.get();
 
-        // Determine length of Longest Common Subsequence (LCS) of substring
-        LCS = LCSLength(contents1, contents2, f1Length, f2Length, lookup);
-        
-        // Calculate similarity between the two files
-        similarity = ((double)LCS * 2.0) / (double)(f1Length + f2Length);
+                // if(filesToComp[0].equals("POISON") && filesToComp[1].equals("PILL"))
+                // if(filesToComp.getFile1().equals("POISON") && filesToComp.getFile2().equals("PILL"))
+                // {
+                //     filesQueue.put(filesToComp); // POISON other threads in pool
+                //     System.out.println("POISONED");
+                //     break;
+                // }
 
-        // Round similarity
-        similarity = roundDouble(similarity);
+                // Compare file contents and calc similarity
+                // similarity = new SimilarityAlgo().getSimilarity(
+                //     filesToComp[0], 
+                //     filesToComp[1]);
+                similarity = new SimilarityAlgo().getSimilarity(
+                    filesToComp.getFile1(), 
+                    filesToComp.getFile2());
+                    
+                // Crop filename from path
+                // filename1 = cropFilename(filesToComp[0]);
+                // filename2 = cropFilename(filesToComp[1]);
+                filename1 = cropFilename(filesToComp.getFile1());
+                filename2 = cropFilename(filesToComp.getFile2());
 
-        return similarity;
+                // System.out.println(filesToComp[1]);
+                
+                // Create new ComparisonResult object
+                ComparisonResult newResult = new ComparisonResult(filename1, filename2, similarity);
+                
+                // Add to BlockingQueue
+                resultsQueue.put(newResult);
+                
+                // Update GUI with similarity results > 0.5
+                if(newResult.getSimilarity() > 0.5)
+                {
+                    Platform.runLater(() ->
+                    {
+                        ui.updateResultsTable(newResult);
+                    });
+                }
+                
+                Thread.sleep(100);
+            }
+
+            // resultsQueue.put(POISON_PILL); // ADD POISON PILL to resultsQueue
+            // Thread.currentThread().interrupt();
+        } 
+        catch(InterruptedException e) 
+        {
+            System.out.println("File Comparison done");
+        }
     }
 
     /**
-     * REFERENCE: "How to read a file in one line in JDK 7 or Java 8? Example".
-     *             https://javarevisited.blogspot.com/2015/02/how-to-read-file-in-one-line-java-8.html
-     *             (accessed 25/08/2021).
-     * @param file
-     * @return
+     * Calculate current progress and update GUI progress bar
+     * @param current
+     * @param end
+     * @throws InterruptedException
      */
-    private String extractContents(String file)
+    private void calcProgress(int current, int end) throws InterruptedException
     {
-        List<String> lines;
-        StringBuilder sb;
+        double progress;
 
-        sb = new StringBuilder();
+        progress = (double)current / (double)end;
 
-        try
+        // Update GUI
+        Platform.runLater(() ->
         {
-            lines = Files.readAllLines(Paths.get(file), StandardCharsets.UTF_8);
-
-            for(String line : lines)
-            {
-                sb.append(line);
-            }
-        }
-        catch(IOException e)
-        {
-
-        }
-
-        return sb.toString();
+            ui.updateProgressBar(progress);
+        });
     }
 
     /**
-     * REFERENCE: https://www.techiedelight.com/longest-common-subsequence/
-     * @param contents1
-     * @param contents2
-     * @param m
-     * @param n
-     * @param lookup
+     * Extract the filename from the file path
+     * @param path
      * @return
      */
-    private int LCSLength(String contents1, String contents2, int m, int n, 
-                Map<String, Integer> lookup)
+    private String cropFilename(String path)
     {
-        String key = m + "|" + n;
+        String filename;
+        String[] split;
 
-        if(m == 0 || n == 0)
-        {
-            return 0;
-        }
-        
-        if(!lookup.containsKey(key))
-        {
-            if(contents1.charAt(m - 1) == contents2.charAt(n - 1))
-            {
-                lookup.put(key, LCSLength(contents1, contents2, m-1, n-1, lookup) + 1);
-            }
-            else
-            {
-                lookup.put(key, Integer.max(LCSLength(contents1, contents2, m, n-1, lookup), 
-                LCSLength(contents1, contents2, m-1, n, lookup)));
-            }
-        }
+        split = path.split("/");
+        filename = split[split.length - 1];
 
-        return lookup.get(key);
-    }
-
-    /**
-     * REFERENCE: https://stackoverflow.com/questions/8911356/whats-the-best-practice-to-round-a-float-to-2-decimals
-     * @param similarity
-     * @return
-     */
-    private double roundDouble(double similarity)
-    {
-        BigDecimal bd = new BigDecimal(Double.toString(similarity));
-
-        bd = bd.setScale(2, RoundingMode.CEILING);
-
-        return bd.doubleValue();
+        return filename;
     }
 }

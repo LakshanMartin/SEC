@@ -3,8 +3,8 @@ package fileComparison.view;
 import java.io.File;
 import java.util.concurrent.ExecutionException;
 
-import fileComparison.controller.ProducerConsumer;
-import fileComparison.controller.TestFinder;
+import fileComparison.controller.CompareResultsPool;
+import fileComparison.controller.AccessDirectory;
 import fileComparison.model.ComparisonResult;
 import fileComparison.model.FilesQueue;
 import javafx.beans.property.SimpleStringProperty;
@@ -26,10 +26,10 @@ public class UserInterface
     private TableView<ComparisonResult> resultTable = new TableView<>();  
     private ProgressBar progressBar = new ProgressBar();
     private String[] threads;
-    private Thread finderThread = null;
+    private Thread fileWalkThread = null;
     private int fileCount = 0;
     private FilesQueue filesQueue = new FilesQueue();
-    private ProducerConsumer producerConsumer = null;
+    private CompareResultsPool compareResultsPool = null;
     private static final String OUTPUT_PATH = "src/main/output/";
 
     // CONSTRUCTOR
@@ -62,7 +62,7 @@ public class UserInterface
         { 
             resultTable.getItems().clear();
 
-            if(producerConsumer != null)
+            if(compareResultsPool != null)
             {
                 stopComparison();
             }
@@ -120,12 +120,12 @@ public class UserInterface
             {
                 System.out.println("Window closed");
 
-                if(producerConsumer != null)
+                if(compareResultsPool != null)
                 {
-                    producerConsumer.stop();
+                    compareResultsPool.stop();
                 }
 
-                finderThread.interrupt();
+                fileWalkThread.interrupt();
             }
         });  
     }
@@ -151,14 +151,11 @@ public class UserInterface
 
             outputFile = checkFilename(filename, outputFile);
 
-            finderThread = new Thread(new TestFinder(filesQueue, directory.toPath()));
-            finderThread.start();
+            fileWalkThread = new Thread(new AccessDirectory(filesQueue, directory.toPath()));
+            fileWalkThread.start();
 
-            producerConsumer = new ProducerConsumer(
-                this, directory.toPath(), filesQueue);
-            
-            producerConsumer.start(outputFile);
-            
+            compareResultsPool = new CompareResultsPool(this, filesQueue);
+            compareResultsPool.start(outputFile);
         }
     }
 
@@ -182,12 +179,12 @@ public class UserInterface
     
     private void stopComparison()
     {
-        if(producerConsumer != null)
+        if(compareResultsPool != null)
         {
             System.out.println("Stopping comparison...");
     
-            producerConsumer.stop();
-            producerConsumer = null;
+            compareResultsPool.stop();
+            compareResultsPool = null;
         }
         else
         {

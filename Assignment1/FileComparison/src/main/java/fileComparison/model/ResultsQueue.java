@@ -5,13 +5,13 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-public class Queue 
+public class ResultsQueue 
 {
     // CLASS FIELDS
     private BlockingQueue<ComparisonResult> queue = new ArrayBlockingQueue<>(90);
     
     // EMPTY CONSTRUCTOR
-    public Queue() {}
+    public ResultsQueue() {}
 
     public void put(ComparisonResult newResult) throws InterruptedException
     {
