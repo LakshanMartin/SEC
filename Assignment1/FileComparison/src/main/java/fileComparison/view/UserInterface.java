@@ -28,11 +28,10 @@ public class UserInterface
     // CLASS FIELDS
     private TableView<ComparisonResult> resultTable = new TableView<>();  
     private ProgressBar progressBar = new ProgressBar();
-    private Thread fileWalkThread = null;
-    private ExecutorService es = Executors.newSingleThreadExecutor();
+    private ExecutorService es;
     private int fileCount = 0;
     private FilesQueue filesQueue = new FilesQueue();
-    private CompareResultsPool compareResultsPool = null;
+    private CompareResultsPool compareResultsPool;
     private static final String OUTPUT_PATH = "src/main/output/";
 
     // CONSTRUCTOR
@@ -67,7 +66,8 @@ public class UserInterface
 
             if(compareResultsPool != null)
             {
-                stopComparison();
+                compareResultsPool.stop();
+                filesQueue = new FilesQueue();
             }
 
             compareFiles(stage);
@@ -125,10 +125,8 @@ public class UserInterface
 
                 if(compareResultsPool != null)
                 {
-                    compareResultsPool.stop();
+                    System.exit(0);
                 }
-
-                fileWalkThread.interrupt();
             }
         });  
     }
@@ -157,12 +155,16 @@ public class UserInterface
             outputFile = checkFilename(filename, outputFile);
 
             access = new AccessDirectory(filesQueue, directory.toPath());
+            es  = Executors.newSingleThreadExecutor();
             Future<Integer> future = es.submit(access);
 
             try 
             {
                 numFiles = future.get().intValue();
                 System.out.println("Number of files found: " + numFiles);
+                // access.stopService();
+                es.shutdown();
+                es = null;
             } 
             catch(InterruptedException | ExecutionException e) 
             {
@@ -202,7 +204,6 @@ public class UserInterface
             System.out.println("Stopping comparison...");
     
             compareResultsPool.stop();
-            compareResultsPool = null;
         }
         else
         {
@@ -226,5 +227,8 @@ public class UserInterface
     public void updateProgressBar(double progress)
     {
         progressBar.setProgress(progress);
+
+        
+
     }
 }

@@ -15,6 +15,7 @@ public class FilesComparer implements Runnable
     private ProgressTracker progressTracker;
     private FilesQueue filesQueue;
     private ResultsQueue resultsQueue;
+    private static final ComparisonResult POISON_PILL = new ComparisonResult("POISON", "PILL", 4.4);
 
     // CONSTRUCTOR
     public FilesComparer(UserInterface ui, ProgressTracker progressTracker, FilesQueue filesQueue,        ResultsQueue resultsQueue) 
@@ -64,6 +65,7 @@ public class FilesComparer implements Runnable
                     ui.updateProgressBar(progressTracker.getProgress());
                 });
 
+                
                 // Add to BlockingQueue
                 resultsQueue.put(newResult);
                 
@@ -76,12 +78,27 @@ public class FilesComparer implements Runnable
                     });
                 }
                 
+                // Reset ProgressBar to zero when comparisons are complete
+                if(progressTracker.getProgress() == 1.0)
+                {
+                    Platform.runLater(() ->
+                    {
+                        ui.updateProgressBar(0.0);
+                    });
+
+                    break;
+                }
+                
                 Thread.sleep(100);
             }
+            
+            resultsQueue.put(POISON_PILL);
+
+            Thread.currentThread().interrupt();
         } 
         catch(InterruptedException e) 
         {
-            System.out.println("File Comparison done");
+            System.out.println("FileComparer interrupted");
         }
     }
 

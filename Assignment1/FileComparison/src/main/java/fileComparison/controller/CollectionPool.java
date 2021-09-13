@@ -10,6 +10,7 @@ public class CollectionPool
 {
     private FilesQueue filesQueue;
     private List<String> filesList;
+    private ExecutorService threadPool;
 
     public CollectionPool(FilesQueue filesQueue, List<String> filesList)
     {
@@ -19,7 +20,6 @@ public class CollectionPool
 
     public void start()
     {
-        ExecutorService threadPool; 
         int numThreads = Runtime.getRuntime().availableProcessors() / 2;
         
         threadPool = Executors.newFixedThreadPool(numThreads);

@@ -28,14 +28,15 @@ public class ResultsOutput implements Runnable
         
         try
         {
-            while(true)
+            // while(true)
+            while(!Thread.currentThread().isInterrupted())
             {
                 result = resultsQueue.get();
 
                 if(result.getFile1().equals("POISON") && result.getFile2().equals("PILL"))
                 {
                     resultsQueue.put(result); // POISON other threads
-
+                    System.out.println("POISONED");
                     break;
                 }
                 
@@ -50,11 +51,7 @@ public class ResultsOutput implements Runnable
                 writer.write("\n"); 
                 
                 writer.close(); 
-                
-                Thread.sleep(100);
             } 
-            
-            Thread.currentThread().interrupt();
         }
         catch(IOException e)
         {
@@ -62,7 +59,11 @@ public class ResultsOutput implements Runnable
         }
         catch(InterruptedException e)
         {
-            System.out.println("Results output done");
+            System.out.println("ResultsOutput interrupted");
         } 
+        finally
+        {
+            Thread.currentThread().interrupt();
+        }
     }
 }

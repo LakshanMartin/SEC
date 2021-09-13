@@ -12,10 +12,11 @@ import java.util.stream.Stream;
 
 import fileComparison.model.FilesQueue;
 
-public class AccessDirectory implements Callable<Integer>//Runnable
+public class AccessDirectory implements Callable<Integer>
 {
     private FilesQueue filesQueue;
     private Path path;
+    private CollectionPool collectionPool;
 
     public AccessDirectory(FilesQueue filesQueue, Path path) 
     {
@@ -24,12 +25,11 @@ public class AccessDirectory implements Callable<Integer>//Runnable
     }
 
     @Override
-    public Integer call() //run() 
+    public Integer call()
     {
         List<String> filesList;
-        int numComparisons = 0; 
+        int numFiles = 0; 
         String[] fileExtensions = {"txt", "md", "java", "cs"};
-        CollectionPool collectionPool;
 
         try 
         {
@@ -42,7 +42,7 @@ public class AccessDirectory implements Callable<Integer>//Runnable
                             .collect(Collectors.toList());
             }
 
-            numComparisons = filesList.size();
+            numFiles = filesList.size();
 
             collectionPool = new CollectionPool(filesQueue, filesList);
             collectionPool.start();
@@ -52,7 +52,7 @@ public class AccessDirectory implements Callable<Integer>//Runnable
             System.out.println("IO ERROR: " + e.getMessage());
         }
 
-        return numComparisons;
+        return numFiles;
     }
 
     /**
