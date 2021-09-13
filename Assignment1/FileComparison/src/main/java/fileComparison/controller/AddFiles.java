@@ -21,19 +21,13 @@ public class AddFiles implements Runnable
     @Override
     public void run()
     {
-        // String[] filesToComp = new String[2];
         String file1, file2;
         Files files;
 
         for(int i = startPoint; i < filesList.size()-1; i++)
         {
-            // filesToComp[0] = filesList.get(startPoint).toString();
-            // filesToComp[1] = filesList.get(i + 1).toString();  
             file1 = filesList.get(startPoint).toString();
             file2 = filesList.get(i + 1).toString();  
-
-            // System.out.println(filesToComp[0] + " " + filesToComp[1]);
-            // System.out.println(file1 + " " + file2);
 
             files = new Files(file1, file2);
 

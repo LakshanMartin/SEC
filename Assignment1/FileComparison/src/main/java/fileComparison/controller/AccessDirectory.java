@@ -6,8 +6,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -17,6 +15,7 @@ public class AccessDirectory implements Runnable
 {
     private FilesQueue filesQueue;
     private Path path;
+    private int numComparisons;
 
     public AccessDirectory(FilesQueue filesQueue, Path path) 
     {
@@ -42,6 +41,8 @@ public class AccessDirectory implements Runnable
                             .collect(Collectors.toList());
             }
 
+            numComparisons = filesList.size();
+
             collectionPool = new CollectionPool(filesQueue, filesList);
             collectionPool.start();
         } 
@@ -66,5 +67,10 @@ public class AccessDirectory implements Runnable
         }
 
         return result;
+    }
+
+    public int getNumComparisons()
+    {
+        return numComparisons;
     }
 }

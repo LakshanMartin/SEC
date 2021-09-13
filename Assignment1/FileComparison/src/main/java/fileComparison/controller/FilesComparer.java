@@ -1,7 +1,5 @@
 package fileComparison.controller;
 
-import java.io.File;
-
 import fileComparison.model.ComparisonResult;
 import fileComparison.model.Files;
 import fileComparison.model.FilesQueue;
@@ -35,7 +33,6 @@ public class FilesComparer implements Runnable
         Files filesToComp;
         double similarity;
         String filename1, filename2;
-        ComparisonResult POISON_PILL = new ComparisonResult("POISON", "PILL", 4.4);
 
         try 
         {
@@ -43,29 +40,14 @@ public class FilesComparer implements Runnable
             {
                 filesToComp = filesQueue.get();
 
-                // if(filesToComp[0].equals("POISON") && filesToComp[1].equals("PILL"))
-                // if(filesToComp.getFile1().equals("POISON") && filesToComp.getFile2().equals("PILL"))
-                // {
-                //     filesQueue.put(filesToComp); // POISON other threads in pool
-                //     System.out.println("POISONED");
-                //     break;
-                // }
-
                 // Compare file contents and calc similarity
-                // similarity = new SimilarityAlgo().getSimilarity(
-                //     filesToComp[0], 
-                //     filesToComp[1]);
                 similarity = new SimilarityAlgo().getSimilarity(
                     filesToComp.getFile1(), 
                     filesToComp.getFile2());
                     
                 // Crop filename from path
-                // filename1 = cropFilename(filesToComp[0]);
-                // filename2 = cropFilename(filesToComp[1]);
                 filename1 = cropFilename(filesToComp.getFile1());
                 filename2 = cropFilename(filesToComp.getFile2());
-
-                // System.out.println(filesToComp[1]);
                 
                 // Create new ComparisonResult object
                 ComparisonResult newResult = new ComparisonResult(filename1, filename2, similarity);
@@ -84,9 +66,6 @@ public class FilesComparer implements Runnable
                 
                 Thread.sleep(100);
             }
-
-            // resultsQueue.put(POISON_PILL); // ADD POISON PILL to resultsQueue
-            // Thread.currentThread().interrupt();
         } 
         catch(InterruptedException e) 
         {

@@ -1,10 +1,9 @@
 package fileComparison.view;
 
 import java.io.File;
-import java.util.concurrent.ExecutionException;
 
-import fileComparison.controller.CompareResultsPool;
 import fileComparison.controller.AccessDirectory;
+import fileComparison.controller.CompareResultsPool;
 import fileComparison.model.ComparisonResult;
 import fileComparison.model.FilesQueue;
 import javafx.beans.property.SimpleStringProperty;
@@ -25,7 +24,6 @@ public class UserInterface
     // CLASS FIELDS
     private TableView<ComparisonResult> resultTable = new TableView<>();  
     private ProgressBar progressBar = new ProgressBar();
-    private String[] threads;
     private Thread fileWalkThread = null;
     private int fileCount = 0;
     private FilesQueue filesQueue = new FilesQueue();
@@ -136,6 +134,7 @@ public class UserInterface
         File directory; 
         String filename;
         File outputFile;
+        AccessDirectory access;
 
         // Find directory to compare files
         dc.setInitialDirectory(new File("src/main/resources"));
@@ -151,8 +150,12 @@ public class UserInterface
 
             outputFile = checkFilename(filename, outputFile);
 
-            fileWalkThread = new Thread(new AccessDirectory(filesQueue, directory.toPath()));
+            access = new AccessDirectory(filesQueue, directory.toPath());
+
+            fileWalkThread = new Thread(access);
             fileWalkThread.start();
+
+            
 
             compareResultsPool = new CompareResultsPool(this, filesQueue);
             compareResultsPool.start(outputFile);

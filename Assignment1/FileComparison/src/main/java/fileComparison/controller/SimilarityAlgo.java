@@ -30,7 +30,6 @@ public class SimilarityAlgo
         f2Length = contents2.length();
 
         // Determine length of Longest Common Subsequence (LCS) of substring
-        // LCS = LCSLength(contents1, contents2, f1Length, f2Length, lookup);
         LCS = LCSLength(contents1, contents2);
 
         // Calculate similarity between the two files
@@ -73,6 +72,9 @@ public class SimilarityAlgo
         return sb.toString();
     }
 
+    /**
+     * REFERENCES: https://www.techiedelight.com/longest-common-subsequence-lcs-space-optimized-version/
+     */
     public int LCSLength(String contents1, String contents2)
     {
         int m, n, prev, temp;
@@ -116,41 +118,6 @@ public class SimilarityAlgo
 
         return curr[n];
     }
-
-    // /**
-    //  * REFERENCE: https://www.techiedelight.com/longest-common-subsequence/
-    //  * @param contents1
-    //  * @param contents2
-    //  * @param m
-    //  * @param n
-    //  * @param lookup
-    //  * @return
-    //  */
-    // private int LCSLength(String contents1, String contents2, int m, int n, 
-    //             Map<String, Integer> lookup)
-    // {
-    //     String key = m + "|" + n;
-
-    //     if(m == 0 || n == 0)
-    //     {
-    //         return 0;
-    //     }
-        
-    //     if(!lookup.containsKey(key))
-    //     {
-    //         if(contents1.charAt(m - 1) == contents2.charAt(n - 1))
-    //         {
-    //             lookup.put(key, LCSLength(contents1, contents2, m-1, n-1, lookup) + 1);
-    //         }
-    //         else
-    //         {
-    //             lookup.put(key, Integer.max(LCSLength(contents1, contents2, m, n-1, lookup), 
-    //             LCSLength(contents1, contents2, m-1, n, lookup)));
-    //         }
-    //     }
-
-    //     return lookup.get(key);
-    // }
 
     /**
      * REFERENCE: https://stackoverflow.com/questions/8911356/whats-the-best-practice-to-round-a-float-to-2-decimals
