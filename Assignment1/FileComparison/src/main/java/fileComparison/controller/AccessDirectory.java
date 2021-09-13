@@ -6,16 +6,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import fileComparison.model.FilesQueue;
 
-public class AccessDirectory implements Runnable
+public class AccessDirectory implements Callable<Integer>//Runnable
 {
     private FilesQueue filesQueue;
     private Path path;
-    private int numComparisons;
 
     public AccessDirectory(FilesQueue filesQueue, Path path) 
     {
@@ -24,9 +24,10 @@ public class AccessDirectory implements Runnable
     }
 
     @Override
-    public void run() 
+    public Integer call() //run() 
     {
         List<String> filesList;
+        int numComparisons = 0; 
         String[] fileExtensions = {"txt", "md", "java", "cs"};
         CollectionPool collectionPool;
 
@@ -50,6 +51,8 @@ public class AccessDirectory implements Runnable
         {
             System.out.println("IO ERROR: " + e.getMessage());
         }
+
+        return numComparisons;
     }
 
     /**
@@ -67,10 +70,5 @@ public class AccessDirectory implements Runnable
         }
 
         return result;
-    }
-
-    public int getNumComparisons()
-    {
-        return numComparisons;
     }
 }

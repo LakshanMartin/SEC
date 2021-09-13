@@ -1,6 +1,10 @@
 package fileComparison.view;
 
 import java.io.File;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import fileComparison.controller.AccessDirectory;
 import fileComparison.controller.CompareResultsPool;
@@ -25,6 +29,7 @@ public class UserInterface
     private TableView<ComparisonResult> resultTable = new TableView<>();  
     private ProgressBar progressBar = new ProgressBar();
     private Thread fileWalkThread = null;
+    private ExecutorService es = Executors.newSingleThreadExecutor();
     private int fileCount = 0;
     private FilesQueue filesQueue = new FilesQueue();
     private CompareResultsPool compareResultsPool = null;
@@ -135,6 +140,7 @@ public class UserInterface
         String filename;
         File outputFile;
         AccessDirectory access;
+        int numFiles = 0;
 
         // Find directory to compare files
         dc.setInitialDirectory(new File("src/main/resources"));
@@ -151,14 +157,23 @@ public class UserInterface
             outputFile = checkFilename(filename, outputFile);
 
             access = new AccessDirectory(filesQueue, directory.toPath());
+            Future<Integer> future = es.submit(access);
 
-            fileWalkThread = new Thread(access);
-            fileWalkThread.start();
+            try 
+            {
+                numFiles = future.get().intValue();
+                System.out.println("Number of files found: " + numFiles);
+            } 
+            catch(InterruptedException | ExecutionException e) 
+            {
+                e.printStackTrace();
+            }
 
-            
-
-            compareResultsPool = new CompareResultsPool(this, filesQueue);
-            compareResultsPool.start(outputFile);
+            if(numFiles != 0)
+            {
+                compareResultsPool = new CompareResultsPool(this, filesQueue, numFiles);
+                compareResultsPool.start(outputFile);
+            }
         }
     }
 

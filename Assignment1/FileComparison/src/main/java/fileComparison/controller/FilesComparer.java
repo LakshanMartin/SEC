@@ -3,6 +3,7 @@ package fileComparison.controller;
 import fileComparison.model.ComparisonResult;
 import fileComparison.model.Files;
 import fileComparison.model.FilesQueue;
+import fileComparison.model.ProgressTracker;
 import fileComparison.model.ResultsQueue;
 import fileComparison.view.UserInterface;
 import javafx.application.Platform;
@@ -11,13 +12,15 @@ public class FilesComparer implements Runnable
 {
     // CLASS FIELDS
     private UserInterface ui;
+    private ProgressTracker progressTracker;
     private FilesQueue filesQueue;
     private ResultsQueue resultsQueue;
 
     // CONSTRUCTOR
-    public FilesComparer(UserInterface ui, FilesQueue filesQueue, ResultsQueue resultsQueue) 
+    public FilesComparer(UserInterface ui, ProgressTracker progressTracker, FilesQueue filesQueue,        ResultsQueue resultsQueue) 
     {
         this.ui = ui;
+        this.progressTracker = progressTracker;
         this.filesQueue = filesQueue;
         this.resultsQueue = resultsQueue;
     }
@@ -52,6 +55,15 @@ public class FilesComparer implements Runnable
                 // Create new ComparisonResult object
                 ComparisonResult newResult = new ComparisonResult(filename1, filename2, similarity);
                 
+                // Update progress tracker
+                progressTracker.add();
+
+                // Update GUI ProgressBar
+                Platform.runLater(() ->
+                {
+                    ui.updateProgressBar(progressTracker.getProgress());
+                });
+
                 // Add to BlockingQueue
                 resultsQueue.put(newResult);
                 
@@ -71,25 +83,6 @@ public class FilesComparer implements Runnable
         {
             System.out.println("File Comparison done");
         }
-    }
-
-    /**
-     * Calculate current progress and update GUI progress bar
-     * @param current
-     * @param end
-     * @throws InterruptedException
-     */
-    private void calcProgress(int current, int end) throws InterruptedException
-    {
-        double progress;
-
-        progress = (double)current / (double)end;
-
-        // Update GUI
-        Platform.runLater(() ->
-        {
-            ui.updateProgressBar(progress);
-        });
     }
 
     /**

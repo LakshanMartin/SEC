@@ -20,11 +20,11 @@ public class ProgressTracker
         }
     }
 
-    public int getProgress()
+    public double getProgress()
     {
         synchronized(mutex)
         {
-            return goal - start;
+            return (double)start / (double)goal;
         }
     }
 }
