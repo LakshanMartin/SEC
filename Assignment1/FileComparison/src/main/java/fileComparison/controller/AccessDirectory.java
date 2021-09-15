@@ -10,25 +10,19 @@ import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import fileComparison.model.FilesQueue;
-
-public class AccessDirectory implements Callable<Integer>
+public class AccessDirectory implements Callable<List<String>>
 {
-    private FilesQueue filesQueue;
     private Path path;
-    private CollectionPool collectionPool;
 
-    public AccessDirectory(FilesQueue filesQueue, Path path) 
+    public AccessDirectory(Path path) 
     {
-        this.filesQueue = filesQueue;
         this.path = path;
     }
 
     @Override
-    public Integer call()
+    public List<String> call()
     {
-        List<String> filesList;
-        int numFiles = 0; 
+        List<String> filesList = null;
         String[] fileExtensions = {"txt", "md", "java", "cs"};
 
         try 
@@ -41,18 +35,13 @@ public class AccessDirectory implements Callable<Integer>
                             .filter(f -> Arrays.stream(fileExtensions).anyMatch(f::endsWith))
                             .collect(Collectors.toList());
             }
-
-            numFiles = filesList.size();
-
-            collectionPool = new CollectionPool(filesQueue, filesList);
-            collectionPool.start();
         } 
         catch(IOException e) 
         {
             System.out.println("IO ERROR: " + e.getMessage());
         }
 
-        return numFiles;
+        return filesList;
     }
 
     /**

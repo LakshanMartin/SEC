@@ -18,14 +18,15 @@ public class CompareResultsPool
     private ExecutorService threadPool;
     private FilesQueue filesQueue;
     private int numFiles;
-    private ResultsQueue resultsQueue = new ResultsQueue();
+    private ResultsQueue resultsQueue;
 
     // EMPTY CONSTRUCTOR
-    public CompareResultsPool(UserInterface ui, FilesQueue filesQueue, int numFiles) 
+    public CompareResultsPool(UserInterface ui, int numFiles, FilesQueue filesQueue, ResultsQueue resultsQueue) 
     {
         this.ui = ui;
-        this.filesQueue = filesQueue;
         this.numFiles = numFiles;
+        this.filesQueue = filesQueue;
+        this.resultsQueue = resultsQueue;
     }
     
     public void start(File outputFile)
@@ -36,10 +37,9 @@ public class CompareResultsPool
         int numComparisons;
 
         numComparisons = calcNumComparisons();
-        System.out.println("Number of comparisons to be done: " + numComparisons);
-
         progressTracker = new ProgressTracker(numComparisons);
 
+        // Update Status Bar in the GUI thread
         Platform.runLater(() ->
         {
             ui.updateStatusBar(numFiles, numComparisons);

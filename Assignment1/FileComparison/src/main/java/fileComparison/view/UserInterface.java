@@ -1,15 +1,18 @@
 package fileComparison.view;
 
 import java.io.File;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import fileComparison.controller.AccessDirectory;
+import fileComparison.controller.CollectionPool;
 import fileComparison.controller.CompareResultsPool;
 import fileComparison.model.ComparisonResult;
 import fileComparison.model.FilesQueue;
+import fileComparison.model.ResultsQueue;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
@@ -38,7 +41,9 @@ public class UserInterface
     private ExecutorService es;
     private int fileCount = 0;
     private FilesQueue filesQueue = new FilesQueue();
+    private ResultsQueue resultsQueue = new ResultsQueue();
     private CompareResultsPool compareResultsPool;
+    private CollectionPool collectionPool;
     private static final String OUTPUT_PATH = "src/main/output/";
 
     // CONSTRUCTOR
@@ -82,8 +87,13 @@ public class UserInterface
 
             if(compareResultsPool != null)
             {
+                // Shut down existing pools
+                collectionPool.stop();
                 compareResultsPool.stop();
+
+                // Recreate queues
                 filesQueue = new FilesQueue();
+                resultsQueue = new ResultsQueue();
             }
 
             compareFiles(stage);
@@ -141,7 +151,7 @@ public class UserInterface
 
                 if(compareResultsPool != null)
                 {
-                    System.exit(0);
+                    stopComparison();
                 }
             }
         });  
@@ -154,14 +164,15 @@ public class UserInterface
         String filename;
         File outputFile;
         AccessDirectory access;
-        int numFiles = 0;
+        List<String> filesList = null;
 
         // Find directory to compare files
         dc.setInitialDirectory(new File("src/main/resources"));
         dc.setTitle("Choose directory");
         directory = dc.showDialog(stage);
 
-        // Check that 'Cancel' button wasn't selected from dc
+        // Check that 'Cancel' button wasn't selected from directory selection 
+        // window.
         if(directory != null)
         {
             fileCount++;
@@ -170,14 +181,13 @@ public class UserInterface
 
             outputFile = checkFilename(filename, outputFile);
 
-            access = new AccessDirectory(filesQueue, directory.toPath());
+            access = new AccessDirectory(directory.toPath());
             es  = Executors.newSingleThreadExecutor();
-            Future<Integer> future = es.submit(access);
+            Future<List<String>> future = es.submit(access);
 
             try 
             {
-                numFiles = future.get().intValue();
-                System.out.println("Number of files found: " + numFiles);
+                filesList = future.get();
                 es.shutdown();
                 es = null;
             } 
@@ -186,10 +196,9 @@ public class UserInterface
                 e.printStackTrace();
             }
 
-            if(numFiles != 0)
+            if(filesList.size() != 0)
             {
-                compareResultsPool = new CompareResultsPool(this, filesQueue, numFiles);
-                compareResultsPool.start(outputFile);
+                startThreadPools(filesList, outputFile);
             }
         }
     }
@@ -211,13 +220,30 @@ public class UserInterface
 
         return outputFile;
     }
+
+    /**
+     * Initialise and start the CollectionPool and CompareResultsPool
+     * @param filesList
+     * @param outputFile
+     */
+    private void startThreadPools(List<String> filesList, File outputFile)
+    {
+        collectionPool = new CollectionPool(filesQueue, filesList);
+        collectionPool.start();
+        compareResultsPool = new CompareResultsPool(this, filesList.size(), filesQueue, resultsQueue);
+        compareResultsPool.start(outputFile);
+    }
     
+    /**
+     * Shut down thread pools
+     */
     private void stopComparison()
     {
-        if(compareResultsPool != null)
+        if(collectionPool != null || compareResultsPool != null)
         {
             System.out.println("Stopping comparison...");
     
+            collectionPool.stop();
             compareResultsPool.stop();
         }
         else
