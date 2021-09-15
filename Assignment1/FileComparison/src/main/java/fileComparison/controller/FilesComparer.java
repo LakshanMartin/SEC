@@ -98,7 +98,7 @@ public class FilesComparer implements Runnable
         } 
         catch(InterruptedException e) 
         {
-            System.out.println("FileComparer interrupted");
+            System.out.println(Thread.currentThread().getName() + ": FileComparer interrupted");
         }
     }
 

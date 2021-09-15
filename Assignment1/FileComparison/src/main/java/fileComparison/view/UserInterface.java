@@ -12,13 +12,18 @@ import fileComparison.model.ComparisonResult;
 import fileComparison.model.FilesQueue;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.EventHandler;
+import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.Separator;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -28,6 +33,8 @@ public class UserInterface
     // CLASS FIELDS
     private TableView<ComparisonResult> resultTable = new TableView<>();  
     private ProgressBar progressBar = new ProgressBar();
+    private Label numFiles;
+    private Label numComparisons;
     private ExecutorService es;
     private int fileCount = 0;
     private FilesQueue filesQueue = new FilesQueue();
@@ -58,6 +65,15 @@ public class UserInterface
         Button compareBtn = new Button("Compare...");
         Button stopBtn = new Button("Stop");
         ToolBar toolBar = new ToolBar(compareBtn, stopBtn);
+
+        // Create status bar
+        numFiles = new Label("No. of files found: ...");
+        numComparisons = new Label("No. of comparisons to be done: ...");
+        Separator separator1 = new Separator(Orientation.VERTICAL);
+        Separator separator2 = new Separator(Orientation.VERTICAL);
+        HBox statusBar = new HBox(20,progressBar, separator1, numFiles, separator2, numComparisons);
+        statusBar.setAlignment(Pos.CENTER);
+        statusBar.setStyle("-fx-padding: 4px 0px 4px 0px;");
         
         // Set up button event handlers.
         compareBtn.setOnAction((event) ->
@@ -108,7 +124,7 @@ public class UserInterface
         BorderPane mainBox = new BorderPane();
         mainBox.setTop(toolBar);
         mainBox.setCenter(resultTable);
-        mainBox.setBottom(progressBar);
+        mainBox.setBottom(statusBar);
         Scene scene = new Scene(mainBox);
         stage.setScene(scene);
         stage.sizeToScene();
@@ -121,7 +137,7 @@ public class UserInterface
             @Override
             public void handle(WindowEvent event) 
             {
-                System.out.println("Window closed");
+                System.out.println("Program closed");
 
                 if(compareResultsPool != null)
                 {
@@ -227,8 +243,11 @@ public class UserInterface
     public void updateProgressBar(double progress)
     {
         progressBar.setProgress(progress);
+    }
 
-        
-
+    public void updateStatusBar(int files, int comparisons)
+    {
+        numFiles.setText("No. of files found: " + files);
+        numComparisons.setText("No. of comparisons to be done: " + comparisons);
     }
 }

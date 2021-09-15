@@ -5,11 +5,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import fileComparison.model.ComparisonResult;
 import fileComparison.model.FilesQueue;
 import fileComparison.model.ProgressTracker;
 import fileComparison.model.ResultsQueue;
 import fileComparison.view.UserInterface;
+import javafx.application.Platform;
 
 public class CompareResultsPool 
 {
@@ -19,7 +19,6 @@ public class CompareResultsPool
     private FilesQueue filesQueue;
     private int numFiles;
     private ResultsQueue resultsQueue = new ResultsQueue();
-    private boolean hasStopped = false;
 
     // EMPTY CONSTRUCTOR
     public CompareResultsPool(UserInterface ui, FilesQueue filesQueue, int numFiles) 
@@ -41,7 +40,12 @@ public class CompareResultsPool
 
         progressTracker = new ProgressTracker(numComparisons);
 
-        for(int i = 0; i < 1000; i++)
+        Platform.runLater(() ->
+        {
+            ui.updateStatusBar(numFiles, numComparisons);
+        });
+
+        for(int i = 0; i < 10; i++)
         {
             threadPool.execute(new FilesComparer(ui, progressTracker, filesQueue, resultsQueue));
             threadPool.execute(new ResultsOutput(resultsQueue, outputFile));

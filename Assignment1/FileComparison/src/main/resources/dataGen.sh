@@ -7,9 +7,70 @@ SIZE=$3
 NUM_CHECK="^[0-9]+$"
 
 case "$1" in
+    # Generate compilation of files with all the test cases
+    "-genAll")
+        # ARGUMENT VALIDATIONS
+        if [[ $# -ne 3 ]]; then
+            echo ""
+            echo "ERROR:"
+            echo "  [Number of sets] [Number of characters] required as integer argements"
+            echo ""
+            echo "TRY: '-genRand 5 100' -- Example will generate 5 sets of valid files containing 100 randomly generated characters each"
+            echo ""
+            exit 1
+        elif ! [[ $2 =~ $NUM_CHECK ]] || ! [[ $3 =~ $NUM_CHECK ]]; then
+            echo ""
+            echo "ERROR:"
+            echo "  [Number of sets] [Number of characters] required as integer argements"
+            echo ""
+            echo "TRY: '-genRand 5 100' -- Example will generate 5 sets of valid files containing 100 randomly generated characters each"
+            echo ""
+            exit 1
+        fi
+
+        # Random data in files
+        for ((i=1; i <= NUM_SETS ; i++)) ; do
+            tr -dc "[:space:][:print:]" </dev/urandom | head -c $3 > randFile$i.txt
+            tr -dc "[:space:][:print:]" </dev/urandom | head -c $3 > randFile$i.md
+            tr -dc "[:space:][:print:]" </dev/urandom | head -c $3 > randFile$i.java
+            tr -dc "[:space:][:print:]" </dev/urandom | head -c $3 > randFile$i.cs
+        done
+        
+        # 100% similarity
+        echo "100% Similarity" > hundredFile.txt 
+        echo "100% Similarity" > hundredFile.md 
+        echo "100% Similarity" > hundredFile.java 
+        echo "100% Similarity" > hundredFile.cs 
+
+        # 66.7% similarity
+        echo "123456789a" > SixtySixFile.txt
+        echo "12345" > SixtySixFile.md
+
+        # 50% similarity
+        echo "abcdefghi" > FiftyFile.txt
+        echo "abc" > FiftyFile.cs
+
+        # 0% similarity
+        echo "A" > zeroFile.txt 
+        echo "B" > zeroFile.md 
+        echo "CD" > zerFile.java 
+        echo "EFG" > zeroFile.cs
+
+        # Empty files
+        touch emptyFile.txt
+        touch emptyFile.md
+        touch emptyFile.java
+        touch emptyFile.cs
+
+        # Invalid files
+        echo "Invalid file" > invalidFile.c 
+        echo "Invalid file" > invalidFile.html 
+        echo "Invalid file" > invalidFile.js
+        echo "Invalid file" > invalidFile.cpp
+        ;;
+
     # Generate files with random data
     "-genRand")
-
         # ARGUMENT VALIDATIONS
         if [[ $# -ne 3 ]]; then
             echo ""
@@ -37,12 +98,24 @@ case "$1" in
         done
         ;;
     
-    # Generate empty files
-    "-genEmpty")
-        touch emptyFile.txt
-        touch emptyFile.md
-        touch emptyFile.java
-        touch emptyFile.cs
+    # Generate 100% similarity files
+    "-gen100")
+        echo "100% Similarity" > hundredFile.txt 
+        echo "100% Similarity" > hundredFile.md 
+        echo "100% Similarity" > hundredFile.java 
+        echo "100% Similarity" > hundredFile.cs 
+        ;;
+
+    # Generate two files with 66.7% (0.66667) similarity
+    "-gen66")
+        echo "123456789a" > SixtySixFile.txt
+        echo "12345" > SixtySixFile.md
+        ;;
+
+    # Generate two files with 50% (0.5) similarity
+    "-gen50")
+        echo "abcdefghi" > FiftyFile.txt
+        echo "abc" > FiftyFile.cs
         ;;
 
     # Generate 0% similarity files
@@ -53,12 +126,12 @@ case "$1" in
         echo "EFG" > zeroFile.cs 
         ;;
 
-    # Generate 100% similarity files
-    "-gen100")
-        echo "100% Similarity" > hundredFile.txt 
-        echo "100% Similarity" > hundredFile.md 
-        echo "100% Similarity" > hundredFile.java 
-        echo "100% Similarity" > hundredFile.cs 
+    # Generate empty files
+    "-genEmpty")
+        touch emptyFile.txt
+        touch emptyFile.md
+        touch emptyFile.java
+        touch emptyFile.cs
         ;;
 
     # Generate invalid files

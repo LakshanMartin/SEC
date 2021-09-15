@@ -128,7 +128,7 @@ public class SimilarityAlgo
     {
         BigDecimal bd = new BigDecimal(Double.toString(similarity));
 
-        bd = bd.setScale(2, RoundingMode.CEILING);
+        bd = bd.setScale(5, RoundingMode.CEILING);
 
         return bd.doubleValue();
     }

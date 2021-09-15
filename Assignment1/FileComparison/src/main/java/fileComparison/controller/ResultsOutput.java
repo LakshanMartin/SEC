@@ -36,7 +36,6 @@ public class ResultsOutput implements Runnable
                 if(result.getFile1().equals("POISON") && result.getFile2().equals("PILL"))
                 {
                     resultsQueue.put(result); // POISON other threads
-                    System.out.println("POISONED");
                     break;
                 }
                 
@@ -59,7 +58,7 @@ public class ResultsOutput implements Runnable
         }
         catch(InterruptedException e)
         {
-            System.out.println("ResultsOutput interrupted");
+            System.out.println(Thread.currentThread().getName() + ": ResultsOutput interrupted");
         } 
         finally
         {
