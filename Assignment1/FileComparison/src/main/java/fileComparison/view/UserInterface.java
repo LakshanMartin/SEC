@@ -178,7 +178,6 @@ public class UserInterface
             {
                 numFiles = future.get().intValue();
                 System.out.println("Number of files found: " + numFiles);
-                // access.stopService();
                 es.shutdown();
                 es = null;
             } 

@@ -33,7 +33,6 @@ public class FilesComparer implements Runnable
     @Override
     public void run()
     {
-        // String[] filesToComp;
         Files filesToComp;
         double similarity;
         String filename1, filename2;

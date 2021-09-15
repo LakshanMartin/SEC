@@ -28,7 +28,6 @@ public class ResultsOutput implements Runnable
         
         try
         {
-            // while(true)
             while(!Thread.currentThread().isInterrupted())
             {
                 result = resultsQueue.get();

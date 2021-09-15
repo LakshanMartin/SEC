@@ -3,6 +3,7 @@ package fileComparison.controller;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import fileComparison.model.FilesQueue;
 
@@ -30,5 +31,19 @@ public class CollectionPool
         }
 
         threadPool.shutdown();
+    }
+
+    public void stop()
+    {        
+        try
+        {
+            threadPool.shutdown();
+            threadPool.awaitTermination(1, TimeUnit.SECONDS);
+            threadPool.shutdownNow();
+        }
+        catch(InterruptedException e)
+        {
+            threadPool.shutdownNow();
+        }
     }
 }
