@@ -28,7 +28,9 @@ public class AccessDirectory implements Callable<List<String>>
     /**
      * Compile a list of file paths within the directory
      * REFERENCE: Obtained from Mkyong. "How to find files with the file
-     *            extension in Java". Accessed 6th September 2021.
+     *            extension in Java". 
+     *            https://mkyong.com/java/how-to-find-files-with-certain-extension-only/ 
+     *            Accessed 6th September 2021.
      */
     @Override
     public List<String> call()

@@ -8,6 +8,9 @@ import fileComparison.model.ResultsQueue;
 import fileComparison.view.UserInterface;
 import javafx.application.Platform;
 
+/**
+ * This class outlines the steps involved in the comparison procedure
+ */
 public class FilesComparer implements Runnable
 {
     // CLASS FIELDS
@@ -18,7 +21,8 @@ public class FilesComparer implements Runnable
     private static final ComparisonResult POISON_PILL = new ComparisonResult("POISON", "PILL", 4.4);
 
     // CONSTRUCTOR
-    public FilesComparer(UserInterface ui, ProgressTracker progressTracker, FilesQueue filesQueue,        ResultsQueue resultsQueue) 
+    public FilesComparer(UserInterface ui, ProgressTracker progressTracker, 
+    FilesQueue filesQueue, ResultsQueue resultsQueue) 
     {
         this.ui = ui;
         this.progressTracker = progressTracker;
@@ -27,8 +31,8 @@ public class FilesComparer implements Runnable
     }
 
     /**
-     * 
-     * REFERENCE: https://mkyong.com/java/how-to-find-files-with-certain-extension-only/
+     * Take data from 1st BlockingQueue and process comparisons and add resulting
+     * data to 2nd BlockingQueue
      */
     @Override
     public void run()
@@ -41,6 +45,7 @@ public class FilesComparer implements Runnable
         {
             while(true)
             {
+                // Retrieve data from 1st BlockingQueue
                 filesToComp = filesQueue.get();
 
                 // Compare file contents and calc similarity
@@ -63,9 +68,8 @@ public class FilesComparer implements Runnable
                 {
                     ui.updateProgressBar(progressTracker.getProgress());
                 });
-
                 
-                // Add to BlockingQueue
+                // Add to 2nd BlockingQueue
                 resultsQueue.put(newResult);
                 
                 // Update GUI with similarity results > 0.5
@@ -91,6 +95,8 @@ public class FilesComparer implements Runnable
                 Thread.sleep(100);
             }
             
+            // Add poison pill to 2nd BlockingQueue to indicate no more data to
+            // to be processed
             resultsQueue.put(POISON_PILL);
 
             Thread.currentThread().interrupt();
