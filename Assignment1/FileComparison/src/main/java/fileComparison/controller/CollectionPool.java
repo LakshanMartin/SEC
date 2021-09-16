@@ -30,12 +30,11 @@ public class CollectionPool
      */
     public void start()
     {
+        // Create thread pool
         int numThreads = Runtime.getRuntime().availableProcessors() / 2;
-        
         threadPool = Executors.newFixedThreadPool(numThreads);
 
-        // Each loop will provide a new starting point along the filesList
-        // for the AddFiles class to process
+        // Execute threads per loop
         for(int i = 0; i < filesList.size()-1; i++)
         {
             threadPool.execute(new AddFiles(filesQueue, filesList, i));

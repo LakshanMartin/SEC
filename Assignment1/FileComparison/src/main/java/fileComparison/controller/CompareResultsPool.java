@@ -11,6 +11,10 @@ import fileComparison.model.ResultsQueue;
 import fileComparison.view.UserInterface;
 import javafx.application.Platform;
 
+/**
+ * This class manages the thread pool related to the comparing of files and
+ * output of results
+ */
 public class CompareResultsPool 
 {
     // CLASS FIELDS
@@ -20,7 +24,7 @@ public class CompareResultsPool
     private int numFiles;
     private ResultsQueue resultsQueue;
 
-    // EMPTY CONSTRUCTOR
+    // CONSTRUCTOR
     public CompareResultsPool(UserInterface ui, int numFiles, FilesQueue filesQueue, ResultsQueue resultsQueue) 
     {
         this.ui = ui;
@@ -29,13 +33,19 @@ public class CompareResultsPool
         this.resultsQueue = resultsQueue;
     }
     
+    /**
+     * Executes the FileComparer and ResultsOutput class in individual threads
+     * @param outputFile
+     */
     public void start(File outputFile)
     {
-        threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-        
         ProgressTracker progressTracker;
-        int numComparisons;
-
+        int numThreads, numComparisons;
+        
+        // Create thread pool
+        numThreads = Runtime.getRuntime().availableProcessors();
+        threadPool = Executors.newFixedThreadPool(numThreads);
+        
         numComparisons = calcNumComparisons();
         progressTracker = new ProgressTracker(numComparisons);
 
@@ -45,6 +55,7 @@ public class CompareResultsPool
             ui.updateStatusBar(numFiles, numComparisons);
         });
 
+        // Execute threads per loop
         for(int i = 0; i < 1000; i++)
         {
             threadPool.execute(new FilesComparer(ui, progressTracker, filesQueue, resultsQueue));
@@ -52,11 +63,18 @@ public class CompareResultsPool
         }
     }
 
+    /**
+     * Calculate the number of comparisons to be done
+     * @return
+     */
     private int calcNumComparisons()
     {
         return ((numFiles * numFiles) - numFiles) / 2;
     }
 
+    /**
+     * Begins the shutdown process for the threadpool
+     */
     public void stop()
     {        
         try
