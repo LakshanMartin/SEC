@@ -34,6 +34,8 @@ public class CollectionPool
         
         threadPool = Executors.newFixedThreadPool(numThreads);
 
+        // Each loop will provide a new starting point along the filesList
+        // for the AddFiles class to process
         for(int i = 0; i < filesList.size()-1; i++)
         {
             threadPool.execute(new AddFiles(filesQueue, filesList, i));

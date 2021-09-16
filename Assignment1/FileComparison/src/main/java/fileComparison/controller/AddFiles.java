@@ -5,12 +5,17 @@ import java.util.List;
 import fileComparison.model.Files;
 import fileComparison.model.FilesQueue;
 
+/**
+ * This class sorts the files to be compared and adds it to the BlockingQueue
+ */
 public class AddFiles implements Runnable
 {
+    // CLASS FIELDS
     private FilesQueue filesQueue;
     private List<String> filesList;
     private int startPoint;
 
+    // CONSTRUCTOR
     public AddFiles(FilesQueue filesQueue, List<String> filesList, int startPoint) 
     {
         this.filesQueue = filesQueue;
@@ -18,12 +23,16 @@ public class AddFiles implements Runnable
         this.startPoint = startPoint;
     }
 
+    /**
+     * Creates a Files object containing pairs of files to be compared later
+     */
     @Override
     public void run()
     {
         String file1, file2;
         Files files;
 
+        // Loop adds the initial file and subsequent following files to Files object
         for(int i = startPoint; i < filesList.size()-1; i++)
         {
             file1 = filesList.get(startPoint).toString();
@@ -31,6 +40,7 @@ public class AddFiles implements Runnable
 
             files = new Files(file1, file2);
 
+            // Add Files object to BlockingQueue
             try 
             {
                 filesQueue.put(files);
