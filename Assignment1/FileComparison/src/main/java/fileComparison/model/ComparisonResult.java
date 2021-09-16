@@ -1,5 +1,11 @@
 package fileComparison.model;
 
+/**
+ * This class represents the data object containing results to be output to the
+ * CSV file
+ * 
+ * REFERENCE: Obtained from Dr David Cooper. "uidemo" (accessed 6th September 2021)
+ */
 public class ComparisonResult 
 {
     private final String file1;
