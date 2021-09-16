@@ -8,10 +8,12 @@ package fileComparison.model;
  */
 public class ComparisonResult 
 {
+    // CLASS FIELDS
     private final String file1;
     private final String file2;
     private final double similarity;
     
+    // CONSTRUCTOR
     public ComparisonResult(String file1, String file2, double similarity)
     {
         this.file1 = file1;
