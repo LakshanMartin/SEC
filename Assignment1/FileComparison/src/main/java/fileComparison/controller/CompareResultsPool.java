@@ -45,7 +45,7 @@ public class CompareResultsPool
             ui.updateStatusBar(numFiles, numComparisons);
         });
 
-        for(int i = 0; i < 10; i++)
+        for(int i = 0; i < 1000; i++)
         {
             threadPool.execute(new FilesComparer(ui, progressTracker, filesQueue, resultsQueue));
             threadPool.execute(new ResultsOutput(resultsQueue, outputFile));

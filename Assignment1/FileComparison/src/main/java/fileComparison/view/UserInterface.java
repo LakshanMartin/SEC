@@ -1,11 +1,8 @@
 package fileComparison.view;
 
 import java.io.File;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.*;
+import java.util.concurrent.*;
 
 import fileComparison.controller.AccessDirectory;
 import fileComparison.controller.CollectionPool;
@@ -18,19 +15,21 @@ import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.Separator;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.ToolBar;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
+/**
+ * This class contains all functions related to the User and System interface.
+ * 
+ * REFERENCE #1: Obtained from Dr David Cooper, uidemo. Majority of UI 
+ *               components are drawn from the uidemo program provided
+ * REFERENCE #2: Obtained from mysteryHistery, 
+ *               https://stackoverflow.com/questions/38371117/close-event-in-java-fx-when-close-button-is-pressed
+ *               (Accessed on 10 September 2021).
+ */
 public class UserInterface
 {
     // CLASS FIELDS
@@ -39,26 +38,18 @@ public class UserInterface
     private Label numFiles;
     private Label numComparisons;
     private ExecutorService es;
-    private int fileCount = 0;
+    private int resultsCount = 0;
     private FilesQueue filesQueue = new FilesQueue();
     private ResultsQueue resultsQueue = new ResultsQueue();
     private CompareResultsPool compareResultsPool;
     private CollectionPool collectionPool;
     private static final String OUTPUT_PATH = "src/main/output/";
 
-    // CONSTRUCTOR
-    public UserInterface() 
-    {
-        // this.threads = threads;
-    }
+    // EMPTY CONSTRUCTOR
+    public UserInterface() {}
 
     /**
-     * REFERENCE #1: Obtained from Dr David Cooper, uidemo. Majority of UI 
-     *               components are drawn from the uidemo program provided.
-     * REFERENCE #2: Obtained from mysteryHistery, 
-     *               https://stackoverflow.com/questions/38371117/close-event-in-java-fx-when-close-button-is-pressed
-     *               (Accessed on 10 September 2021).
-     *                
+     * Generates the window interface to be used             
      * @param stage
      */
     public void show(Stage stage)
@@ -78,7 +69,7 @@ public class UserInterface
         Separator separator2 = new Separator(Orientation.VERTICAL);
         HBox statusBar = new HBox(20,progressBar, separator1, numFiles, separator2, numComparisons);
         statusBar.setAlignment(Pos.CENTER);
-        statusBar.setStyle("-fx-padding: 4px 0px 4px 0px;");
+        statusBar.setStyle("-fx-padding: 4 0 4 0");
         
         // Set up button event handlers.
         compareBtn.setOnAction((event) ->
@@ -140,8 +131,7 @@ public class UserInterface
         stage.sizeToScene();
         stage.show();    
 
-        // Add Window closing event
-        // SEE REFERENCE #2
+        // Add Window closing event -- SEE REFERENCE #2
         stage.setOnCloseRequest(new EventHandler<WindowEvent>()
         {
             @Override
@@ -151,56 +141,71 @@ public class UserInterface
 
                 if(compareResultsPool != null)
                 {
-                    stopComparison();
+                    System.exit(0);
                 }
             }
-        });  
+        }); // -- END OF REFERENCE #2 MATERIAL
     }
 
+    /**
+     * Step by step process of comparing files within a directory
+     * @param stage
+     */
     private void compareFiles(Stage stage)
+    {
+        File directory, resultsFile;
+        List<String> filesList = null;
+
+        directory = selectDirectory(stage);
+
+        // Check that the 'Cancel' button wasn't selected from the
+        // 'Choose directory' window
+        if(directory != null)
+        {
+            resultsFile = generateResultsFile();
+            filesList = getFilesList(directory);
+
+            if(filesList.size() != 0)
+            {
+                startThreadPools(filesList, resultsFile);
+            }
+        }
+    }
+
+    /**
+     * Open window for user to select a directory containing files to compare
+     * 
+     * REFERENCE: Obtained from Dr David Cooper, uidemo.
+     * @param stage
+     * @return
+     */
+    private File selectDirectory(Stage stage)
     {
         DirectoryChooser dc = new DirectoryChooser();
         File directory; 
-        String filename;
-        File outputFile;
-        AccessDirectory access;
-        List<String> filesList = null;
 
         // Find directory to compare files
         dc.setInitialDirectory(new File("src/main/resources"));
         dc.setTitle("Choose directory");
         directory = dc.showDialog(stage);
+        
+        return directory;
+    }
 
-        // Check that 'Cancel' button wasn't selected from directory selection 
-        // window.
-        if(directory != null)
-        {
-            fileCount++;
-            filename = "results" + fileCount + ".csv";
-            outputFile = new File(OUTPUT_PATH, filename);
+    private File generateResultsFile()
+    {
+        String filename;
+        File resultsFile;
 
-            outputFile = checkFilename(filename, outputFile);
+        // Increment results.csv file number based on number of directories
+        // selected for file comparisons
+        resultsCount++;
+        filename = "results" + resultsCount + ".csv";
+        resultsFile  = new File(OUTPUT_PATH, filename);
 
-            access = new AccessDirectory(directory.toPath());
-            es  = Executors.newSingleThreadExecutor();
-            Future<List<String>> future = es.submit(access);
+        resultsFile = checkFilename(filename, resultsFile);
 
-            try 
-            {
-                filesList = future.get();
-                es.shutdown();
-                es = null;
-            } 
-            catch(InterruptedException | ExecutionException e) 
-            {
-                e.printStackTrace();
-            }
-
-            if(filesList.size() != 0)
-            {
-                startThreadPools(filesList, outputFile);
-            }
-        }
+        return resultsFile;
     }
 
     /**
@@ -213,12 +218,41 @@ public class UserInterface
     {
         while(outputFile.exists())
         {
-            fileCount++;
-            filename = "results" + fileCount + ".csv";
+            resultsCount++;
+            filename = "results" + resultsCount + ".csv";
             outputFile = new File(OUTPUT_PATH, filename);
         }
 
         return outputFile;
+    }
+
+    /**
+     * Retrieve valid files from chosen directory
+     * @param directory
+     */
+    private List<String> getFilesList(File directory)
+    {
+        AccessDirectory access;
+        List<String> filesList = null;
+      
+        // Open directory and use single thread pool to retrieve files
+        access = new AccessDirectory(directory.toPath());
+        es  = Executors.newSingleThreadExecutor();
+        Future<List<String>> future = es.submit(access);
+
+        // Retrieve list of files and shutdown thread pool
+        try 
+        {
+            filesList = future.get();
+            es.shutdown();
+            es = null;
+        } 
+        catch(InterruptedException | ExecutionException e) 
+        {
+            e.printStackTrace();
+        }
+
+        return filesList;
     }
 
     /**
@@ -270,6 +304,13 @@ public class UserInterface
         progressBar.setProgress(progress);
     }
 
+    /**
+     * Update status bar to provide the following info:
+     *  - number of valid files found to compare
+     *  - number of comparisons to be done
+     * @param files
+     * @param comparisons
+     */
     public void updateStatusBar(int files, int comparisons)
     {
         numFiles.setText("No. of files found: " + files);
