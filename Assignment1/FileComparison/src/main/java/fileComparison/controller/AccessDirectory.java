@@ -16,8 +16,10 @@ import java.util.stream.Stream;
  */
 public class AccessDirectory implements Callable<List<String>>
 {
+    // CLASS FIELDS
     private Path path;
 
+    // CONSTRUCTOR
     public AccessDirectory(Path path) 
     {
         this.path = path;

@@ -7,18 +7,27 @@ import java.util.concurrent.TimeUnit;
 
 import fileComparison.model.FilesQueue;
 
+/**
+ * This class manages the thread pool related to the processing of files for 
+ * comparison.
+ */
 public class CollectionPool 
 {
+    // CLASS FIELDS
     private FilesQueue filesQueue;
     private List<String> filesList;
     private ExecutorService threadPool;
 
+    // CONSTRUCTOR
     public CollectionPool(FilesQueue filesQueue, List<String> filesList)
     {
         this.filesQueue = filesQueue;
         this.filesList = filesList;
     }
 
+    /**
+     * Executes the AddFiles class in individual threads 
+     */
     public void start()
     {
         int numThreads = Runtime.getRuntime().availableProcessors() / 2;
@@ -33,6 +42,9 @@ public class CollectionPool
         threadPool.shutdown();
     }
 
+    /**
+     * Begins the shutdown process for the thread pool
+     */
     public void stop()
     {        
         try
