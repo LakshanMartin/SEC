@@ -1,10 +1,10 @@
 package fileComparison.controller;
 
+import java.util.concurrent.BlockingQueue;
+
 import fileComparison.model.ComparisonResult;
 import fileComparison.model.Files;
-import fileComparison.model.FilesQueue;
 import fileComparison.model.ProgressTracker;
-import fileComparison.model.ResultsQueue;
 import fileComparison.view.UserInterface;
 import javafx.application.Platform;
 
@@ -16,13 +16,13 @@ public class FilesComparer implements Runnable
     // CLASS FIELDS
     private UserInterface ui;
     private ProgressTracker progressTracker;
-    private FilesQueue filesQueue;
-    private ResultsQueue resultsQueue;
+    private BlockingQueue<Files> filesQueue;
+    private BlockingQueue<ComparisonResult> resultsQueue;
     private static final ComparisonResult POISON_PILL = new ComparisonResult("POISON", "PILL", 4.4);
 
     // CONSTRUCTOR
     public FilesComparer(UserInterface ui, ProgressTracker progressTracker, 
-    FilesQueue filesQueue, ResultsQueue resultsQueue) 
+    BlockingQueue<Files> filesQueue, BlockingQueue<ComparisonResult> resultsQueue) 
     {
         this.ui = ui;
         this.progressTracker = progressTracker;
@@ -46,7 +46,7 @@ public class FilesComparer implements Runnable
             while(true)
             {
                 // Retrieve data from 1st BlockingQueue
-                filesToComp = filesQueue.get();
+                filesToComp = filesQueue.take();
 
                 // Compare file contents and calc similarity
                 similarity = new SimilarityAlgo().getSimilarity(

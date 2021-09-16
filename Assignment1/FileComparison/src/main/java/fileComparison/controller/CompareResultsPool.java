@@ -1,13 +1,14 @@
 package fileComparison.controller;
 
 import java.io.File;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import fileComparison.model.FilesQueue;
+import fileComparison.model.ComparisonResult;
+import fileComparison.model.Files;
 import fileComparison.model.ProgressTracker;
-import fileComparison.model.ResultsQueue;
 import fileComparison.view.UserInterface;
 import javafx.application.Platform;
 
@@ -20,12 +21,12 @@ public class CompareResultsPool
     // CLASS FIELDS
     private UserInterface ui;
     private ExecutorService threadPool;
-    private FilesQueue filesQueue;
+    private BlockingQueue<Files> filesQueue;
+    private BlockingQueue<ComparisonResult> resultsQueue;
     private int numFiles;
-    private ResultsQueue resultsQueue;
 
     // CONSTRUCTOR
-    public CompareResultsPool(UserInterface ui, int numFiles, FilesQueue filesQueue, ResultsQueue resultsQueue) 
+    public CompareResultsPool(UserInterface ui, int numFiles, BlockingQueue<Files> filesQueue, BlockingQueue<ComparisonResult> resultsQueue) 
     {
         this.ui = ui;
         this.numFiles = numFiles;

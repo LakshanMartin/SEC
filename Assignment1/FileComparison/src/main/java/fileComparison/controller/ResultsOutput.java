@@ -3,9 +3,9 @@ package fileComparison.controller;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.concurrent.BlockingQueue;
 
 import fileComparison.model.ComparisonResult;
-import fileComparison.model.ResultsQueue;
 
 /**
  * This class is responsible for the outputting of comparison results to a CSV
@@ -14,11 +14,11 @@ import fileComparison.model.ResultsQueue;
 public class ResultsOutput implements Runnable
 {
     // CLASS FIELDS
-    private ResultsQueue resultsQueue;
+    private BlockingQueue<ComparisonResult> resultsQueue;
     private File outputFile;
 
     // CONSTRUCTOR
-    public ResultsOutput(ResultsQueue resultsQueue, File outputFile)
+    public ResultsOutput(BlockingQueue<ComparisonResult> resultsQueue, File outputFile)
     {
         this.resultsQueue = resultsQueue;
         this.outputFile = outputFile;
@@ -38,7 +38,7 @@ public class ResultsOutput implements Runnable
         {
             while(!Thread.currentThread().isInterrupted())
             {
-                result = resultsQueue.get();
+                result = resultsQueue.take();
 
                 // Checks if retrieved data is a poison pill
                 if(result.getFile1().equals("POISON") && result.getFile2().equals("PILL"))

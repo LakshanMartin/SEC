@@ -1,9 +1,9 @@
 package fileComparison.controller;
 
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
 
 import fileComparison.model.Files;
-import fileComparison.model.FilesQueue;
 
 /**
  * This class sorts the files to be compared and adds it to the BlockingQueue
@@ -11,12 +11,12 @@ import fileComparison.model.FilesQueue;
 public class AddFiles implements Runnable
 {
     // CLASS FIELDS
-    private FilesQueue filesQueue;
+    private BlockingQueue<Files> filesQueue;
     private List<String> filesList;
     private int startPoint;
 
     // CONSTRUCTOR
-    public AddFiles(FilesQueue filesQueue, List<String> filesList, int startPoint) 
+    public AddFiles(BlockingQueue<Files> filesQueue, List<String> filesList, int startPoint) 
     {
         this.filesQueue = filesQueue;
         this.filesList = filesList;

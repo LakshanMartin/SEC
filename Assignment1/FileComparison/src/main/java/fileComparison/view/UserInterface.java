@@ -1,22 +1,33 @@
 package fileComparison.view;
 
 import java.io.File;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import fileComparison.controller.AccessDirectory;
 import fileComparison.controller.CollectionPool;
 import fileComparison.controller.CompareResultsPool;
 import fileComparison.model.ComparisonResult;
-import fileComparison.model.FilesQueue;
-import fileComparison.model.ResultsQueue;
+import fileComparison.model.Files;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.Separator;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.ToolBar;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -39,8 +50,8 @@ public class UserInterface
     private Label numComparisons;
     private ExecutorService es;
     private int resultsCount = 0;
-    private FilesQueue filesQueue = new FilesQueue();
-    private ResultsQueue resultsQueue = new ResultsQueue();
+    private BlockingQueue<Files> filesQueue = new ArrayBlockingQueue<>(100);
+    private BlockingQueue<ComparisonResult> resultsQueue = new ArrayBlockingQueue<>(100);
     private CompareResultsPool compareResultsPool;
     private CollectionPool collectionPool;
     private static final String OUTPUT_PATH = "src/main/output/";
@@ -82,9 +93,9 @@ public class UserInterface
                 collectionPool.stop();
                 compareResultsPool.stop();
 
-                // Recreate queues
-                filesQueue = new FilesQueue();
-                resultsQueue = new ResultsQueue();
+                // Clear queues
+                filesQueue.clear();
+                resultsQueue.clear();
             }
 
             compareFiles(stage);

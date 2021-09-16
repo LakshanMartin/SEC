@@ -1,11 +1,12 @@
 package fileComparison.controller;
 
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import fileComparison.model.FilesQueue;
+import fileComparison.model.Files;
 
 /**
  * This class manages the thread pool related to the processing of files for 
@@ -14,12 +15,12 @@ import fileComparison.model.FilesQueue;
 public class CollectionPool 
 {
     // CLASS FIELDS
-    private FilesQueue filesQueue;
+    private BlockingQueue<Files> filesQueue;
     private List<String> filesList;
     private ExecutorService threadPool;
 
     // CONSTRUCTOR
-    public CollectionPool(FilesQueue filesQueue, List<String> filesList)
+    public CollectionPool(BlockingQueue<Files> filesQueue, List<String> filesList)
     {
         this.filesQueue = filesQueue;
         this.filesList = filesList;
