@@ -6,19 +6,26 @@ import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+/**
+ * This class contains the Longest Common Subsequence algorithm used to identify
+ * similarities between two Strings
+ */
 public class SimilarityAlgo 
 {
     // EMPTY CONSTRUCTOR
     public SimilarityAlgo() {}
 
+    /**
+     * Calculate the similarity of two Strings
+     * @param file1
+     * @param file2
+     * @return
+     */
     public double getSimilarity(String file1, String file2)
     {
         String contents1, contents2;
-        Map<String, Integer> lookup = new HashMap<>();
         int LCS, f1Length, f2Length;
         double similarity;
 
@@ -73,7 +80,11 @@ public class SimilarityAlgo
     }
 
     /**
-     * REFERENCES: https://www.techiedelight.com/longest-common-subsequence-lcs-space-optimized-version/
+     * Execution of a version of the Longest Common Subsequence Algorithm.
+     * 
+     * REFERENCES: Obtained from Techie Delight. "Longest Common Subsequeuence" 
+     *             https://www.techiedelight.com/longest-common-subsequence-lcs-space-optimized-version/
+     *             (accessed 12th September 2021)
      */
     public int LCSLength(String contents1, String contents2)
     {
@@ -100,12 +111,12 @@ public class SimilarityAlgo
                 }
                 else 
                 {
-                    // if the current character of `X` and `Y` matches
+                    // If the current character of `X` and `Y` matches
                     if(contents1.charAt(i - 1) == contents2.charAt(j - 1)) 
                     {
                         curr[j] = prev + 1;
                     }
-                    // otherwise, if the current character of `X` and `Y` don't match
+                    // Else the current character of `X` and `Y` don't match
                     else 
                     {
                         curr[j] = Integer.max(curr[j], curr[j - 1]);
@@ -120,7 +131,12 @@ public class SimilarityAlgo
     }
 
     /**
-     * REFERENCE: https://stackoverflow.com/questions/8911356/whats-the-best-practice-to-round-a-float-to-2-decimals
+     * Round similarity score to 5 decimal places
+     * 
+     * REFERENCE: Obtained from Jav_Rock. "What's the best practice to round a 
+     *            float to 2 decimals". 
+     *            https://stackoverflow.com/questions/8911356/whats-the-best-practice-to-round-a-float-to-2-decimals
+     *            (accessed 10th September 2021)
      * @param similarity
      * @return
      */
@@ -128,7 +144,7 @@ public class SimilarityAlgo
     {
         BigDecimal bd = new BigDecimal(Double.toString(similarity));
 
-        bd = bd.setScale(5, RoundingMode.CEILING);
+        bd = bd.setScale(5, RoundingMode.CEILING); // Round to 5 decimal places
 
         return bd.doubleValue();
     }
