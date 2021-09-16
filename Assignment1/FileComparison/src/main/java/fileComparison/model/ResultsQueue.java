@@ -1,9 +1,7 @@
 package fileComparison.model;
 
-import java.util.HashSet;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 public class ResultsQueue 
 {
@@ -21,11 +19,5 @@ public class ResultsQueue
     public ComparisonResult get() throws InterruptedException
     {
         return this.queue.take();
-        // return this.queue.poll(1, TimeUnit.SECONDS);
-    }
-
-    public ComparisonResult peek() throws InterruptedException
-    {
-        return this.queue.peek();
     }
 }
