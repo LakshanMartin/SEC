@@ -7,6 +7,10 @@ import java.io.IOException;
 import fileComparison.model.ComparisonResult;
 import fileComparison.model.ResultsQueue;
 
+/**
+ * This class is responsible for the outputting of comparison results to a CSV
+ * file
+ */
 public class ResultsOutput implements Runnable
 {
     // CLASS FIELDS
@@ -20,6 +24,10 @@ public class ResultsOutput implements Runnable
         this.outputFile = outputFile;
     }
 
+    /**
+     * Retrieves the ComparisonResult data from the 2nd BlockingQueue to be output
+     * the CSV file
+     */
     @Override
     public void run()
     {
@@ -32,6 +40,7 @@ public class ResultsOutput implements Runnable
             {
                 result = resultsQueue.get();
 
+                // Checks if retrieved data is a poison pill
                 if(result.getFile1().equals("POISON") && result.getFile2().equals("PILL"))
                 {
                     resultsQueue.put(result); // POISON other threads
