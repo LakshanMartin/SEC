@@ -1,5 +1,9 @@
 package fileComparison.model;
 
+/**
+ * This class contains data on the two files to be compared and added to the 1st 
+ * BlockingQueue
+ */
 public class Files 
 {
     private String file1;
