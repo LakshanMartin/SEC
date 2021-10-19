@@ -67,8 +67,11 @@ public class MainUI
                                "; text is\n---\n" + newValue + "\n---\n");
         });
         
-        textArea.setText("This is some\ndemonstration text\nTry pressing F1, ctrl+b, ctrl+shift+b or alt+b.");
-        textArea.selectRange(8, 16); // Select a range of text (and move the caret to the end)
+        // textArea.setText("This is some\ndemonstration text\nTry pressing F1, ctrl+b, ctrl+shift+b or alt+b.");
+        // textArea.selectRange(8, 16); // Select a range of text (and move the caret to the end)
+        
+        textArea.setPromptText("Enter text here...");
+        mainBox.requestFocus(); // Remove focus from textArea so prompt text can be displayed
         
         // Example global keypress handler.
         scene.setOnKeyPressed(keyEvent -> 

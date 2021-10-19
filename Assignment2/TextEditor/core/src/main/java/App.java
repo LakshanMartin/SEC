@@ -31,6 +31,7 @@ public class App extends Application
                 // Specified language property to be used
                 Locale locale1 = new Locale(split[0], split[1]);
                 bundle = ResourceBundle.getBundle("bundle", locale1);
+                System.out.println("Using locale bundle");
             }
             else // Default language properties used
             {
