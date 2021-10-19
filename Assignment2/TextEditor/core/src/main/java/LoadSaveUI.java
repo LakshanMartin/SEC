@@ -76,11 +76,11 @@ public class LoadSaveUI
 
             if(encoding != null)
             {
-                // TO BE IMPLEMENTED
-
                 try
                 {
-                    textArea.setText(fileIO.load(file));
+                    textArea.setText(fileIO.load(file, encoding));
+                    textArea.requestFocus(); // Set focus on loaded text
+                    textArea.end(); // Move caret to end of loaded text
                 }
                 catch(IOException e)
                 {
@@ -106,11 +106,9 @@ public class LoadSaveUI
 
             if(encoding != null)
             {
-                // TO BE IMPLEMENTED
-
                 try
                 {
-                    fileIO.save(file, textArea.getText());
+                    fileIO.save(file, encoding, textArea.getText());
                 }
                 catch(IOException e)
                 {

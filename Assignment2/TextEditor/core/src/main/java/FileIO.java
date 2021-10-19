@@ -1,18 +1,21 @@
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
 public class FileIO 
 {
     public FileIO(){}
 
-    public String load(File file) throws IOException
+    public String load(File file, String encoding) throws IOException
     {
         StringBuilder contents = new StringBuilder();
+        FileInputStream fis = new FileInputStream(file);
+        InputStreamReader isr = new InputStreamReader(fis, encoding);
 
-        try(BufferedReader br = new BufferedReader(new FileReader(file)))
+        try(BufferedReader br = new BufferedReader(isr))
         {
             String line;
 
@@ -25,9 +28,9 @@ public class FileIO
         return contents.toString();
     }
 
-    public void save(File file, String contents) throws IOException
+    public void save(File file, String encoding, String contents) throws IOException
     {
-        try(PrintWriter pw = new PrintWriter(file))
+        try(PrintWriter pw = new PrintWriter(file, encoding))
         {
             pw.println(contents);
         }
