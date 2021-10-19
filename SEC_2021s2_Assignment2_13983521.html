@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Assignment 2</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Merriweather&family=Merriweather+Sans&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@500&family=Merriweather&family=Merriweather+Sans&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+@media screen {
+html { background: #404040; }
+}
+html {
+font-family: 'Open Sans', sans-serif;
+line-height: 1.8em;
+}
+body {
+background: white;
+max-width: 50em;
+margin-left: auto;
+margin-right: auto;
+padding: 4em;
+counter-reset: section;
+}
+h1, h2, h3, h4, h5, h6 {
+font-family: 'Merriweather', serif;
+}
+h2, h3, h4, h5, h6 {
+margin-top: 1.5em;
+}
+h2:not(.notnumbered) {
+counter-reset: subsection;
+counter-increment: section;
+}
+h2:not(.notnumbered)::before {
+content: counter(section);
+margin-right: 1em;
+}
+h3:not(.notnumbered) {
+counter-reset: subsubsection;
+counter-increment: subsection;
+}
+h3:not(.notnumbered)::before {
+content: counter(section) "." counter(subsection);
+margin-right: 1em;
+}
+h4:not(.notnumbered) {
+counter-increment: subsubsection;
+}
+h4:not(.notnumbered)::before {
+content: counter(section) "." counter(subsection) "." counter(subsubsection);
+margin-right: 1em;
+}
+pre {
+line-height: 1.7em;
+}
+code {
+font-family: 'Inconsolata', monospace;
+}
+.unixcmd::before, .wincmd::before, [prompt]::before, .unixcmd br+::before, .wincmd br+::before, [prompt] br+::before {
+font-family: 'Inconsolata', monospace;
+color: #808080;
+}
+.unixcmd::before, .unixcmd br+::before {
+content: "[user@pc]$ ";
+}
+.wincmd::before, wincmd br+::before {
+content: "C:\\> ";
+}
+[prompt]::before, [prompt] br+::before {
+content: attr(prompt) " ";
+}
+.admonition {
+border-radius: 5px;
+border: 1px solid #606060;
+padding: 0 1em;
+margin: 1ex 0;
+}
+.admonition-title {
+font-weight: bold;
+font-family: 'Merriweather Sans', sans-serif;
+}
+.admonition.note {
+border: 1px solid #0060c0;
+background: #c0d8ff;
+}
+.admonition.warning {
+border: 1px solid #c03030;
+background: #ffc0c0;
+}
+.admonition.answer {
+border: 1px solid #c000c0;
+background: #ffe0ff;
+}
+ul > li::marker {
+color: #0080ff;
+content: '\25A0\00A0';
+}
+ul ul > li::marker {
+color: #80c0ff;
+content: '\25B8\00A0';
+}
+ol {
+width: 100%;
+counter-reset: listitem;
+padding: 0;
+}
+ol > li {
+display: table;
+counter-increment: listitem;
+}
+ol > li::before {
+content: counters(listitem, ".") ". ";
+display: table-cell;
+width: 2ex;
+padding-right: 0.5em;
+color: #ff6000;
+font-weight: bold;
+}
+ol ol > li::before {
+width: 3ex;
+}
+ol ol ol > li::before {
+width: 4ex;
+}
+.alpha + ol > li::before {
+content: "(" counter(listitem, lower-alpha) ") ";
+}
+.roman + ol > li::before {
+content: "(" counter(listitem, lower-roman) ") ";
+}
+li {
+margin: 0.5em 0 0.5em 0;
+padding-left: 0.5em;
+padding-top: 0em;
+width: calc(100% - 1ex);
+}
+ol > li > p:first-child {
+margin-top: 0;
+}
+ol > li > :last-child {
+margin-bottom: 0;
+}
+table {
+border-collapse: collapse;
+border-bottom: 1px solid black;
+}
+table thead tr {
+background-color: #ffc080;
+border-top: 1px solid black;
+border-bottom: 1px solid black;
+}
+td, th {
+padding: 0.5em 1em;
+}
+tbody tr:nth-child(odd) {
+background-color: white;
+}
+tbody tr:nth-child(even) {
+background-color: #fff0e0;
+}
+[nmarks]:not([nmarks="1"])::after {
+content: "[" attr(nmarks) " marks]";
+}
+[nmarks="1"]::after {
+content: "[1 mark]";
+}
+[nmarks]::after {
+display: block;
+text-align: right;
+font-weight: bold;
+position: relative;
+}
+.inline {
+position: relative;
+}
+.inline[nmarks]::after {
+position: absolute;
+right: 0pt;
+bottom: 0pt;
+}
+code .o, code .ow, code .p { color: red; }
+code .c, .ch, code .cm, code .cpf, code .c1, code .cs, code .cp { color: #c06000; font-style: italic }
+code .k, .kc, code .kd, code .kn, code .kp, code .kr, code .kt { color: blue; font-weight: bold }
+code .m, code .mb, code .mf, code .mh, code .mi, code .mo, code .il { color: #008080; }
+code .s, code .sa , code .sb , code .sc , code .dl , code .sd , code .s2 , code .se , code .sh , code .si , code .sx , code .sr , code .s1 , code .ss { color: green; }
+code .na, code .nb, code .nc, code .no, code .nd, code .ni, code .ne, code .nf, code .nl, code .nn, code .nt, code .nv, code .bp, code .fm, code .vc, code .vg, code .vi, code .vm { color: black; }
+code .w { color: #bbbbbb }
+.file {
+border: 1px solid grey;
+border-radius: 1mm;
+padding: 0 1ex;
+}
+.optional {
+border: 1px solid #c08000;
+background: #ffd0a0;
+}
+</style>
+<style> body { background: url("data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0idGlueSIgdmVyc2lvbj0iMS4yIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgICAgICAgICAgICAgICB3aWR0aD0iMjgwIiBoZWlnaHQ9IjYwIj4KICAgICAgICAgICAgICAgIDx0ZXh0IHg9IjAiIHk9IjUwIiBzdHlsZT0iZm9udDogYm9sZCA2MHB4IHNhbnMtc2VyaWY7IGZpbGw6ICNmZWZlZmU7Ij4xMzk4MzUyMTwvdGV4dD4KICAgICAgICAgICAgPC9zdmc+") white; } .h { user-select: none; color: #fefefe; background: white; border: 5px solid #fefefe; position: fixed; left: 50%; right: 50%; width: 300px; margin-left: -150px; text-align: center; z-index: 1; padding: 0em; font: bold 60px sans-serif; } .j { position: relative; z-index: 2; } .l { user-select: none; color: #fefefe; background: white; position: absolute; transform-origin: top left; transform: rotate(90deg); font: bold 50px sans-serif; } .r { position: absolute; left: 10000px; color: white; color: #ffffff00; font-size: 1px; z-index: -1; } </style><script> window.onload = function() { const colours = ["#181800","#181800","#000018","#001800","#000018","#181800","#180000","#001800","#180000","#000018","#000018","#181800","#001800","#001800","#000018","#180000","#000018","#001800"]; let i = 0; for(const element of document.getElementsByClassName('q')) { if(window.getComputedStyle(element)['color'] === 'rgb(0, 0, 0)') { element.style.color = colours[i]; i = (i + 1) % colours.length; } } }; </script></head>
+<body> <div> <div class="h" style="top: 10px;" aria-hidden="true"><span>&#0049;</span>&#8288;<span>&#0051;</span>&#8288;<span>&#0057;</span>&#8288;<span>&#0056;</span>&#8288;<span>&#0051;</span>&#8288;<span>&#0053;</span>&#8288;<span>&#0050;</span>&#8288;<span>&#0049;</span></div> <div class="h" style="bottom: 10px;" aria-hidden="true"><span>&#0049;</span>&#8288;<span>&#0051;</span>&#8288;<span>&#0057;</span>&#8288;<span>&#0056;</span>&#8288;<span>&#0051;</span>&#8288;<span>&#0053;</span>&#8288;<span>&#0050;</span>&#8288;<span>&#0049;</span></div> </div> <div class="j"> <p style="color: red; text-align: center;"><span class="q">Please</span> do  <span class="q">not</span>  <span class="q">share</span>    <span class="q">this</span>   <span class="q">file</span>  <span class="q">with</span>  <span class="q">other</span>  <span class="q">people</span>.  It <span class="q">has</span>  <span class="q">been</span>  <span class="q">fingerprinted</span>    <span class="q">with</span>   <span class="q">your</span>  ID  (<span class="q">13983521</span>).<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<div><div class="l" aria-hidden="true"><span>&#0049;</span>&#8288;<span>&#0051;</span>&#8288;<span>&#0057;</span>&#8288;<span>&#0056;</span>&#8288;<span>&#0051;</span>&#8288;<span>&#0053;</span>&#8288;<span>&#0050;</span>&#8288;<span>&#0049;</span></div></div><h1>Assignment  2</h1>
+<div class="admonition preamble">
+<p><strong><span class="q">Software</span>  <span class="q">Engineering</span> <span class="q">Concepts</span>  (<span class="q">COMP3003</span>)<br />
+<span class="q">Software</span>  <span class="q">Architecture</span>    <span class="q">and</span>   <span class="q">Extensible</span>  <span class="q">Design</span>  (<span class="q">COMP6007</span>)</strong><br />
+<span class="q">Semester</span>  2,  <span class="q">2021</span><span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<p><strong><span class="q">Due</span>:</strong> <span class="q">Thursday</span>  28  <span class="q">October</span>,    23:59<br />
+<strong><span class="q">Weight</span>:</strong>   40%  of  <span class="q">the</span>  <span class="q">unit</span>  <span class="q">mark</span><br />
+<strong><span class="q">Available</span> <span class="q">Marks</span>:</strong>  40<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+</div>
+
+
+
+
+<div><div class="l" aria-hidden="true"><span>&#0049;</span>&#8288;<span>&#0051;</span>&#8288;<span>&#0057;</span>&#8288;<span>&#0056;</span>&#8288;<span>&#0051;</span>&#8288;<span>&#0053;</span>&#8288;<span>&#0050;</span>&#8288;<span>&#0049;</span></div></div><h2>Overview</h2>
+<p><span class="q">Your</span>  <span class="q">task</span>    is   to  <span class="q">design</span>  <span class="q">and</span>  <span class="q">implement</span>  a <span class="q">GUI</span>-<span class="q">based</span>  <span class="q">text</span>  <span class="q">editor</span>,    <span class="q">making</span>   <span class="q">use</span>  of  <span class="q">Gradle</span>,  <span class="q">plugins</span>  <span class="q">and</span> <span class="q">scripts</span>,  a  <span class="q">domain</span>-<span class="q">specific</span>    <span class="q">language</span>,   <span class="q">and</span>  <span class="q">internationalisation</span>.  (<span class="q">For</span>  <span class="q">bonus</span>  <span class="q">marks</span>, <span class="q">you</span>  <span class="q">may</span>  <span class="q">also</span>    <span class="q">use</span>   <span class="q">JNI</span>  to  <span class="q">implement</span>  <span class="q">one</span>  of <span class="q">the</span>  <span class="q">plugins</span>.)<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<p><span class="q">The</span>  <span class="q">basic</span>    <span class="q">functionality</span>   of  a  <span class="q">text</span>  <span class="q">editor</span>  is <span class="q">simple</span>,  <span class="q">and</span>  <span class="q">much</span>    of   it  is  <span class="q">provided</span>  <span class="q">for</span>  <span class="q">you</span> in  <span class="q">the</span>  <span class="q">form</span>    of   a  <code><span class="q">TextArea</span></code>  <span class="q">object</span>  (<span class="q">JavaFX</span>)  or <code><span class="q">JTextArea</span></code>  <span class="q">object</span>  (<span class="q">Swing</span>).    <span class="q">These</span>   <span class="q">objects</span>  <span class="q">will</span>  <span class="q">handle</span>  <span class="q">inserting</span>  <span class="q">and</span> <span class="q">deleting</span>  <span class="q">text</span>,  <span class="q">using</span>    <span class="q">the</span>   <span class="q">mouse</span>  <span class="q">and</span>  <span class="q">arrow</span>  <span class="q">keys</span>  to <span class="q">move</span>  <span class="q">the</span>  <abbr title="The text cursor, typically shown as a vertical line between letters, indicating where the next character will appear when you type it."><span class="q">caret</span></abbr>,    <span class="q">scrolling</span>,   <span class="q">copy</span>-<span class="q">and</span>-<span class="q">paste</span>,  <span class="q">and</span>  <span class="q">even</span>  <span class="q">undo</span>/<span class="q">redo</span>,  so <span class="q">you</span>  <em><span class="q">don</span>&rsquo;t</em>  <span class="q">need</span>    to   <span class="q">implement</span>  <span class="q">these</span>  <span class="q">things</span>  <span class="q">yourself</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<p><span class="q">You</span>  <span class="q">will</span> <span class="q">need</span>  to  <span class="q">add</span>    on   <span class="q">several</span>  <span class="q">features</span>:<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<ul>
+<li>
+<p><span class="q">Loading</span>  <span class="q">and</span>  <span class="q">saving</span>  <span class="q">files</span>. <span class="q">You</span>  <span class="q">must</span>  <span class="q">have</span>    <span class="q">GUI</span>   <span class="q">buttons</span>  <span class="q">for</span>  <span class="q">these</span>  <span class="q">operations</span>.  <span class="q">You</span>&rsquo;re <span class="q">strongly</span>  <span class="q">advised</span>  to    <span class="q">use</span>   <code><span class="q">FileChooser</span></code>  or  <code><span class="q">JFileChooser</span></code>  to  <span class="q">allow</span> <span class="q">the</span>  <span class="q">user</span>  to    <span class="q">select</span>   <span class="q">the</span>  <span class="q">filename</span>/<span class="q">path</span>  to  <span class="q">load</span>/<span class="q">save</span>.  <span class="q">Also</span> be  <span class="q">aware</span>  of    <span class="q">the</span>   <a href="#i18n"><span class="q">I18N</span>  <span class="q">Requirements</span></a>  <span class="q">for</span>  <span class="q">file</span>  IO.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+<li>
+<p><span class="q">DSL</span>-<span class="q">based</span> <span class="q">key</span>  <span class="q">mapping</span>.  On    <span class="q">startup</span>,   <span class="q">your</span>  <span class="q">application</span>  <span class="q">must</span>  <span class="q">parse</span>  a <span class="q">file</span>  <span class="q">called</span>  &ldquo;<code><span class="q">keymap</span></code>&rdquo;,    <span class="q">written</span>   in  a  <span class="q">domain</span>-<span class="q">specific</span>  <span class="q">language</span>  <span class="q">that</span> <span class="q">expresses</span>  <span class="q">how</span>  to    <span class="q">handle</span>   <span class="q">certain</span>  <span class="q">extra</span>  <span class="q">key</span>  <span class="q">combinations</span>.  <span class="q">Your</span> <span class="q">application</span>  <span class="q">must</span>  <span class="q">then</span>    <span class="q">make</span>   <span class="q">those</span>  <span class="q">key</span>  <span class="q">combinations</span>  <span class="q">work</span>  as <span class="q">requested</span>,  <span class="q">via</span>  <span class="q">the</span>    <span class="q">GUI</span>.   <span class="q">This</span>  is  <span class="q">described</span>  <span class="q">further</span>  in <a href="#dsl"><span class="q">DSL</span>  <span class="q">Requirements</span></a>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+<li>
+<p><span class="q">Plugins</span>/<span class="q">scripts</span>/<span class="q">API</span>.  <span class="q">Your</span>    <span class="q">application</span>   <span class="q">must</span>  <span class="q">have</span>  a  <span class="q">plugin</span>  <span class="q">loading</span> <span class="q">mechanism</span>,  a  <span class="q">script</span>    <span class="q">loading</span>   <span class="q">mechanism</span>,  <span class="q">and</span>  an  <span class="q">API</span>  <span class="q">for</span> <span class="q">both</span>  <span class="q">plugins</span>  <span class="q">and</span>    <span class="q">scripts</span>   to  <span class="q">interact</span>  <span class="q">with</span>  <span class="q">your</span>  <span class="q">application</span>. <span class="q">You</span>  <span class="q">will</span>  <span class="q">also</span>    <span class="q">need</span>   a  <span class="q">GUI</span>  <span class="q">mechanism</span>  <span class="q">for</span>  <span class="q">adding</span> <span class="q">and</span>  <span class="q">listing</span>  <span class="q">plugins</span>/<span class="q">scripts</span>    at   <span class="q">runtime</span>.  <span class="q">This</span>  is  <span class="q">described</span>  <span class="q">further</span> <span class="q">under</span>  <a href="#plugins"><span class="q">Plugin</span>/<span class="q">Script</span>  <span class="q">Requirements</span></a>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+</ul>
+<p><span class="q">Your</span>    <span class="q">project</span>   <span class="q">must</span>  <span class="q">use</span>  <span class="q">Gradle</span>,  <span class="q">with</span>  <span class="q">separate</span> <span class="q">subprojects</span>  <span class="q">for</span>  <span class="q">the</span>    <span class="q">core</span>   <span class="q">application</span>,  <span class="q">each</span>  of  <span class="q">the</span>  <span class="q">plugins</span>, <span class="q">and</span>  <span class="q">the</span>  <span class="q">API</span>    <span class="q">declarations</span>.   <span class="q">This</span>  is  <span class="q">described</span>  <span class="q">further</span>  <span class="q">under</span> <a href="#build"><span class="q">Build</span>  <span class="q">Requirements</span></a>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<p><span class="q">Finally</span>,  <span class="q">you</span>    <span class="q">may</span>   be  <span class="q">eligible</span>  <span class="q">for</span>  <span class="q">bonus</span>  <span class="q">marks</span> if  <span class="q">you</span>  <span class="q">implement</span>    <span class="q">one</span>   of  <span class="q">the</span>  <span class="q">plugins</span>  in  C/C++ <span class="q">using</span>  <span class="q">JNI</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<div class="admonition note">
+<p class="admonition-title"><span class="q">Example</span>  <span class="q">Code</span><span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<p><span class="q">Please</span>    <span class="q">find</span>   a  <span class="q">copy</span>  of  <code><span class="q">UIExample</span>.<span class="q">java</span></code>  on <span class="q">Blackboard</span>  (<span class="q">under</span>  <span class="q">Assessments</span>    →   <span class="q">Assignment</span>  2).  <span class="q">This</span>  <span class="q">shows</span>  <span class="q">how</span> to  <span class="q">use</span>  <span class="q">JavaFX</span>    <span class="q">for</span>   <span class="q">the</span>  <span class="q">GUI</span>  <span class="q">operations</span>  <span class="q">that</span>  <span class="q">you</span>&rsquo;ll <span class="q">need</span>  <span class="q">for</span>  <span class="q">this</span>    <span class="q">assignment</span>.   In  <span class="q">addition</span>,  <span class="q">the</span>  <span class="q">bus</span>  <span class="q">timetable</span> <span class="q">app</span>  <span class="q">from</span>  <span class="q">worksheet</span>    8   is  a  <span class="q">useful</span>  <span class="q">reference</span>.  <span class="q">For</span> <span class="q">instance</span>,  <span class="q">the</span>  <span class="q">latter</span>    <span class="q">shows</span>   <span class="q">how</span>  to  <span class="q">use</span>  <span class="q">the</span>  <span class="q">JavaFX</span> <code><span class="q">FileChooser</span></code>  <span class="q">class</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<p><span class="q">Feel</span>  <span class="q">free</span>    to   <span class="q">adapt</span>  or  <span class="q">reuse</span>  <span class="q">any</span>  <span class="q">other</span> <span class="q">COMP3003</span>/<span class="q">6007</span>  <span class="q">demo</span>/<span class="q">example</span>  <span class="q">code</span>    <span class="q">too</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<p><span class="q">However</span>,   <span class="q">you</span>  <span class="q">are</span>  <em><span class="q">not</span></em>  <span class="q">permitted</span>  to <span class="q">use</span>  <span class="q">third</span>-<span class="q">party</span>  <span class="q">code</span>    <span class="q">without</span>   <span class="q">written</span>  <span class="q">permission</span>  <span class="q">from</span>  <span class="q">the</span>  <span class="q">unit</span> <span class="q">coordinator</span>.  (<span class="q">And</span>  of    <span class="q">course</span>,   if  <span class="q">you</span>  do,  <span class="q">you</span>  <span class="q">must</span> <span class="q">also</span>  <span class="q">cite</span>  <span class="q">your</span>    <span class="q">sources</span>.)<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title"><span class="q">Multithreading</span>?<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<p><span class="q">Nothing</span>   in  <span class="q">this</span>  <span class="q">assignment</span>  <span class="q">requires</span>  <span class="q">you</span> to  <span class="q">create</span>  <span class="q">new</span>    <span class="q">threads</span>,   <span class="q">though</span>  <span class="q">you</span>  <span class="q">can</span>  if  <span class="q">you</span> <span class="q">wish</span>.  <span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+</div>
+<div><div class="l" aria-hidden="true"><span>&#0049;</span>&#8288;<span>&#0051;</span>&#8288;<span>&#0057;</span>&#8288;<span>&#0056;</span>&#8288;<span>&#0051;</span>&#8288;<span>&#0053;</span>&#8288;<span>&#0050;</span>&#8288;<span>&#0049;</span></div></div><h2>Language/Tool/Library  Requirements</h2>
+<p><span class="q">You</span>    <span class="q">will</span>   <span class="q">generally</span>  <span class="q">need</span>  to  <span class="q">use</span>  <span class="q">the</span> <span class="q">following</span>:<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<ul>
+<li><span class="q">Java</span>  (or  a    <span class="q">JVM</span>-<span class="q">based</span>   <span class="q">language</span>  <span class="q">like</span>  <span class="q">Kotlin</span>,  <span class="q">Scala</span>  or <span class="q">Groovy</span>)  to  <span class="q">develop</span>    <span class="q">the</span>   <span class="q">core</span>  <span class="q">application</span>,  <span class="q">API</span>  <span class="q">and</span>  <span class="q">plugins</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+<li><span class="q">JavaFX</span> (<span class="q">strongly</span>  <span class="q">recommended</span>)  or    <span class="q">Swing</span>   to  <span class="q">create</span>  <span class="q">the</span>  <span class="q">GUI</span>,  as <span class="q">part</span>  of  <span class="q">the</span>    <span class="q">core</span>   <span class="q">application</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+<li><span class="q">Jython</span>  to  <span class="q">manage</span>  <span class="q">scripting</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+<li><span class="q">JavaCC</span>  to <span class="q">generate</span>  a  <span class="q">parser</span>    <span class="q">for</span>   <span class="q">the</span>  <span class="q">domain</span>-<span class="q">specific</span>  <span class="q">language</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+<li><span class="q">Gradle</span>  to  <span class="q">manage</span> <span class="q">the</span>  <span class="q">build</span>  <span class="q">process</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+<li>A    C/C++   <span class="q">compiler</span>  <span class="q">that</span>  <span class="q">works</span>  <span class="q">with</span>  <span class="q">Gradle</span>, <em>if</em>  <span class="q">you</span>  <span class="q">wish</span>    to   <span class="q">pursue</span>  <span class="q">the</span>  <span class="q">JNI</span>  <span class="q">bonus</span>  <span class="q">marks</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title"><span class="q">Other</span> <span class="q">options</span>?<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<p>If  <span class="q">you</span>  <span class="q">really</span>    <span class="q">have</span>   <span class="q">too</span>  <span class="q">much</span>  <span class="q">time</span>  on  <span class="q">your</span> <span class="q">hands</span>,  <span class="q">you</span>  <span class="q">can</span>    <span class="q">investigate</span>   <span class="q">alternatives</span>  <span class="q">for</span>  <span class="q">some</span>  or  <span class="q">all</span> of  <span class="q">these</span>  <span class="q">and</span>    <span class="q">propose</span>   <span class="q">them</span>  to  <span class="q">the</span>  <span class="q">unit</span>  <span class="q">coordinator</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<p><span class="q">You</span> <span class="q">can</span>,  <span class="q">for</span>  <span class="q">instance</span>,    <span class="q">use</span>   <span class="q">GraalVM</span>  <span class="q">JavaScript</span>  <span class="q">instead</span>  of  <span class="q">Jython</span>. <span class="q">However</span>,  <span class="q">for</span>  <span class="q">anything</span>    <span class="q">else</span>   (<span class="q">not</span>  <span class="q">already</span>  <span class="q">mentioned</span>  <span class="q">here</span>),  <span class="q">you</span> <span class="q">will</span>  <span class="q">need</span>  <span class="q">written</span>    <span class="q">permission</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+</div>
+<div><div class="l" aria-hidden="true"><span>&#0049;</span>&#8288;<span>&#0051;</span>&#8288;<span>&#0057;</span>&#8288;<span>&#0056;</span>&#8288;<span>&#0051;</span>&#8288;<span>&#0053;</span>&#8288;<span>&#0050;</span>&#8288;<span>&#0049;</span></div></div><h2 class="inline" id="i18n" nmarks="10">I18N   Requirements</h2>
+<ul>
+<li>
+<p class="inline" nmarks="2"><span class="q">The</span>  <span class="q">locale</span>  <span class="q">must</span>  be  <span class="q">user</span>-<span class="q">configurable</span>, <span class="q">via</span>  a  &ldquo;<code>--<span class="q">locale</span>=...</code>&rdquo;    <span class="q">command</span>-<span class="q">line</span>   <span class="q">parameter</span>.  If  <span class="q">this</span>  <span class="q">parameter</span>  is <span class="q">absent</span>,  <span class="q">the</span>  <span class="q">application</span>    <span class="q">must</span>   <span class="q">fall</span>  <span class="q">back</span>  to  <span class="q">the</span>  <span class="q">default</span> <span class="q">locale</span>.<br /><span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+<li>
+<p class="inline" nmarks="4"><span class="q">All</span>  UI  <span class="q">text</span>    <span class="q">must</span>   be  <span class="q">translatable</span>,  <span class="q">and</span>  <span class="q">there</span>  <span class="q">must</span> be  <span class="q">translations</span>  <span class="q">for</span>    <span class="q">English</span>   <span class="q">and</span>  <span class="q">some</span>  <span class="q">other</span>  <span class="q">language</span>  (of <span class="q">your</span>  <span class="q">choice</span>),  <span class="q">whether</span>    <span class="q">real</span>   or  <span class="q">fake</span>.  (A  <span class="q">fake</span>  <span class="q">translation</span> <span class="q">may</span>  <span class="q">consist</span>  of    <span class="q">any</span>   <span class="q">arbitrary</span>  <span class="q">text</span>  in  <span class="q">place</span>  of <span class="q">English</span>  <span class="q">text</span>,  <span class="q">but</span>    it   <span class="q">must</span>  <span class="q">not</span>  be  <span class="q">offensive</span>,  <span class="q">and</span> <span class="q">must</span>  <span class="q">still</span>  <span class="q">use</span>    <span class="q">the</span>   <span class="q">proper</span>  <span class="q">internationalisation</span>  <span class="q">techniques</span>.)<br /><span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+<li>
+<p class="inline" nmarks="2"><span class="q">File</span>  IO  <span class="q">must</span> <span class="q">have</span>  <span class="q">configurable</span>  <span class="q">encodings</span>.    <span class="q">The</span>   <span class="q">application</span>  <span class="q">must</span>  <span class="q">ask</span>  <span class="q">the</span>  <span class="q">user</span> <span class="q">whether</span>  to  <span class="q">use</span>    <span class="q">UTF</span>-8,   <span class="q">UTF</span>-16  or  <span class="q">UTF</span>-32  <span class="q">whenever</span>  <span class="q">loading</span> or  <span class="q">saving</span>  a    <span class="q">file</span>.<br /><span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+<li>
+<p class="inline" nmarks="1"><span class="q">String</span>   <span class="q">operations</span>  <span class="q">must</span>  <span class="q">work</span>  <span class="q">properly</span>  (as an  <span class="q">ordinary</span>  <span class="q">user</span>    <span class="q">would</span>   <span class="q">expect</span>  <span class="q">them</span>  to  <span class="q">work</span>)  on <span class="q">arbitrary</span>  <span class="q">Unicode</span>  <span class="q">strings</span>.<br /><span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+<li>
+<p class="inline" nmarks="1"><span class="q">Dates</span>    <span class="q">must</span>   be  <span class="q">handled</span>  in  an  <span class="q">appropriately</span> <span class="q">internationalised</span>  <span class="q">fashion</span>.<br /><span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+</ul>
+<p><span class="q">These</span>  <span class="q">requirements</span>    <span class="q">apply</span>   to  <span class="q">the</span>  <span class="q">core</span>  <span class="q">application</span>  <em><span class="q">and</span></em> to  <span class="q">plugins</span>  <span class="q">and</span>    <span class="q">scripts</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<div><div class="l" aria-hidden="true"><span>&#0049;</span>&#8288;<span>&#0051;</span>&#8288;<span>&#0057;</span>&#8288;<span>&#0056;</span>&#8288;<span>&#0051;</span>&#8288;<span>&#0053;</span>&#8288;<span>&#0050;</span>&#8288;<span>&#0049;</span></div></div><h2 id="plugins">Plugin/Script   Requirements</h2>
+<p><span class="q">Your</span>  <span class="q">application</span>  <span class="q">must</span>  <span class="q">have</span>  <span class="q">mechanisms</span> to  <span class="q">load</span>  <span class="q">and</span>    <span class="q">run</span>   <span class="q">both</span>  <span class="q">plugins</span>  <span class="q">and</span>  <span class="q">scripts</span>.  <span class="q">Both</span> <span class="q">must</span>  <span class="q">have</span>  <span class="q">equivalent</span>    <span class="q">access</span>   to  a  <span class="q">common</span>  <span class="q">API</span>.  <span class="q">You</span> <span class="q">must</span>  <span class="q">also</span>  <span class="q">provide</span>    <span class="q">several</span>   <span class="q">plugin</span>/<span class="q">script</span>  <span class="q">implementations</span>  <span class="q">for</span>  <span class="q">specific</span>  <span class="q">purposes</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<div><div class="l" aria-hidden="true"><span>&#0049;</span>&#8288;<span>&#0051;</span>&#8288;<span>&#0057;</span>&#8288;<span>&#0056;</span>&#8288;<span>&#0051;</span>&#8288;<span>&#0053;</span>&#8288;<span>&#0050;</span>&#8288;<span>&#0049;</span></div></div><h3 class="inline" nmarks="2">Loading Mechanisms</h3>
+<p><span class="q">The</span>  <span class="q">application</span>  <em><span class="q">must</span>    <span class="q">not</span></em>   <span class="q">have</span>  <span class="q">any</span>  <span class="q">plugins</span>/<span class="q">scripts</span>  <span class="q">loaded</span>  <span class="q">when</span> it  <span class="q">starts</span>  up.    It   <span class="q">must</span>  <span class="q">provide</span>  a  <span class="q">dialog</span>  <span class="q">box</span> <span class="q">with</span>  &ldquo;<span class="q">Add</span>  <span class="q">Plugin</span>&rdquo;    <span class="q">and</span>   &ldquo;<span class="q">Add</span>  <span class="q">Script</span>&rdquo;  <span class="q">buttons</span>,  <span class="q">and</span>  <span class="q">which</span> <span class="q">lists</span>  <span class="q">currently</span>  <span class="q">loaded</span>    <span class="q">plugins</span>/<span class="q">scripts</span>.   (<span class="q">You</span>  <span class="q">are</span>  <em><span class="q">not</span></em>  <span class="q">required</span>  to <span class="q">implement</span>  a  <span class="q">plugin</span>/<span class="q">script</span>    &ldquo;<span class="q">unloading</span>&rdquo;   <span class="q">feature</span>,  <span class="q">though</span>  <span class="q">you</span>  <span class="q">can</span>  if <span class="q">you</span>  <span class="q">want</span>.)<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<p><span class="q">Plugins</span>  <span class="q">should</span>    be   <span class="q">loaded</span>  <span class="q">via</span>  <span class="q">the</span>  <span class="q">reflection</span>  <span class="q">API</span>, <span class="q">with</span>  <span class="q">the</span>  <span class="q">user</span>    <span class="q">supplying</span>   <span class="q">the</span>  <abbr title="The name of a class including the package name; e.g., &quot;java.lang.String&quot; or &quot;edu.curtin.example.ExampleApp&quot;."><span class="q">fully</span>-<span class="q">qualified</span>  <span class="q">class</span>  <span class="q">name</span></abbr>  of <span class="q">the</span>  <span class="q">plugin</span>&rsquo;s  <span class="q">class</span>    (or   <span class="q">its</span>  <span class="q">entry</span>-<span class="q">point</span>  <span class="q">class</span>  if  it <span class="q">has</span>  <span class="q">several</span>  <span class="q">classes</span>).    <span class="q">This</span>   <span class="q">assumes</span>  <span class="q">that</span>  <span class="q">the</span>  <span class="q">plugins</span>  <span class="q">are</span> <span class="q">already</span>  <span class="q">located</span>  in    <span class="q">the</span>   <span class="q">JVM</span>&rsquo;s  <span class="q">search</span>  <span class="q">path</span>,  <span class="q">but</span>  <span class="q">Gradle</span> <span class="q">will</span>  <span class="q">take</span>  <span class="q">care</span>    of   <span class="q">that</span>  <span class="q">when</span>  <span class="q">properly</span>  <span class="q">configured</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<p><span class="q">Scripts</span>  <span class="q">should</span> be  <span class="q">read</span>  in    as   <span class="q">ordinary</span>  <span class="q">UTF</span>-8  <span class="q">text</span>  <span class="q">files</span>,  <span class="q">and</span> <span class="q">run</span>  <span class="q">through</span>  an    <span class="q">interpreter</span>.   <span class="q">You</span>&rsquo;re  <span class="q">advised</span>  to  <span class="q">use</span>  <code><span class="q">FileChooser</span></code> or  <code><span class="q">JFileChooser</span></code>  to    <span class="q">allow</span>   <span class="q">the</span>  <span class="q">user</span>  to  <span class="q">locate</span>  <span class="q">the</span> <span class="q">script</span>  <span class="q">file</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<div><div class="l" aria-hidden="true"><span>&#0049;</span>&#8288;<span>&#0051;</span>&#8288;<span>&#0057;</span>&#8288;<span>&#0056;</span>&#8288;<span>&#0051;</span>&#8288;<span>&#0053;</span>&#8288;<span>&#0050;</span>&#8288;<span>&#0049;</span></div></div><h3 class="inline" nmarks="5">API</h3>
+<p><span class="q">Plugins</span>  <span class="q">and</span>    <span class="q">scripts</span>   <span class="q">must</span>  <span class="q">have</span>  <span class="q">access</span>  to  an <span class="q">API</span>,  to  <span class="q">let</span>    <span class="q">them</span>   <span class="q">communicate</span>  <span class="q">with</span>  <span class="q">the</span>  <span class="q">core</span>  <span class="q">application</span>. <span class="q">The</span>  <span class="q">API</span>  <span class="q">should</span>    <span class="q">consist</span>   <span class="q">simply</span>  of  a  <span class="q">set</span>  of <code><span class="q">interface</span></code>  <span class="q">declarations</span>.  <span class="q">How</span>    <span class="q">many</span>   <span class="q">you</span>  <span class="q">have</span>,  <span class="q">what</span>  <span class="q">they</span>  <span class="q">are</span> <span class="q">called</span>,  <span class="q">and</span>  <span class="q">what</span>    <span class="q">methods</span>   <span class="q">they</span>  <span class="q">contain</span>  <span class="q">are</span>  up  to <span class="q">you</span>.  <span class="q">Overall</span>,  <span class="q">though</span>,    <span class="q">the</span>   <span class="q">API</span>  <span class="q">must</span>  <span class="q">have</span>  <span class="q">the</span>  <span class="q">following</span> <span class="q">characteristics</span>:<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<ul>
+<li>
+<p><span class="q">Plugins</span>/<span class="q">scripts</span>  <em><span class="q">must</span>  <span class="q">not</span></em>    <span class="q">have</span>   <span class="q">direct</span>  <span class="q">access</span>  to  <span class="q">GUI</span>  <span class="q">objects</span> (<span class="q">anything</span>  <span class="q">that</span>  <span class="q">forms</span>    <span class="q">part</span>   of  <span class="q">JavaFX</span>  or  <span class="q">Swing</span>).  <span class="q">Therefore</span>, <span class="q">your</span>  <span class="q">API</span>  <span class="q">must</span>    <span class="q">make</span>   no  <span class="q">mention</span>  of  <span class="q">them</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<div class="admonition note">
+<p class="admonition-title"><span class="q">Note</span><span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<p><span class="q">This</span>  <span class="q">may</span> <span class="q">seem</span>  <span class="q">annoying</span>  <span class="q">when</span>    <span class="q">you</span>   <span class="q">realise</span>  <span class="q">that</span>  <span class="q">giving</span>  <span class="q">your</span>  <span class="q">plugins</span> <span class="q">direct</span>  <span class="q">access</span>  to    <span class="q">the</span>   <span class="q">GUI</span>  <span class="q">would</span>  <span class="q">remove</span>  a  <span class="q">lot</span> of  <span class="q">API</span>  <span class="q">design</span>    <span class="q">work</span>.   <em><span class="q">However</span></em>,  <span class="q">the</span>  <span class="q">point</span>  of  <span class="q">the</span> <span class="q">assignment</span>  is  to    <em>do</em>   <span class="q">that</span>  <span class="q">API</span>  <span class="q">design</span>  <span class="q">work</span>!<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<p><span class="q">Obviously</span>,  <span class="q">your</span> <span class="q">core</span>  <span class="q">application</span>  (<span class="q">the</span>    <span class="q">API</span>   <em><span class="q">provider</span></em>)  <span class="q">will</span>  <span class="q">use</span>  <span class="q">JavaFX</span>/<span class="q">Swing</span>  <span class="q">itself</span>. <span class="q">But</span>  <span class="q">the</span>  <span class="q">API</span>    <span class="q">declarations</span>,   <span class="q">and</span>  <span class="q">the</span>  <span class="q">plugins</span>/<span class="q">scripts</span>  <span class="q">that</span>  <span class="q">use</span> <span class="q">them</span>,  <span class="q">can</span>  <span class="q">and</span>    <span class="q">should</span>   be  <span class="q">kept</span>  <span class="q">completely</span>  <span class="q">separate</span>  <span class="q">from</span> it.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+</div>
+<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+<li>
+<p><span class="q">Plugins</span>/<span class="q">scripts</span>  <span class="q">must</span>  <span class="q">report</span>    a   <span class="q">human</span>-<span class="q">readable</span>  <span class="q">name</span>  (<span class="q">other</span>  <span class="q">than</span>  <span class="q">their</span> <span class="q">package</span>/<span class="q">class</span>  <span class="q">name</span>),  to    be   <span class="q">listed</span>  in  <span class="q">the</span>  <span class="q">GUI</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+<li>
+<p><span class="q">Plugins</span>/<span class="q">scripts</span>  <span class="q">must</span> be  <span class="q">able</span>  to    <span class="q">access</span>   <span class="q">and</span>  <span class="q">modify</span>  <span class="q">the</span>  <span class="q">text</span>  <span class="q">being</span> <span class="q">edited</span>,  <span class="q">and</span>  <span class="q">the</span>    <abbr title="The text cursor, typically shown as a vertical line between letters, indicating where the next character will appear when you type it."><span class="q">caret</span></abbr>   <span class="q">position</span>.  <span class="q">The</span>  <span class="q">latter</span>  is  an <span class="q">integer</span>,  <span class="q">where</span>  0    <span class="q">means</span>   <span class="q">the</span>  <span class="q">start</span>  of  <span class="q">the</span>  <span class="q">file</span>, 1  <span class="q">means</span>  <span class="q">after</span>    <span class="q">the</span>   <span class="q">first</span>  <span class="q">character</span>,  <span class="q">etc</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+<li>
+<p><span class="q">Plugins</span>/<span class="q">scripts</span>  <span class="q">must</span>  be <span class="q">able</span>  to  <span class="q">alter</span>    <span class="q">the</span>   <span class="q">text</span>  <span class="q">selection</span>,  to  <span class="q">cause</span>  a <span class="q">certain</span>  <span class="q">range</span>  of    <span class="q">characters</span>   <span class="q">within</span>  <span class="q">the</span>  <span class="q">text</span>  to  be <span class="q">highlighted</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+<li>
+<p><span class="q">Plugins</span>/<span class="q">scripts</span>  <span class="q">must</span>  be    <span class="q">able</span>   to  <span class="q">register</span>  <span class="q">callbacks</span>  <span class="q">for</span>  <span class="q">the</span> <span class="q">following</span>:<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<ul>
+<li>
+<p><span class="q">Modification</span>  of  <span class="q">the</span>    <span class="q">text</span>   by  <span class="q">the</span>  <span class="q">user</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+<li>
+<p><span class="q">Function</span>  <span class="q">key</span>  <span class="q">presses</span> (F1-<span class="q">F12</span>).<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+<li>
+<p><span class="q">GUI</span>  <span class="q">button</span>  <span class="q">presses</span>.    <span class="q">Specifically</span>,   a  <span class="q">plugin</span>/<span class="q">script</span>  <span class="q">must</span>  be  <span class="q">able</span> to  <span class="q">cause</span>  an    <span class="q">extra</span>   <span class="q">button</span>  to  <span class="q">appear</span>  in  <span class="q">the</span> <span class="q">toolbar</span>.  It  <span class="q">must</span>    <span class="q">supply</span>   <span class="q">the</span>  <span class="q">name</span>  of  <span class="q">the</span>  <span class="q">button</span> (<span class="q">the</span>  <span class="q">text</span>  <span class="q">written</span>    on   <span class="q">top</span>)  <span class="q">and</span>  <span class="q">the</span>  <span class="q">callback</span>  to be  <span class="q">invoked</span>  <span class="q">when</span>    <span class="q">the</span>   <span class="q">button</span>  is  <span class="q">pressed</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+</ul>
+<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+<li>
+<p><span class="q">Plugins</span>/<span class="q">scripts</span>  <span class="q">must</span>  be <span class="q">able</span>  to  <span class="q">ask</span>    <span class="q">for</span>   <span class="q">user</span>  <span class="q">input</span>  by  <span class="q">means</span>  of a  <span class="q">dialog</span>  <span class="q">box</span>    <span class="q">containing</span>   a  <span class="q">text</span>  <span class="q">field</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+</ul>
+<div><div class="l" aria-hidden="true"><span>&#0049;</span>&#8288;<span>&#0051;</span>&#8288;<span>&#0057;</span>&#8288;<span>&#0056;</span>&#8288;<span>&#0051;</span>&#8288;<span>&#0053;</span>&#8288;<span>&#0050;</span>&#8288;<span>&#0049;</span></div></div><h3 class="inline" nmarks="8">Actual  Plugins  and Scripts</h3>
+<p><span class="q">While</span>  <span class="q">the</span>  <span class="q">idea</span>    of   a  <span class="q">plugin</span>/<span class="q">script</span>  is  <span class="q">that</span>  <span class="q">they</span>&rsquo;ll be  <span class="q">written</span>  by    <span class="q">third</span>-<span class="q">parties</span>,   <span class="q">you</span>  <span class="q">are</span>  <span class="q">also</span>  <span class="q">required</span>  to <span class="q">provide</span>  <span class="q">some</span>  <span class="q">yourself</span>.    <span class="q">Specifically</span>:<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<ul>
+<li>
+<p class="inline" nmarks="2">A   &ldquo;<span class="q">date</span>&rdquo;  <strong><span class="q">plugin</span></strong>.  It  <span class="q">creates</span>  a <span class="q">new</span>  <span class="q">button</span>  <span class="q">labelled</span>    &ldquo;<span class="q">Date</span>&rdquo;.   <span class="q">When</span>  <span class="q">pressed</span>,  <span class="q">the</span>  <span class="q">current</span>  <span class="q">date</span> <span class="q">and</span>  <span class="q">time</span>  (<span class="q">for</span>    <span class="q">the</span>   <span class="q">correct</span>  <span class="q">locale</span>)  <span class="q">are</span>  <span class="q">inserted</span>  at <span class="q">the</span>  <abbr title="The text cursor, typically shown as a vertical line between letters, indicating where the next character will appear when you type it."><span class="q">caret</span></abbr>  <span class="q">position</span>.<br /><span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<p><span class="q">The</span>    <abbr title="The name of a class including the package name; e.g., &quot;java.lang.String&quot; or &quot;edu.curtin.example.ExampleApp&quot;."><span class="q">fully</span>-<span class="q">qualified</span>   <span class="q">class</span>  <span class="q">name</span></abbr>  <span class="q">should</span>  be  &ldquo;<code><span class="q">texteditor</span>.<span class="q">DatePlugin</span></code>&rdquo;. (It  <span class="q">will</span>  <span class="q">assist</span>    <span class="q">the</span>   <span class="q">marker</span>  <span class="q">greatly</span>  if  <span class="q">you</span>  <span class="q">use</span> <span class="q">this</span>  <span class="q">exact</span>  <span class="q">name</span>!)<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+<li>
+<p class="inline" nmarks="4">A    &ldquo;<span class="q">find</span>&rdquo;   <strong><span class="q">plugin</span></strong>.  It  <span class="q">creates</span>  a  <span class="q">new</span> <span class="q">button</span>  <span class="q">labelled</span>  &ldquo;<span class="q">Find</span>&rdquo;.    <span class="q">When</span>   <span class="q">pressed</span>,  or  <span class="q">when</span>  <span class="q">the</span>  F3 <span class="q">key</span>  is  <span class="q">pressed</span>,    <span class="q">the</span>   <span class="q">plugin</span>:<br /><span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<ol>
+<li>
+<p><span class="q">Asks</span>  <span class="q">the</span>  <span class="q">user</span>  <span class="q">for</span>  a <span class="q">search</span>  <span class="q">term</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+<li>
+<p><span class="q">Looks</span>  <span class="q">for</span>    <span class="q">the</span>   <span class="q">first</span>  <span class="q">occurrence</span>  of  <span class="q">that</span>  <span class="q">term</span> in  <span class="q">the</span>  <span class="q">text</span>    <span class="q">being</span>   <span class="q">edited</span>,  <span class="q">but</span>  <span class="q">only</span>  <span class="q">from</span>  <span class="q">the</span> <abbr title="The text cursor, typically shown as a vertical line between letters, indicating where the next character will appear when you type it."><span class="q">caret</span></abbr>  <span class="q">position</span>  <span class="q">forwards</span>.    <span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+<li>
+<p>If   <span class="q">the</span>  <span class="q">search</span>  <span class="q">term</span>  is  <span class="q">found</span>, <span class="q">the</span>  <span class="q">matching</span>  <span class="q">text</span>    is   <span class="q">selected</span>  (<span class="q">highlighted</span>).  If  <span class="q">not</span>  <span class="q">found</span>, <span class="q">nothing</span>  <span class="q">else</span>  <span class="q">happens</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+</ol>
+<p><span class="q">The</span>    <abbr title="The name of a class including the package name; e.g., &quot;java.lang.String&quot; or &quot;edu.curtin.example.ExampleApp&quot;."><span class="q">fully</span>-<span class="q">qualified</span>   <span class="q">class</span>  <span class="q">name</span></abbr>  <span class="q">should</span>  be  &ldquo;<code><span class="q">texteditor</span>.<span class="q">FindPlugin</span></code>&rdquo;.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+<li>
+<p class="inline" nmarks="2">An &ldquo;<span class="q">emoji</span>&rdquo;  <strong><span class="q">script</span></strong>  (<span class="q">not</span>    <span class="q">plugin</span>).   It  <span class="q">monitors</span>  <span class="q">changes</span>  to  <span class="q">the</span> <span class="q">text</span>,  <span class="q">and</span>  <span class="q">when</span>    it   <span class="q">sees</span>  <span class="q">the</span>  <span class="q">substring</span>  <code>":-)"</code>  <span class="q">immediately</span> <span class="q">prior</span>  to  <span class="q">the</span>    <abbr title="The text cursor, typically shown as a vertical line between letters, indicating where the next character will appear when you type it."><span class="q">caret</span></abbr>,   it  <span class="q">replaces</span>  it  <span class="q">with</span>  <code>"😊"</code>.<br /><span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<p>(To <span class="q">emphasise</span>:  <span class="q">this</span>  <span class="q">particular</span>    <span class="q">script</span>   <span class="q">does</span>  <span class="q">not</span>  <span class="q">require</span>  <span class="q">the</span>  <span class="q">user</span> to  <span class="q">press</span>  a    <span class="q">special</span>   <span class="q">button</span>,  <span class="q">only</span>  to  <span class="q">keep</span>  <span class="q">typing</span>.)<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+</ul>
+<p><span class="q">See</span> <span class="q">the</span>  <a href="#build"><span class="q">Build</span>  <span class="q">Requirements</span></a>    <span class="q">for</span>   <span class="q">further</span>  <span class="q">information</span>  <span class="q">about</span>  <em><span class="q">where</span></em>  <span class="q">the</span> <span class="q">plugins</span>/<span class="q">scripts</span>  <span class="q">are</span>  to    be   <span class="q">located</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<div class="admonition optional">
+<p class="admonition-title"><span class="q">Bonus</span>  <span class="q">Marks</span><span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<p><span class="q">You</span>  <span class="q">can</span>  <span class="q">provide</span>  a <span class="q">native</span>  <span class="q">implementation</span>  of    <span class="q">the</span>   &ldquo;<span class="q">date</span>&rdquo;  or  &ldquo;<span class="q">find</span>&rdquo;  <span class="q">plugins</span>  <span class="q">for</span> <span class="q">potentially</span>  5  <span class="q">bonus</span>    <span class="q">marks</span>.   <span class="q">However</span>,  <span class="q">you</span>  <span class="q">are</span>  <span class="q">strongly</span>  <span class="q">advised</span> to  <em><span class="q">also</span></em>  <span class="q">provide</span>    a   <span class="q">Java</span>  <span class="q">implementation</span>  <span class="q">too</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+</div>
+
+
+<div><div class="l" aria-hidden="true"><span>&#0049;</span>&#8288;<span>&#0051;</span>&#8288;<span>&#0057;</span>&#8288;<span>&#0056;</span>&#8288;<span>&#0051;</span>&#8288;<span>&#0053;</span>&#8288;<span>&#0050;</span>&#8288;<span>&#0049;</span></div></div><h2 class="inline" id="dsl" nmarks="10">DSL  Requirements</h2>
+<p><span class="q">The</span>  <span class="q">application</span> <span class="q">must</span>  <span class="q">read</span>  <span class="q">the</span>    <span class="q">UTF</span>-8   <span class="q">text</span>  <span class="q">file</span>  &ldquo;<code><span class="q">keymap</span></code>&rdquo;  (no  <span class="q">filename</span> <span class="q">extension</span>)  on  <span class="q">start</span>    up.   <span class="q">This</span>  <span class="q">file</span>  <span class="q">conforms</span>  to  a <span class="q">domain</span>-<span class="q">specific</span>  <span class="q">language</span>  <span class="q">that</span>    (as   an  <span class="q">example</span>)  <span class="q">looks</span>  <span class="q">like</span>  <span class="q">this</span>:<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<div class="file highlight"><pre><span></span><code><span class="q">ctrl</span>+i       = <span class="q">insert</span> &quot;    &quot; at <span class="q">start</span> of <span class="q">line</span>
+<span class="q">ctrl</span>+<span class="q">shift</span>+i = <span class="q">delete</span> &quot;    &quot; at <span class="q">start</span> of <span class="q">line</span>
+<span class="q">ctrl</span>+d       = <span class="q">insert</span> &quot;//&quot; at <span class="q">start</span> of <span class="q">line</span>
+<span class="q">ctrl</span>+<span class="q">shift</span>+d = <span class="q">delete</span> &quot;//&quot; at <span class="q">start</span> of <span class="q">line</span>
+<span class="q">alt</span>+t        = <span class="q">insert</span> &quot;/*<span class="q">TODO</span>*/&quot; at <span class="q">caret</span>
+<span class="q">alt</span>+f        = <span class="q">insert</span> &quot;/*<span class="q">FIXME</span>*/&quot; at <span class="q">caret</span>
+<span class="q">alt</span>+s        = <span class="q">delete</span> &quot;/*<span class="q">TODO</span>*/&quot; at <span class="q">caret</span>
+<span class="q">alt</span>+g        = <span class="q">delete</span> &quot;/*<span class="q">FIXME</span>*/&quot; at <span class="q">caret</span>
+</code></pre></div>
+<p><span class="q">Specifically</span>, <span class="q">there</span>  <span class="q">are</span>  <span class="q">zero</span>    or   <span class="q">more</span>  <span class="q">lines</span>,  <span class="q">with</span>  <span class="q">each</span>  <span class="q">line</span> <span class="q">consisting</span>  of:<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<ul>
+<li>A  <span class="q">key</span>    <span class="q">combination</span>,   <span class="q">containing</span>  &ldquo;<code><span class="q">alt</span></code>&rdquo;,  &ldquo;<code><span class="q">ctrl</span></code>&rdquo;  <span class="q">and</span>/or  &ldquo;<code><span class="q">shift</span></code>&rdquo; <span class="q">followed</span>  by  a    <span class="q">lowercase</span>   <span class="q">letter</span>,  <span class="q">separated</span>  by  &ldquo;<code>+</code>&rdquo;  <span class="q">symbols</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+<li>An <span class="q">equals</span>  <span class="q">sign</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+<li><span class="q">Either</span>  &ldquo;<code><span class="q">insert</span></code>&rdquo;    or   &ldquo;<code><span class="q">delete</span></code>&rdquo;.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+<li>A  <span class="q">string</span>,  in  <span class="q">double</span>  <span class="q">quotes</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+<li><span class="q">Either</span> <span class="q">the</span>  <span class="q">phrase</span>  &ldquo;<code>at <span class="q">start</span> of <span class="q">line</span></code>&rdquo;    or   &ldquo;<code>at <span class="q">caret</span></code>&rdquo;.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+</ul>
+<p><span class="q">Whitespace</span>  (<span class="q">except</span>  in  <span class="q">strings</span>)  is <span class="q">insignificant</span>,  <em><span class="q">but</span></em>  <span class="q">newlines</span>    <span class="q">are</span>   <span class="q">important</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<p><span class="q">The</span>  <span class="q">application</span>  <span class="q">must</span>  <span class="q">parse</span>  <span class="q">this</span> <span class="q">information</span>,  <span class="q">using</span>  a    <span class="q">JavaCC</span>-<span class="q">generated</span>   <span class="q">parser</span>,  <span class="q">and</span>  <span class="q">then</span>  <span class="q">use</span>  it to  <span class="q">set</span>  up    <span class="q">keyboard</span>   <span class="q">input</span>.  <span class="q">The</span>  <span class="q">goal</span>  is  <span class="q">fairly</span> <span class="q">self</span>  <span class="q">explanatory</span>.  <span class="q">Given</span>    <span class="q">the</span>   <span class="q">above</span>  <span class="q">file</span>,  we  <span class="q">want</span>  <span class="q">the</span> <span class="q">following</span>  to  <span class="q">happen</span>    <span class="q">while</span>   <span class="q">editing</span>:<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<ul>
+<li>
+<p>If  we  <span class="q">type</span>  <span class="q">ctrl</span>+i,  <span class="q">four</span> <span class="q">spaces</span>  <span class="q">should</span>  be    <span class="q">inserted</span>   at  <span class="q">the</span>  <span class="q">beginning</span>  of  <span class="q">the</span> <span class="q">current</span>  <span class="q">line</span>,  <span class="q">and</span>    <span class="q">the</span>   <abbr title="The text cursor, typically shown as a vertical line between letters, indicating where the next character will appear when you type it."><span class="q">caret</span></abbr>  <span class="q">should</span>  be  <span class="q">moved</span>  <span class="q">the</span> <span class="q">same</span>  <span class="q">distance</span>  <span class="q">ahead</span>.    <span class="q">The</span>   <span class="q">beginning</span>  of  <span class="q">the</span>  <span class="q">current</span>  <span class="q">line</span> <span class="q">can</span>  be  <span class="q">found</span>    by   <span class="q">searching</span>  <span class="q">for</span>  <span class="q">the</span>  <span class="q">last</span>  &ldquo;<code>\n</code>&rdquo; <span class="q">character</span>  <span class="q">before</span>  <span class="q">the</span>    <abbr title="The text cursor, typically shown as a vertical line between letters, indicating where the next character will appear when you type it."><span class="q">caret</span></abbr>   (or  <span class="q">the</span>  <span class="q">beginning</span>  of  <span class="q">the</span> <span class="q">file</span>  if  <span class="q">there</span>    <span class="q">isn</span>&rsquo;t   <span class="q">one</span>).<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+<li>
+<p>If  we  <span class="q">type</span>  <span class="q">ctrl</span>+<span class="q">shift</span>+i,  <span class="q">four</span> <span class="q">spaces</span>  <span class="q">should</span>  be    <span class="q">deleted</span>   <span class="q">from</span>  <span class="q">the</span>  <span class="q">beginning</span>  of  <span class="q">the</span> <span class="q">current</span>  <span class="q">line</span>  (<span class="q">and</span>    <span class="q">the</span>   <abbr title="The text cursor, typically shown as a vertical line between letters, indicating where the next character will appear when you type it."><span class="q">caret</span></abbr>  <span class="q">moved</span>  <span class="q">four</span>  <span class="q">spaces</span>  <span class="q">back</span>), <span class="q">but</span>  <em><span class="q">only</span>  if</em>    <span class="q">there</span>   <span class="q">are</span>  <span class="q">four</span>  <span class="q">spaces</span>  <span class="q">there</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+<li>
+<p><span class="q">Similarly</span>  <span class="q">for</span> <span class="q">ctrl</span>+d  <span class="q">and</span>  <span class="q">ctrl</span>+<span class="q">shift</span>+d,    <span class="q">except</span>   we  <span class="q">insert</span>/<span class="q">delete</span>  &ldquo;<code>//</code>&rdquo;  <span class="q">instead</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+<li>
+<p>If  we <span class="q">type</span>  <span class="q">alt</span>+t,  <span class="q">the</span>    <span class="q">string</span>   <code>"/*<span class="q">TODO</span>*/"</code>  <span class="q">should</span>  be  <span class="q">inserted</span>  at <span class="q">the</span>  <span class="q">carot</span>  <span class="q">location</span>,    <span class="q">and</span>   <span class="q">alt</span>+s  <span class="q">should</span>  <span class="q">delete</span>  it  (if it&rsquo;s  <span class="q">there</span>).  <span class="q">Similarly</span>    <span class="q">for</span>   <span class="q">alt</span>+f  <span class="q">and</span>  <span class="q">alt</span>+g  <span class="q">and</span>  <span class="q">the</span> <span class="q">string</span>  <code>"/*<span class="q">FIXME</span>*/"</code>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+</ul>
+<p><span class="q">But</span>,  to    <span class="q">reiterate</span>,   <span class="q">this</span>  is  <span class="q">only</span>  an  <span class="q">example</span>! <span class="q">The</span>  <span class="q">user</span>  <span class="q">can</span>    <span class="q">put</span>   <span class="q">whatever</span>  <span class="q">they</span>  <span class="q">want</span>  in  <span class="q">the</span> &ldquo;<code><span class="q">keymap</span></code>&rdquo;  <span class="q">file</span>  (<span class="q">within</span>    <span class="q">the</span>   <span class="q">syntax</span>  <span class="q">rules</span>),  <span class="q">and</span>  <span class="q">that</span>  <span class="q">determines</span> <span class="q">what</span>  <span class="q">your</span>  <span class="q">application</span>    <span class="q">should</span>   <span class="q">actually</span>  do.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<div class="admonition note">
+<p class="admonition-title"><span class="q">Marking</span>  /  <span class="q">Good</span>  <span class="q">Practice</span><span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<p><span class="q">The</span> 10  <span class="q">DSL</span>  <span class="q">marks</span>    <span class="q">will</span>   be  <span class="q">allocated</span>  <span class="q">principally</span>  <span class="q">based</span>  on <em><span class="q">how</span>  <span class="q">much</span>  of    <span class="q">this</span>   <span class="q">you</span>  <span class="q">can</span>  <span class="q">get</span>  <span class="q">working</span></em>.  <span class="q">For</span> <span class="q">instance</span>,  <span class="q">can</span>  <span class="q">your</span>    <span class="q">application</span>   <span class="q">handle</span>  <span class="q">all</span>  <span class="q">possible</span>  <span class="q">key</span>  <span class="q">combinations</span>? <span class="q">Can</span>  it  <span class="q">handle</span>    <span class="q">insertions</span>?   <span class="q">Deletions</span>?  <span class="q">Can</span>  it  <span class="q">handle</span>  <span class="q">all</span> <span class="q">strings</span>?  <span class="q">Can</span>  it    <span class="q">handle</span>   <span class="q">operations</span>  at  <span class="q">the</span>  <span class="q">start</span>  of <span class="q">the</span>  <span class="q">line</span>?  At    <span class="q">the</span>   <abbr title="The text cursor, typically shown as a vertical line between letters, indicating where the next character will appear when you type it."><span class="q">caret</span></abbr>?<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<p><span class="q">However</span>,  <span class="q">this</span>  is  <span class="q">contingent</span>  on <span class="q">using</span>  <span class="q">JavaCC</span>  <span class="q">properly</span>.    <span class="q">For</span>   <span class="q">instance</span>,  <span class="q">don</span>&rsquo;t  <span class="q">try</span>  to  <span class="q">use</span> <span class="q">the</span>  <span class="q">standard</span>  <span class="q">Java</span>    <span class="q">API</span>   (<code><span class="q">StringTokenizer</span></code>,  <code><span class="q">String</span>.<span class="q">split</span>()</code>,  <code><span class="q">Pattern</span></code>,  <span class="q">etc</span>.)  <span class="q">for</span> <span class="q">things</span>  <span class="q">that</span>  <span class="q">JavaCC</span>    <span class="q">should</span>   be  <span class="q">doing</span>.  <span class="q">Also</span>,  <span class="q">don</span>&rsquo;t  <span class="q">try</span> to  <span class="q">make</span>  <span class="q">overly</span>-<span class="q">complicated</span>    <span class="q">tokens</span>   <span class="q">when</span>  <span class="q">you</span>  <span class="q">can</span>  <span class="q">make</span>  <span class="q">simple</span> <span class="q">tokens</span>  <span class="q">and</span>  <span class="q">use</span>    <span class="q">BNF</span>   to  <span class="q">deal</span>  <span class="q">with</span>  <span class="q">combinations</span>  of <span class="q">them</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title"><span class="q">Note</span><span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<p><span class="q">There</span>&rsquo;s  no  <span class="q">need</span>    to   <span class="q">translate</span>  <span class="q">these</span>  <span class="q">strings</span>  <span class="q">for</span>  <span class="q">I18N</span> <span class="q">purposes</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+</div>
+<div><div class="l" aria-hidden="true"><span>&#0049;</span>&#8288;<span>&#0051;</span>&#8288;<span>&#0057;</span>&#8288;<span>&#0056;</span>&#8288;<span>&#0051;</span>&#8288;<span>&#0053;</span>&#8288;<span>&#0050;</span>&#8288;<span>&#0049;</span></div></div><h2 class="inline" id="build" nmarks="5">Build  Requirements</h2>
+<p><span class="q">Your</span>  <span class="q">application</span>    <span class="q">must</span>   <span class="q">use</span>  <span class="q">Gradle</span>,  <span class="q">with</span>  <span class="q">separate</span>  <span class="q">subprojects</span> <span class="q">for</span>  (a)  <span class="q">the</span>    <span class="q">core</span>   <span class="q">application</span>,  (b)  <span class="q">the</span>  <span class="q">API</span>  <span class="q">declarations</span>, <span class="q">and</span>  (c)  <span class="q">each</span>    of   <span class="q">the</span>  <span class="q">two</span>  <span class="q">plugins</span>.  <span class="q">You</span>  <span class="q">will</span> <span class="q">need</span>  to  <span class="q">set</span>    up   <span class="q">dependencies</span>  to  <span class="q">ensure</span>  <span class="q">everything</span>  <span class="q">compiles</span> <span class="q">and</span>  <span class="q">runs</span>  as    <span class="q">expected</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<p><span class="q">The</span>   <span class="q">end</span>  <span class="q">result</span>  <span class="q">must</span>  be  <span class="q">that</span>:<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<ol>
+<li>
+<p><span class="q">The</span> <span class="q">build</span>  <span class="q">user</span>  <span class="q">can</span>    <span class="q">type</span>   &ldquo;<code>./<span class="q">gradlew</span> <span class="q">run</span></code>&rdquo;  to  <span class="q">have</span>  <span class="q">the</span>  <span class="q">core</span> <span class="q">application</span>  <span class="q">run</span>,  <span class="q">and</span>    be   <span class="q">able</span>  to  <span class="q">load</span>  <span class="q">the</span>  <span class="q">plugins</span>/<span class="q">scripts</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+<li>
+<p><span class="q">The</span> <span class="q">build</span>  <span class="q">user</span>  <span class="q">can</span>    <span class="q">also</span>   <span class="q">type</span>  &ldquo;<code>./<span class="q">gradlew</span> <span class="q">build</span></code>&rdquo;,  <span class="q">and</span>  <span class="q">unpack</span>  <span class="q">and</span> <span class="q">run</span>  <span class="q">the</span>  <span class="q">core</span>    <span class="q">application</span>&rsquo;s   <span class="q">distribution</span>  <code>.<span class="q">zip</span></code>  <span class="q">file</span>,  to  <span class="q">achieve</span> <span class="q">the</span>  <span class="q">same</span>  <span class="q">effect</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+</ol>
+<div><div class="l" aria-hidden="true"><span>&#0049;</span>&#8288;<span>&#0051;</span>&#8288;<span>&#0057;</span>&#8288;<span>&#0056;</span>&#8288;<span>&#0051;</span>&#8288;<span>&#0053;</span>&#8288;<span>&#0050;</span>&#8288;<span>&#0049;</span></div></div><h3>The    <code>keymap</code>   File</h3>
+<p><span class="q">Keep</span>  <span class="q">the</span>  <code><span class="q">keymap</span></code>  <span class="q">file</span>  in <span class="q">the</span>  <span class="q">core</span>  <span class="q">application</span>&rsquo;s    <span class="q">base</span>   <span class="q">directory</span>  &ndash;  <span class="q">the</span>  <span class="q">directory</span>  <span class="q">containing</span> <span class="q">the</span>  <span class="q">core</span>  <span class="q">application</span>    <span class="q">subproject</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<p><span class="q">The</span>   <span class="q">core</span>  <span class="q">application</span>  <span class="q">should</span>  <span class="q">simply</span>  <span class="q">read</span> <span class="q">the</span>  <code><span class="q">keymap</span></code>  <span class="q">file</span>    <span class="q">from</span>   <span class="q">the</span>  <span class="q">current</span>  <span class="q">directory</span>  on  <span class="q">start</span>-up. <span class="q">Gradle</span>  <span class="q">will</span>  <span class="q">set</span>    <span class="q">the</span>   &ldquo;<span class="q">current</span>  <span class="q">directory</span>&rdquo;  to  be  <span class="q">the</span> <span class="q">base</span>  <span class="q">directory</span>  of    <span class="q">whichever</span>   <span class="q">project</span>/<span class="q">subproject</span>  is  <span class="q">being</span>  <span class="q">run</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<div class="admonition note">
+<p class="admonition-title">If  in <span class="q">doubt</span>&hellip;<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<p><span class="q">You</span>  <span class="q">can</span>  <span class="q">insert</span>    a   <span class="q">debugging</span>  <span class="q">statement</span>  to  <span class="q">print</span>  <span class="q">the</span> <span class="q">value</span>  of  <code><span class="q">System</span>.<span class="q">getProperty</span>("<span class="q">user</span>.<span class="q">dir</span>")</code>,    if   <span class="q">you</span>  <span class="q">need</span>  to  <span class="q">see</span>  <span class="q">what</span> <span class="q">the</span>  &ldquo;<span class="q">current</span>  <span class="q">directory</span>&rdquo;    <span class="q">actually</span>   is.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+</div>
+<div><div class="l" aria-hidden="true"><span>&#0049;</span>&#8288;<span>&#0051;</span>&#8288;<span>&#0057;</span>&#8288;<span>&#0056;</span>&#8288;<span>&#0051;</span>&#8288;<span>&#0053;</span>&#8288;<span>&#0050;</span>&#8288;<span>&#0049;</span></div></div><h3>Script  File(s)</h3>
+<p><span class="q">Unlike</span>  <span class="q">plugins</span>,  <span class="q">scripts</span>  <span class="q">don</span>&rsquo;t <span class="q">participate</span>  in  <span class="q">the</span>    <span class="q">build</span>   <span class="q">process</span>,  <span class="q">because</span>  <span class="q">there</span>&rsquo;s  <span class="q">nothing</span>  to <span class="q">build</span>.  <span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<p><span class="q">For</span>  <span class="q">the</span>    <span class="q">one</span>   <span class="q">script</span>  <span class="q">you</span>  <span class="q">need</span>  to  <span class="q">provide</span>, it&rsquo;s  <span class="q">easiest</span>  if    <span class="q">you</span>   <span class="q">put</span>  it  (e.g.,  <code><span class="q">emoji</span>.py</code>)  <span class="q">directly</span> in  <span class="q">the</span>  <span class="q">root</span>    <span class="q">project</span>   <span class="q">directory</span>.  In  <span class="q">any</span>  <span class="q">case</span>,  as a  <span class="q">matter</span>  of    <span class="q">principle</span>,   it  <em><span class="q">should</span>  <span class="q">not</span></em>  go  in <span class="q">the</span>  <span class="q">core</span>  <span class="q">application</span>&rsquo;s    <span class="q">directory</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+
+
+
+
+
+
+
+
+<div><div class="l" aria-hidden="true"><span>&#0049;</span>&#8288;<span>&#0051;</span>&#8288;<span>&#0057;</span>&#8288;<span>&#0056;</span>&#8288;<span>&#0051;</span>&#8288;<span>&#0053;</span>&#8288;<span>&#0050;</span>&#8288;<span>&#0049;</span></div></div><h2>Submission</h2>
+<p><span class="q">Submit</span>   <span class="q">your</span>  <span class="q">project</span>  <span class="q">structure</span>,  <span class="q">inside</span>  a <span class="q">single</span>  .<span class="q">zip</span>/.<span class="q">tar</span>.gz  <span class="q">file</span>,    to   <span class="q">the</span>  <span class="q">appropriate</span>  <span class="q">area</span>  on  <span class="q">Blackboard</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<p><span class="q">Please</span>:<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<ul>
+<li><span class="q">Don</span>&rsquo;t <span class="q">use</span>  .<span class="q">rar</span>,  .<span class="q">zipx</span>    or   .7z.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+<li><span class="q">Don</span>&rsquo;t  <span class="q">have</span>  <span class="q">nested</span>  .<span class="q">zip</span>  <span class="q">files</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+<li><em>Do</em> <span class="q">verify</span>  <span class="q">that</span>  <span class="q">your</span>    <span class="q">submission</span>   is  <span class="q">correct</span>  <span class="q">and</span>  <span class="q">not</span>  <span class="q">corrupted</span>. <span class="q">Once</span>  <span class="q">you</span>  <span class="q">have</span>    <span class="q">submitted</span>,   <span class="q">please</span>  <span class="q">download</span>  <span class="q">your</span>  <span class="q">own</span>  <span class="q">submission</span> <span class="q">and</span>  <span class="q">thoroughly</span>  <span class="q">check</span>    <span class="q">that</span>   it  is  <span class="q">intact</span>.  <span class="q">You</span>  <span class="q">may</span> <span class="q">make</span>  <span class="q">multiple</span>  <span class="q">submissions</span>.    <span class="q">Only</span>   <span class="q">your</span>  <span class="q">last</span>  <span class="q">one</span>  <span class="q">will</span>  be <span class="q">marked</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></li>
+</ul>
+<div><div class="l" aria-hidden="true"><span>&#0049;</span>&#8288;<span>&#0051;</span>&#8288;<span>&#0057;</span>&#8288;<span>&#0056;</span>&#8288;<span>&#0051;</span>&#8288;<span>&#0053;</span>&#8288;<span>&#0050;</span>&#8288;<span>&#0049;</span></div></div><h2>Academic  Integrity</h2>
+<p><span class="q">Please</span>  <span class="q">see</span>    <span class="q">the</span>   <em><span class="q">Coding</span>  <span class="q">and</span>  <span class="q">Academic</span>  <span class="q">Integrity</span>  <span class="q">Guidelines</span></em> on  <span class="q">Blackboard</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<p>In  <span class="q">summary</span>,    <span class="q">this</span>   is  an  <span class="q">assessable</span>  <span class="q">task</span>.  If <span class="q">you</span>  <span class="q">use</span>  <span class="q">someone</span>    <span class="q">else</span>&rsquo;s   <span class="q">work</span>  or  <span class="q">assistance</span>  to  <span class="q">help</span> <span class="q">complete</span>  <span class="q">part</span>  of    <span class="q">the</span>   <span class="q">assignment</span>,  <span class="q">where</span>  it&rsquo;s  <span class="q">intended</span>  <span class="q">that</span> <span class="q">you</span>  <span class="q">complete</span>  it    <span class="q">yourself</span>,   <span class="q">you</span>  <span class="q">will</span>  <span class="q">have</span>  <span class="q">compromised</span>  <span class="q">the</span> <span class="q">assessment</span>.  <span class="q">You</span>  <span class="q">will</span>    <span class="q">not</span>   <span class="q">receive</span>  <span class="q">marks</span>  <span class="q">for</span>  <span class="q">any</span>  <span class="q">parts</span> of  <span class="q">your</span>  <span class="q">submission</span>    <span class="q">that</span>   <span class="q">are</span>  <span class="q">not</span>  <span class="q">your</span>  <span class="q">own</span>  <span class="q">original</span> <span class="q">work</span>.  <span class="q">Further</span>,  if    <span class="q">you</span>   do  <span class="q">not</span>  <em><span class="q">reference</span></em>  <span class="q">any</span>  <span class="q">external</span> <span class="q">sources</span>  <span class="q">that</span>  <span class="q">you</span>    <span class="q">use</span>,   <span class="q">you</span>  <span class="q">are</span>  <span class="q">committing</span>  <span class="q">plagiarism</span>  <span class="q">and</span>/or <span class="q">collusion</span>,  <span class="q">and</span>  <span class="q">penalties</span>    <span class="q">for</span>   <span class="q">academic</span>  <span class="q">misconduct</span>  <span class="q">may</span>  <span class="q">apply</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<p><span class="q">Curtin</span>  <span class="q">also</span> <span class="q">provides</span>  <span class="q">general</span>  <span class="q">advice</span>    on   <span class="q">academic</span>  <span class="q">integrity</span>  at  <a href="http://academicintegrity.curtin.edu.au"><span class="q">academicintegrity</span>.<span class="q">curtin</span>.<span class="q">edu</span>.au</a>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+<p><span class="q">The</span>  <span class="q">unit</span> <span class="q">coordinator</span>  <span class="q">may</span>  <span class="q">require</span>    <span class="q">you</span>   to  <span class="q">provide</span>  an  <span class="q">oral</span>  <span class="q">justification</span> of,  or  to    <span class="q">answer</span>   <span class="q">questions</span>  <span class="q">about</span>,  <span class="q">any</span>  <span class="q">piece</span>  of <span class="q">written</span>  <span class="q">work</span>  <span class="q">submitted</span>    in   <span class="q">this</span>  <span class="q">unit</span>.  <span class="q">Your</span>  <span class="q">response</span>(s)  <span class="q">may</span> be  <span class="q">referred</span>  to    as   <span class="q">evidence</span>  in  an  <span class="q">academic</span>  <span class="q">misconduct</span> <span class="q">inquiry</span>.<span><span aria-hidden="true" class="r"><span>
+̡̨̢̡̣̩̣̥</span></span></span></p>
+ </div> </body>
+</html>
