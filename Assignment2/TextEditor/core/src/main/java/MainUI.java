@@ -57,7 +57,7 @@ public class MainUI
         
         // Button event handlers.
         loadBtn.setOnAction(event -> loadSaveUI.load());
-        saveBtn.setOnAction(event -> showDialog2());
+        saveBtn.setOnAction(event -> loadSaveUI.save());
         btn3.setOnAction(event -> toolBar.getItems().add(new Button("ButtonN")));
         
         // TextArea event handlers & caret positioning.

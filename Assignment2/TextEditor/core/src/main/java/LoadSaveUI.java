@@ -93,4 +93,37 @@ public class LoadSaveUI
             }
         }
     }
+
+    public void save()
+    {
+        fileDialog.setTitle(bundle.getString("save_title"));
+
+        File file = fileDialog.showSaveDialog(stage);
+
+        if(file != null)
+        {
+            String encoding = getEncoding();
+
+            if(encoding != null)
+            {
+                // TO BE IMPLEMENTED
+
+                try
+                {
+                    fileIO.save(file, textArea.getText());
+                }
+                catch(IOException e)
+                {
+                    new Alert(
+                        Alert.AlertType.ERROR,
+                        String.format(
+                            bundle.getString("save_error"), 
+                            e.getClass().getName(), 
+                            e.getMessage()),
+                            new ButtonType(bundle.getString("close_btn"), ButtonBar.ButtonData.CANCEL_CLOSE)
+                    ).showAndWait();   
+                }
+            }
+        }
+    }
 }
