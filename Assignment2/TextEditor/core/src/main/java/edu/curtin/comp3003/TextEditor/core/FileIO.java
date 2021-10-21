@@ -1,3 +1,5 @@
+package edu.curtin.comp3003.TextEditor.core;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;

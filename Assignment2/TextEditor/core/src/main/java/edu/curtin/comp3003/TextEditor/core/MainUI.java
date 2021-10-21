@@ -1,3 +1,5 @@
+package edu.curtin.comp3003.TextEditor.core;
+
 import java.util.ResourceBundle;
 
 import javafx.collections.FXCollections;
@@ -16,7 +18,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
-public class MainUI 
+
+public class MainUI
 {
     private Stage stage;
     private ResourceBundle bundle;
@@ -40,9 +43,10 @@ public class MainUI
         Button loadBtn = new Button(bundle.getString("load_btn"));
         Button saveBtn = new Button(bundle.getString("save_btn"));
         Button pluginScriptBtn = new Button(bundle.getString("pluginScript_btn"));
+        Button btn2 = new Button("Button2");
         Button btn3 = new Button("Button3");
         ToolBar toolBar = new ToolBar(
-            loadBtn, saveBtn, new Separator(), pluginScriptBtn, btn3);
+            loadBtn, saveBtn, new Separator(), pluginScriptBtn, btn2, btn3);
         
         // Subtle user experience tweaks
         toolBar.setFocusTraversable(false);
@@ -58,6 +62,7 @@ public class MainUI
         // Button event handlers.
         loadBtn.setOnAction(event -> loadSaveUI.load());
         saveBtn.setOnAction(event -> loadSaveUI.save());
+        btn2.setOnAction(event -> showDialog2());
         btn3.setOnAction(event -> toolBar.getItems().add(new Button("ButtonN")));
         
         // TextArea event handlers & caret positioning.

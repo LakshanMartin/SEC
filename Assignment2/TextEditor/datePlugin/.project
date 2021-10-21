@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>core</name>
-	<comment>Project core created by Buildship.</comment>
+	<name>datePlugin</name>
+	<comment>Project datePlugin created by Buildship.</comment>
 	<projects>
 	</projects>
 	<buildSpec>
@@ -22,7 +22,7 @@
 	</natures>
 	<filteredResources>
 		<filter>
-			<id>1634655440732</id>
+			<id>1634777989114</id>
 			<name></name>
 			<type>30</type>
 			<matcher>

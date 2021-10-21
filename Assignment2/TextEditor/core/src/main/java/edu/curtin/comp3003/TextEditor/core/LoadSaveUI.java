@@ -1,3 +1,5 @@
+package edu.curtin.comp3003.TextEditor.core;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ResourceBundle;
