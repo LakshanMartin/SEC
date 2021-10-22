@@ -41,10 +41,12 @@ public class MainUI implements API
         Button loadBtn = new Button(bundle.getString("load_btn"));
         Button saveBtn = new Button(bundle.getString("save_btn"));
         Button pluginScriptBtn = new Button(bundle.getString("pluginScript_btn"));
-        Button btn2 = new Button("Button2");
-        Button btn3 = new Button("Button3");
         toolBar = new ToolBar(
-            loadBtn, saveBtn, pluginScriptBtn, new Separator(), btn2, btn3);
+            loadBtn, saveBtn, pluginScriptBtn);
+
+        // Plugin/Scripts List
+        ObservableList<String> list = FXCollections.observableArrayList();
+        ListView<String> listView = new ListView<>(list);
         
         // Subtle user experience tweaks
         toolBar.setFocusTraversable(false);
@@ -60,9 +62,7 @@ public class MainUI implements API
         // Button event handlers.
         loadBtn.setOnAction(event -> loadSaveUI.load());
         saveBtn.setOnAction(event -> loadSaveUI.save());
-        pluginScriptBtn.setOnAction(event -> pluginScriptDialog());
-        // btn2.setOnAction(event -> showDialog1());
-        btn3.setOnAction(event -> toolBar.getItems().add(new Button("New Btn")));
+        pluginScriptBtn.setOnAction(event -> pluginScriptDialog(list, listView));
         
         // TextArea event handlers & caret positioning.
         textArea.textProperty().addListener((object, oldValue, newValue) -> 
@@ -70,9 +70,6 @@ public class MainUI implements API
             System.out.println("caret position is " + textArea.getCaretPosition() + 
                                "; text is\n---\n" + newValue + "\n---\n");
         });
-        
-        // textArea.setText("This is some\ndemonstration text\nTry pressing F1, ctrl+b, ctrl+shift+b or alt+b.");
-        // textArea.selectRange(8, 16); // Select a range of text (and move the caret to the end)
         
         textArea.setPromptText("Enter text here...");
         mainBox.requestFocus(); // Remove focus from textArea so prompt text can be displayed
@@ -110,14 +107,11 @@ public class MainUI implements API
         stage.show();
     }
         
-    private void pluginScriptDialog()
+    private void pluginScriptDialog(ObservableList<String> list, ListView<String> listView)
     {
         Button addPluginBtn = new Button(bundle.getString("addPlugin_btn"));
         Button addScriptBtn = new Button(bundle.getString("addScript_btn"));
         ToolBar toolBar = new ToolBar(addPluginBtn, addScriptBtn);
-
-        ObservableList<String> list = FXCollections.observableArrayList();
-        ListView<String> listView = new ListView<>(list);
 
         addPluginBtn.setOnAction(event -> inputPlugin(
             bundle.getString("loadPlugin_txt"), 
@@ -173,6 +167,7 @@ public class MainUI implements API
     public void createDateBtn() 
     {        
         Button pluginBtn = new Button(bundle.getString("date_btn"));
+        toolBar.getItems().addAll(new Separator());
         toolBar.getItems().add(pluginBtn);
 
         pluginBtn.setOnAction((event) -> 
@@ -191,6 +186,7 @@ public class MainUI implements API
     public void createFindBtn()
     {
         Button findBtn = new Button(bundle.getString("find_btn"));
+        toolBar.getItems().addAll(new Separator());
         toolBar.getItems().add(findBtn);
 
         findBtn.setOnAction(event -> inputSearchTerm(
@@ -221,12 +217,20 @@ public class MainUI implements API
         {
             // REFERENCED MATERIAL ----------------------------------------------
             Pattern pattern = Pattern.compile("\\b" + inputStr + "\\b");
-            Matcher matcher = pattern.matcher(textArea.getText());
+
+            int caretPosition = textArea.getCaretPosition();
+            
+            // Isolate textArea from current caret position
+            String fromCaret = textArea.getText().substring(caretPosition);
+
+            Matcher matcher = pattern.matcher(fromCaret);
             boolean found = matcher.find(0);
 
             if(found)
             {
-                textArea.selectRange(matcher.start(), matcher.end());
+                // Add caretPosition to account for substring used for pattern.matcher
+                textArea.selectRange(matcher.start() + caretPosition, matcher.end() + caretPosition);
+                textArea.requestFocus();
             }
             // END OF REFERENCED MATERIAL----------------------------------------
         }
