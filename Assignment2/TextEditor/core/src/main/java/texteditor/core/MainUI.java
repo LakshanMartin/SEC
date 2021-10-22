@@ -3,6 +3,7 @@ package texteditor.core;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.time.LocalDate;
 import java.util.ResourceBundle;
 
 import texteditor.API.*;
@@ -20,9 +21,8 @@ public class MainUI implements API
     private Stage stage;
     private ResourceBundle bundle;
     private LoadSaveUI loadSaveUI;
-    // private Reflection reflection;
     private TextArea textArea;
-    ToolBar toolBar;
+    private ToolBar toolBar;
 
     public MainUI(Stage stage, ResourceBundle bundle, LoadSaveUI loadSaveUI, TextArea textArea) 
     {
@@ -116,19 +116,17 @@ public class MainUI implements API
         Button addScriptBtn = new Button(bundle.getString("addScript_btn"));
         ToolBar toolBar = new ToolBar(addPluginBtn, addScriptBtn);
 
+        ObservableList<String> list = FXCollections.observableArrayList();
+        ListView<String> listView = new ListView<>(list);
+
         addPluginBtn.setOnAction(event -> inputPlugin(
             bundle.getString("loadPlugin_txt"), 
-            bundle.getString("enterClass_txt")));
+            bundle.getString("enterClass_txt"),
+            list));
         
         // addScriptBtn.setOnAction(event -> inputPlugin(
         //     bundle.getString("loadScript_txt"), 
         //     bundle.getString("enterClass_txt")));
-
-        ObservableList<String> list = FXCollections.observableArrayList();
-        ListView<String> listView = new ListView<>(list);        
-        list.add("Item 1");
-        list.add("Item 2");
-        list.add("Item 3");        
         
         BorderPane box = new BorderPane();
         box.setTop(toolBar);
@@ -142,7 +140,7 @@ public class MainUI implements API
         dialog.showAndWait();
     }
 
-    private void inputPlugin(String title, String headerText)
+    private void inputPlugin(String title, String headerText, ObservableList<String> list)
     {
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle(title);
@@ -150,18 +148,22 @@ public class MainUI implements API
 
         String inputStr = dialog.showAndWait().orElse(null);
 
+        Plugin pluginObj;
+
         if(inputStr != null)
         {
             new Alert(
                 Alert.AlertType.INFORMATION,
                 "You entered '" + inputStr + "'",
-                ButtonType.OK).showAndWait();
+                ButtonType.OK)
+                .showAndWait();
 
             try 
             {
                 Reflection reflection = new Reflection();
-                Plugin pluginObj = (Plugin)reflection.getReflection(inputStr);
+                pluginObj = (Plugin)reflection.getReflection(inputStr);
                 pluginObj.start(this);
+                list.add(pluginObj.getClass().getSimpleName());
             } 
             catch(ReflectionException e) 
             {
@@ -174,17 +176,24 @@ public class MainUI implements API
     }   
 
     @Override
-    public void generateDateBtn(String btnName) 
+    public void createDateBtn() 
     {        
-        Button pluginButton = new Button(btnName);
+        Button pluginButton = new Button(bundle.getString("date_btn"));
         toolBar.getItems().add(pluginButton);
 
-        // pluginButton.setOnAction(event -> clickAction);
+        pluginButton.setOnAction((event) -> 
+        {
+            StringBuilder contents = new StringBuilder(textArea.getText());
+
+            contents.append(LocalDate.now());
+
+            textArea.setText(contents.toString());
+        });
     }
 
     @Override
-    public void printCurrentDate()
+    public void createFindBtn()
     {
-
+        
     }
 }

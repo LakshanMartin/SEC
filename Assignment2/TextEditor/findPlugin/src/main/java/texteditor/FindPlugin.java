@@ -2,13 +2,13 @@ package texteditor;
 
 import texteditor.API.*;
 
-public class DatePlugin implements Plugin
+public class FindPlugin implements Plugin
 {
-    public DatePlugin() {}
+    public FindPlugin() {}
 
     @Override
     public void start(API api) 
     {
-        api.createDateBtn(); 
+        
     }
 }
