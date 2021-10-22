@@ -41,9 +41,10 @@ dependencies {
     testImplementation 'junit:junit:4.12'
 
     implementation project(':api')
+    implementation project(':datePlugin')
 }
 
 application {
     // Define the main class for the application
-    mainClassName = 'edu.curtin.comp3003.TextEditor.core.App'
+    mainClassName = 'texteditor.core.App'
 }

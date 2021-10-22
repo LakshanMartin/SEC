@@ -1,30 +1,28 @@
-package edu.curtin.comp3003.TextEditor.core;
+package texteditor.core;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ResourceBundle;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import texteditor.API.*;
+
+import javafx.collections.*;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.ListView;
-import javafx.scene.control.Separator;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextInputDialog;
-import javafx.scene.control.ToolBar;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 
-public class MainUI
+public class MainUI implements API
 {
     private Stage stage;
     private ResourceBundle bundle;
     private LoadSaveUI loadSaveUI;
+    // private Reflection reflection;
     private TextArea textArea;
+    ToolBar toolBar;
 
     public MainUI(Stage stage, ResourceBundle bundle, LoadSaveUI loadSaveUI, TextArea textArea) 
     {
@@ -39,14 +37,14 @@ public class MainUI
         stage.setTitle(bundle.getString("main_title"));
         stage.setMinWidth(800);
 
-        // Create toolbar
+        // Create default toolbar
         Button loadBtn = new Button(bundle.getString("load_btn"));
         Button saveBtn = new Button(bundle.getString("save_btn"));
         Button pluginScriptBtn = new Button(bundle.getString("pluginScript_btn"));
         Button btn2 = new Button("Button2");
         Button btn3 = new Button("Button3");
-        ToolBar toolBar = new ToolBar(
-            loadBtn, saveBtn, new Separator(), pluginScriptBtn, btn2, btn3);
+        toolBar = new ToolBar(
+            loadBtn, saveBtn, pluginScriptBtn, new Separator(), btn2, btn3);
         
         // Subtle user experience tweaks
         toolBar.setFocusTraversable(false);
@@ -62,8 +60,9 @@ public class MainUI
         // Button event handlers.
         loadBtn.setOnAction(event -> loadSaveUI.load());
         saveBtn.setOnAction(event -> loadSaveUI.save());
-        btn2.setOnAction(event -> showDialog2());
-        btn3.setOnAction(event -> toolBar.getItems().add(new Button("ButtonN")));
+        pluginScriptBtn.setOnAction(event -> pluginScriptDialog());
+        // btn2.setOnAction(event -> showDialog1());
+        btn3.setOnAction(event -> toolBar.getItems().add(new Button("New Btn")));
         
         // TextArea event handlers & caret positioning.
         textArea.textProperty().addListener((object, oldValue, newValue) -> 
@@ -111,38 +110,20 @@ public class MainUI
         stage.show();
     }
         
-    private void showDialog1()
+    private void pluginScriptDialog()
     {
-        // TextInputDialog is a subclass of Dialog that just presents a single text field.
+        Button addPluginBtn = new Button(bundle.getString("addPlugin_btn"));
+        Button addScriptBtn = new Button(bundle.getString("addScript_btn"));
+        ToolBar toolBar = new ToolBar(addPluginBtn, addScriptBtn);
+
+        addPluginBtn.setOnAction(event -> inputPlugin(
+            bundle.getString("loadPlugin_txt"), 
+            bundle.getString("enterClass_txt")));
         
-        var dialog = new TextInputDialog();
-        dialog.setTitle("Text entry dialog box");
-        dialog.setHeaderText("Enter text");
-        
-        // 'showAndWait()' opens the dialog and waits for the user to press the 'OK' or 'Cancel' button. It returns an Optional, which is a whole other discussion, but we can call 'orElse(null)' on that to get the actual string entered if the user pressed 'OK', or null if the user pressed 'Cancel'.
-        
-        var inputStr = dialog.showAndWait().orElse(null);
-        if(inputStr != null)
-        {
-            // Alert is another specialised dialog just for displaying a quick message.
-            new Alert(
-                Alert.AlertType.INFORMATION,
-                "You entered '" + inputStr + "'",
-                ButtonType.OK).showAndWait();
-        }
-    }
-        
-    private void showDialog2()
-    {        
-        Button addBtn = new Button("Add...");
-        Button removeBtn = new Button("Remove...");
-        ToolBar toolBar = new ToolBar(addBtn, removeBtn);
-        
-        addBtn.setOnAction(event -> new Alert(Alert.AlertType.INFORMATION, "Add...", ButtonType.OK).showAndWait());
-        removeBtn.setOnAction(event -> new Alert(Alert.AlertType.INFORMATION, "Remove...", ButtonType.OK).showAndWait());
-        
-        // FYI: 'ObservableList' inherits from the ordinary List interface, but also works as a subject for any 'observer-pattern' purposes; e.g., to allow an on-screen ListView to display any changes made to the list as they are made.
-        
+        // addScriptBtn.setOnAction(event -> inputPlugin(
+        //     bundle.getString("loadScript_txt"), 
+        //     bundle.getString("enterClass_txt")));
+
         ObservableList<String> list = FXCollections.observableArrayList();
         ListView<String> listView = new ListView<>(list);        
         list.add("Item 1");
@@ -154,10 +135,56 @@ public class MainUI
         box.setCenter(listView);
         
         Dialog dialog = new Dialog();
-        dialog.setTitle("List of things");
-        dialog.setHeaderText("Here's a list of things");
+        dialog.setTitle(bundle.getString("pluginScript_title"));
+        dialog.setHeaderText(bundle.getString("pluginScript_txt"));
         dialog.getDialogPane().setContent(box);
         dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
         dialog.showAndWait();
+    }
+
+    private void inputPlugin(String title, String headerText)
+    {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle(title);
+        dialog.setHeaderText(headerText);
+
+        String inputStr = dialog.showAndWait().orElse(null);
+
+        if(inputStr != null)
+        {
+            new Alert(
+                Alert.AlertType.INFORMATION,
+                "You entered '" + inputStr + "'",
+                ButtonType.OK).showAndWait();
+
+            try 
+            {
+                Reflection reflection = new Reflection();
+                Plugin pluginObj = (Plugin)reflection.getReflection(inputStr);
+                pluginObj.start(this);
+            } 
+            catch(ReflectionException e) 
+            {
+                new Alert(
+                    Alert.AlertType.INFORMATION, 
+                    e.getMessage(),
+                    ButtonType.OK).showAndWait();
+            }
+        }
+    }   
+
+    @Override
+    public void generateDateBtn(String btnName) 
+    {        
+        Button pluginButton = new Button(btnName);
+        toolBar.getItems().add(pluginButton);
+
+        // pluginButton.setOnAction(event -> clickAction);
+    }
+
+    @Override
+    public void printCurrentDate()
+    {
+
     }
 }

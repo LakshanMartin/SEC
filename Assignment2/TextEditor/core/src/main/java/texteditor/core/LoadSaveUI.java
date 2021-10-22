@@ -1,4 +1,4 @@
-package edu.curtin.comp3003.TextEditor.core;
+package texteditor.core;
 
 import java.io.File;
 import java.io.IOException;
