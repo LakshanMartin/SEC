@@ -8,7 +8,7 @@
  */
 
 // Sub-project Names
-include 'core', 'api', 'datePlugin'
+include 'core', 'api', 'datePlugin', 'findPlugin'
 
 // Project Name
 rootProject.name = 'TextEditor'

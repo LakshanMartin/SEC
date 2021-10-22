@@ -9,6 +9,6 @@ public class FindPlugin implements Plugin
     @Override
     public void start(API api) 
     {
-        
+        api.createFindBtn();
     }
 }

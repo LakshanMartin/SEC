@@ -42,6 +42,7 @@ dependencies {
 
     implementation project(':api')
     implementation project(':datePlugin')
+    implementation project(':findPlugin')
 }
 
 application {

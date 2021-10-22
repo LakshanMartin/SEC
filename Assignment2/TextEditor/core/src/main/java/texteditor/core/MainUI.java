@@ -1,10 +1,10 @@
 package texteditor.core;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import texteditor.API.*;
 
@@ -152,12 +152,6 @@ public class MainUI implements API
 
         if(inputStr != null)
         {
-            new Alert(
-                Alert.AlertType.INFORMATION,
-                "You entered '" + inputStr + "'",
-                ButtonType.OK)
-                .showAndWait();
-
             try 
             {
                 Reflection reflection = new Reflection();
@@ -178,14 +172,16 @@ public class MainUI implements API
     @Override
     public void createDateBtn() 
     {        
-        Button pluginButton = new Button(bundle.getString("date_btn"));
-        toolBar.getItems().add(pluginButton);
+        Button pluginBtn = new Button(bundle.getString("date_btn"));
+        toolBar.getItems().add(pluginBtn);
 
-        pluginButton.setOnAction((event) -> 
+        pluginBtn.setOnAction((event) -> 
         {
             StringBuilder contents = new StringBuilder(textArea.getText());
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern(
+                bundle.getString("date_format"));
 
-            contents.append(LocalDate.now());
+            contents.append(dtf.format(LocalDate.now()));
 
             textArea.setText(contents.toString());
         });
@@ -194,6 +190,45 @@ public class MainUI implements API
     @Override
     public void createFindBtn()
     {
-        
+        Button findBtn = new Button(bundle.getString("find_btn"));
+        toolBar.getItems().add(findBtn);
+
+        findBtn.setOnAction(event -> inputSearchTerm(
+            bundle.getString("find_title"), 
+            bundle.getString("find_txt")));
+    }
+
+    /**
+     * Prompt user to enter a search term and highlight next occurrence of term
+     * within text editor after current caret position
+     * 
+     * REFERENCE: purring pigeon, 2017. "How to implement ctrl+f in a javafx text area".
+     *            StackOverflow. 
+     *            https://stackoverflow.com/questions/42790255/how-to-implement-ctrlf-in-a-javafx-text-area?rq=1 (accessed 23/10/21)
+     * 
+     * @param title
+     * @param headerText
+     */
+    private void inputSearchTerm(String title, String headerText)
+    {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle(title);
+        dialog.setHeaderText(headerText);
+
+        String inputStr = dialog.showAndWait().orElse(null);
+
+        if(inputStr != null && !textArea.getText().isEmpty())
+        {
+            // REFERENCED MATERIAL ----------------------------------------------
+            Pattern pattern = Pattern.compile("\\b" + inputStr + "\\b");
+            Matcher matcher = pattern.matcher(textArea.getText());
+            boolean found = matcher.find(0);
+
+            if(found)
+            {
+                textArea.selectRange(matcher.start(), matcher.end());
+            }
+            // END OF REFERENCED MATERIAL----------------------------------------
+        }
     }
 }
