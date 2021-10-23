@@ -9,6 +9,6 @@ public class DatePlugin implements Plugin
     @Override
     public void start(API api) 
     {
-        api.createDateBtn(); 
+        api.createBtn("date_btn", () -> api.printDate()); 
     }
 }

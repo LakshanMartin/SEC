@@ -23,6 +23,7 @@ public class MainUI implements API
     private LoadSaveUI loadSaveUI;
     private TextArea textArea;
     private ToolBar toolBar;
+    private BtnCallback hotKeyMethod;
 
     public MainUI(Stage stage, ResourceBundle bundle, LoadSaveUI loadSaveUI, TextArea textArea) 
     {
@@ -88,6 +89,10 @@ public class MainUI implements API
             {
                 new Alert(Alert.AlertType.INFORMATION, "F1", ButtonType.OK).showAndWait();
             }
+            else if(key == KeyCode.F3 && hotKeyMethod != null)
+            {
+                hotKeyMethod.callback();
+            }
             else if(ctrl && shift && key == KeyCode.B)
             {
                 new Alert(Alert.AlertType.INFORMATION, "ctrl+shift+b", ButtonType.OK).showAndWait();
@@ -113,7 +118,7 @@ public class MainUI implements API
         Button addScriptBtn = new Button(bundle.getString("addScript_btn"));
         ToolBar toolBar = new ToolBar(addPluginBtn, addScriptBtn);
 
-        addPluginBtn.setOnAction(event -> inputPlugin(
+        addPluginBtn.setOnAction(event -> loadPlugin(
             bundle.getString("loadPlugin_txt"), 
             bundle.getString("enterClass_txt"),
             list));
@@ -134,7 +139,7 @@ public class MainUI implements API
         dialog.showAndWait();
     }
 
-    private void inputPlugin(String title, String headerText, ObservableList<String> list)
+    private void loadPlugin(String title, String headerText, ObservableList<String> list)
     {
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle(title);
@@ -155,6 +160,7 @@ public class MainUI implements API
             } 
             catch(ReflectionException e) 
             {
+                // Display error message
                 new Alert(
                     Alert.AlertType.INFORMATION, 
                     e.getMessage(),
@@ -164,34 +170,31 @@ public class MainUI implements API
     }   
 
     @Override
-    public void createDateBtn() 
+    public void createBtn(String btnName, BtnCallback obj) 
     {        
-        Button pluginBtn = new Button(bundle.getString("date_btn"));
+        Button pluginBtn = new Button(bundle.getString(btnName));
         toolBar.getItems().addAll(new Separator());
         toolBar.getItems().add(pluginBtn);
 
-        pluginBtn.setOnAction((event) -> 
-        {
-            StringBuilder contents = new StringBuilder(textArea.getText());
-            DateTimeFormatter dtf = DateTimeFormatter.ofPattern(
-                bundle.getString("date_format"));
-
-            contents.append(dtf.format(LocalDate.now()));
-
-            textArea.setText(contents.toString());
-        });
+        pluginBtn.setOnAction((event) -> obj.callback());
     }
 
     @Override
-    public void createFindBtn()
+    public void createHotKey(BtnCallback callback)
     {
-        Button findBtn = new Button(bundle.getString("find_btn"));
-        toolBar.getItems().addAll(new Separator());
-        toolBar.getItems().add(findBtn);
+        hotKeyMethod = callback;
+    }
 
-        findBtn.setOnAction(event -> inputSearchTerm(
-            bundle.getString("find_title"), 
-            bundle.getString("find_txt")));
+    @Override
+    public void printDate()
+    {
+        StringBuilder contents = new StringBuilder(textArea.getText());
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(
+            bundle.getString("date_format"));
+
+        contents.append(dtf.format(LocalDate.now()));
+
+        textArea.setText(contents.toString());
     }
 
     /**
@@ -205,18 +208,19 @@ public class MainUI implements API
      * @param title
      * @param headerText
      */
-    private void inputSearchTerm(String title, String headerText)
+    @Override
+    public void findTerm()
     {
         TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle(title);
-        dialog.setHeaderText(headerText);
+        dialog.setTitle(bundle.getString("find_title"));
+        dialog.setHeaderText(bundle.getString("find_txt"));
 
         String inputStr = dialog.showAndWait().orElse(null);
 
         if(inputStr != null && !textArea.getText().isEmpty())
         {
             // REFERENCED MATERIAL ----------------------------------------------
-            Pattern pattern = Pattern.compile("\\b" + inputStr + "\\b");
+            Pattern pattern = Pattern.compile(inputStr);
 
             int caretPosition = textArea.getCaretPosition();
             
@@ -224,7 +228,7 @@ public class MainUI implements API
             String fromCaret = textArea.getText().substring(caretPosition);
 
             Matcher matcher = pattern.matcher(fromCaret);
-            boolean found = matcher.find(0);
+            boolean found = matcher.find();
 
             if(found)
             {
