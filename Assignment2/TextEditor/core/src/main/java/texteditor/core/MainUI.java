@@ -1,5 +1,7 @@
 package texteditor.core;
 
+import java.text.Normalizer;
+import java.text.Normalizer.Form;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
@@ -227,13 +229,19 @@ public class MainUI implements API
             // Isolate textArea from current caret position
             String fromCaret = textArea.getText().substring(caretPosition);
 
-            Matcher matcher = pattern.matcher(fromCaret);
+            // Normalise content
+            String normText = Normalizer.normalize(fromCaret, Normalizer.Form.NFKC);
+
+            // Matcher matcher = pattern.matcher(fromCaret);
+            Matcher matcher = pattern.matcher(normText);
             boolean found = matcher.find();
 
             if(found)
             {
                 // Add caretPosition to account for substring used for pattern.matcher
-                textArea.selectRange(matcher.start() + caretPosition, matcher.end() + caretPosition);
+                textArea.selectRange(
+                    matcher.start() + caretPosition, 
+                    matcher.end() + caretPosition);
                 textArea.requestFocus();
             }
             // END OF REFERENCED MATERIAL----------------------------------------
