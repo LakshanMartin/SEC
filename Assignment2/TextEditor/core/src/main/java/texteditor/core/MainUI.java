@@ -1,7 +1,6 @@
 package texteditor.core;
 
 import java.text.Normalizer;
-import java.text.Normalizer.Form;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
@@ -25,7 +24,7 @@ public class MainUI implements API
     private LoadSaveUI loadSaveUI;
     private TextArea textArea;
     private ToolBar toolBar;
-    private BtnCallback hotKeyMethod;
+    private Callback hotKeyMethod;
 
     public MainUI(Stage stage, ResourceBundle bundle, LoadSaveUI loadSaveUI, TextArea textArea) 
     {
@@ -172,7 +171,7 @@ public class MainUI implements API
     }   
 
     @Override
-    public void createBtn(String btnName, BtnCallback obj) 
+    public void createBtn(String btnName, Callback obj) 
     {        
         Button pluginBtn = new Button(bundle.getString(btnName));
         toolBar.getItems().addAll(new Separator());
@@ -182,7 +181,7 @@ public class MainUI implements API
     }
 
     @Override
-    public void createHotKey(BtnCallback callback)
+    public void createHotKey(Callback callback)
     {
         hotKeyMethod = callback;
     }

@@ -1,6 +1,6 @@
 package texteditor.API;
 
-public interface BtnCallback 
+public interface Callback 
 {
     void callback();
 }

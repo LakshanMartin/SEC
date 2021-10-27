@@ -1,0 +1,78 @@
+PARSER_BEGIN(MyParser)
+package texteditor;
+public class MyParser 
+{
+}
+PARSER_END(MyParser)
+
+SKIP: { " " | "\t" | "\n" }
+
+TOKEN: { 
+    < MAINKEY: "ctrl+" | "shift+" | "alt+" |
+               "ctrl+shift+" | "ctrl+alt+" | "shift+ctrl+" | "shift+alt+" | "alt+ctrl+" | "alt+shift+" |
+               "ctrl+shift+alt+" | "ctrl+alt+shift+" | "shift+ctrl+alt+" | "shift+alt+ctrl+" | 
+               "alt+ctrl+shift+" | "alt+shift+ctrl+" > |          
+    < CUSTOMKEY: ["a" - "z"] > | 
+    < EQUALS: "=" > |
+    < FUNC: "insert" | 
+            "delete" > |
+    < STRING: "\""(~["\""])*"\"" > |
+    < POSITION: "at start of line" | "at caret" > 
+}
+
+String keybind() :
+{
+    Token keybind;
+}
+{
+    keybind = <MAINKEY>
+    {
+        return keybind.image;
+    }
+}
+
+String customKey() :
+{
+    Token custom;
+}
+{
+    custom = <CUSTOMKEY>
+    {
+        return custom.image;
+    }
+}
+
+String func() :
+{
+    Token func;
+}
+{
+    <EQUALS>
+
+    func = <FUNC>
+    {
+        return func.image;
+    }
+}
+
+String text() :
+{
+    Token text;
+}
+{
+    text = <STRING>
+    {
+        return text.image;
+    }
+}
+
+String pos():
+{
+    Token pos;
+}
+{
+    pos = <POSITION>
+    {
+        return pos.image;
+    }
+}
