@@ -1,5 +1,5 @@
 PARSER_BEGIN(MyParser)
-package texteditor;
+package texteditor.core;
 public class MyParser 
 {
 }

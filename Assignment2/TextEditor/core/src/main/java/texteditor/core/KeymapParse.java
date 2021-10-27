@@ -1,40 +1,39 @@
 package texteditor.core;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 public class KeymapParse 
 {
-    public static void main(String[] args) 
+    public KeymapParse() {}
+
+    public List<Keybind> startParse() throws IOException, ParseException
     {
-        try
-        {
-            MyParser parser = new MyParser(new FileInputStream("keymap"));
+        List<Keybind> keybindList = new ArrayList<>();
+        long lineCount = 0;
+        Path path = Paths.get("keymap");
+        lineCount = Files.lines(path).count();
+        
+        MyParser parser = new MyParser(new FileInputStream("keymap"));
 
-            for(int i = 0; i <11; i++)
-            {
-                System.out.println("KEYBIND #" + (i+1));
-                String mainKey = parser.keybind();
-                String customKey = parser.customKey();
-                String func = parser.func();
-                String text = parser.text();
-                String pos = parser.pos();
-
-                Keybind obj = new Keybind(mainKey, customKey, func, text, pos);
-                System.out.println("Keybind from obj: " + obj.getMainKey() + obj.getCustomKey());
-                System.out.println("Func from obj: " + obj.getFunc());
-                System.out.println("Text from obj: " + obj.getText());
-                System.out.println("Count space: " + obj.getText().length());
-                System.out.println("Pos from obj: " + obj.getPos());
-                
-                
-                System.out.println("\n");
-            }
-        }
-        catch(FileNotFoundException | ParseException e)
+        for(int i = 0; i <lineCount; i++)
         {
-            System.out.println("Parsing error!");
-            System.out.println(e.getMessage());
+            String mainKey = parser.keybind();
+            String customKey = parser.customKey();
+            String func = parser.func();
+            String text = parser.text();
+            String pos = parser.pos();
+
+            Keybind keybind = new Keybind(mainKey, customKey, func, text, pos);
+
+            keybindList.add(keybind);
         }
+
+        return keybindList;
     }
 }

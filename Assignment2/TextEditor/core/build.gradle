@@ -36,7 +36,7 @@ javacc {
     configs {
         createmyparser {
             inputFile = file('src/main/jj/parser.jj')
-            packageName = 'texteditor'
+            packageName = 'texteditor.core'
         }
     }
 }

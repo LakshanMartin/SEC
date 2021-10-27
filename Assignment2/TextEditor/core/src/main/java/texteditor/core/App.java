@@ -4,10 +4,15 @@
 
 package texteditor.core;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
 import javafx.application.Application;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 
@@ -47,10 +52,28 @@ public class App extends Application
             bundle = ResourceBundle.getBundle("bundle");
         }
         
+        KeymapParse keymap = new KeymapParse();
         TextArea textArea = new TextArea();
         FileIO fileIO = new FileIO();
         LoadSaveUI loadSaveUI = new LoadSaveUI(stage, bundle, fileIO, textArea);
-        new MainUI(stage, bundle, loadSaveUI, textArea).display();
+        MainUI mainUI = new MainUI(stage, bundle, loadSaveUI, textArea, keymap);
+
+        try
+        {
+            mainUI.parseKeymap();
+            mainUI.display();
+        }
+        catch(IOException | ParseException e)
+        {
+            new Alert(
+                        Alert.AlertType.ERROR,
+                        String.format(
+                            bundle.getString("parse_error"), 
+                            e.getClass().getName(), 
+                            e.getMessage()),
+                            new ButtonType(bundle.getString("close_btn"), ButtonBar.ButtonData.CANCEL_CLOSE)
+                    ).showAndWait(); 
+        }
     }
     
     

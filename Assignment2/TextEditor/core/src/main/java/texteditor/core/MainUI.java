@@ -1,8 +1,10 @@
 package texteditor.core;
 
+import java.io.IOException;
 import java.text.Normalizer;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,15 +25,37 @@ public class MainUI implements API
     private ResourceBundle bundle;
     private LoadSaveUI loadSaveUI;
     private TextArea textArea;
+    private KeymapParse keymap;
+    private List<Keybind> keybindList;
     private ToolBar toolBar;
     private Callback hotKeyMethod;
 
-    public MainUI(Stage stage, ResourceBundle bundle, LoadSaveUI loadSaveUI, TextArea textArea) 
+    public MainUI(Stage stage, ResourceBundle bundle, LoadSaveUI loadSaveUI, TextArea textArea, KeymapParse keymap) 
     {
         this.stage = stage;
         this.bundle = bundle;
         this.loadSaveUI = loadSaveUI;
         this.textArea = textArea;
+        this.keymap = keymap;
+    }
+
+    public void parseKeymap() throws IOException, ParseException
+    {
+        keybindList = keymap.startParse();
+
+        int i = 1;
+        for(Keybind keybind : keybindList)
+        {
+            System.out.println("KEYBIND #" + i);
+            System.out.println("Keybind from obj: " + keybind.getMainKey() + keybind.getCustomKey());
+            System.out.println("Func from obj: " + keybind.getFunc());
+            System.out.println("Text from obj: " + keybind.getText());
+            System.out.println("Count space: " + keybind.getText().length());
+            System.out.println("Pos from obj: " + keybind.getPos());
+            System.out.println("\n");
+
+            i++;
+        }
     }
 
     public void display()
