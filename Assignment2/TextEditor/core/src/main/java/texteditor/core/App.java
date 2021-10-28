@@ -61,7 +61,6 @@ public class App extends Application
         try
         {
             mainUI.parseKeymap();
-            mainUI.display();
         }
         catch(IOException | ParseException e)
         {
@@ -74,8 +73,8 @@ public class App extends Application
                             new ButtonType(bundle.getString("close_btn"), ButtonBar.ButtonData.CANCEL_CLOSE)
                     ).showAndWait(); 
         }
-    }
-    
-    
+
+        mainUI.display();
+    } 
 }
 

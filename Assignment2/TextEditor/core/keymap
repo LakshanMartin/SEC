@@ -1,5 +1,5 @@
 ctrl+i       = insert "    " at start of line
-ctrl+shift+i = delete "    " at start of line
+shift+i = delete "    " at start of line
 ctrl+d       = insert "//" at start of line
 ctrl+shift+d = delete "//" at start of line
 alt+t        = insert "/*TODO*/" at caret

@@ -34,7 +34,7 @@ public class Keybind
 
     public String getText()
     {
-        return text;
+        return text.substring(1, text.length()-1);
     }
 
     public String getPos()

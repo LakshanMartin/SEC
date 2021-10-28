@@ -1,6 +1,7 @@
 package texteditor.core;
 
 import java.io.IOException;
+import java.security.Key;
 import java.text.Normalizer;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -10,11 +11,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import texteditor.API.*;
-
+import javafx.application.Platform;
 import javafx.collections.*;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
@@ -99,6 +101,7 @@ public class MainUI implements API
         
         textArea.setPromptText("Enter text here...");
         mainBox.requestFocus(); // Remove focus from textArea so prompt text can be displayed
+
         
         // Example global keypress handler.
         scene.setOnKeyPressed(keyEvent -> 
@@ -109,33 +112,217 @@ public class MainUI implements API
             boolean ctrl = keyEvent.isControlDown();
             boolean shift = keyEvent.isShiftDown();
             boolean alt = keyEvent.isAltDown();
+
+            setKeyBindings(keyEvent/*key, ctrl, shift, alt*/);
+
+
+
+            if(key == KeyCode.F3 && hotKeyMethod != null)
+            {
+                 hotKeyMethod.callback();
+            }
+            else if(key == KeyCode.ESCAPE)
+            {
+                // Added in case keybind uses 'Shift' key while within text area,
+                // which would capitalise a letter rather than activate keybind function
+                mainBox.requestFocus();
+            }
         
-            if(key == KeyCode.F1)
-            {
-                new Alert(Alert.AlertType.INFORMATION, "F1", ButtonType.OK).showAndWait();
-            }
-            else if(key == KeyCode.F3 && hotKeyMethod != null)
-            {
-                hotKeyMethod.callback();
-            }
-            else if(ctrl && shift && key == KeyCode.B)
-            {
-                new Alert(Alert.AlertType.INFORMATION, "ctrl+shift+b", ButtonType.OK).showAndWait();
-            }
-            else if(ctrl && key == KeyCode.B)
-            {
-                new Alert(Alert.AlertType.INFORMATION, "ctrl+b", ButtonType.OK).showAndWait();
-            }
-            else if(alt && key == KeyCode.B)
-            {
-                new Alert(Alert.AlertType.INFORMATION, "alt+b", ButtonType.OK).showAndWait();
-            }
+            // if(key == KeyCode.F1)
+            // {
+            //     new Alert(Alert.AlertType.INFORMATION, "F1", ButtonType.OK).showAndWait();
+            // }
+            // else if(key == KeyCode.F3 && hotKeyMethod != null)
+            // {
+            //     hotKeyMethod.callback();
+            // }
+            // else if(ctrl && shift && key == KeyCode.B)
+            // {
+            //     new Alert(Alert.AlertType.INFORMATION, "ctrl+shift+b", ButtonType.OK).showAndWait();
+            // }
+            // else if(ctrl && key == KeyCode.B)
+            // {
+            //     new Alert(Alert.AlertType.INFORMATION, "ctrl+b", ButtonType.OK).showAndWait();
+            // }
+            // else if(alt && key == KeyCode.B)
+            // {
+            //     new Alert(Alert.AlertType.INFORMATION, "alt+b", ButtonType.OK).showAndWait();
+            // }
         });
+
+
         
         stage.setScene(scene);
         stage.sizeToScene();
         stage.show();
     }
+
+    private void setKeyBindings(KeyEvent keyEvent/*KeyCode key, Boolean ctrl, Boolean shift, Boolean alt*/)
+    {
+        for(int i = 0; i < keybindList.size(); i++)
+        {
+            KeyCode key = keyEvent.getCode();
+            boolean ctrl = keyEvent.isControlDown();
+            boolean shift = keyEvent.isShiftDown();
+            boolean alt = keyEvent.isAltDown();
+
+            Keybind keybind = keybindList.get(i);
+            String mainKey = keybind.getMainKey();
+            String customKey = keybind.getCustomKey();
+            String func = keybind.getFunc();
+            String text = keybind.getText();
+            String pos = keybind.getPos();
+            KeyBindDetails details = new KeyBindDetails(customKey);
+            KeyCode keyCode = details.getKeyCode();
+
+            
+            switch(mainKey)
+            {
+                case "ctrl+":
+                    if(ctrl && !shift && !alt && key == keyCode)
+                    {
+                        if(func.equals("insert"))
+                        {
+                            if(pos.equals("at start of line"))
+                            {
+                                textArea.requestFocus();
+                                textArea.insertText(0, text);
+                            }
+                            else // "at caret"
+                            {
+                                textArea.requestFocus();
+                                textArea.insertText(textArea.getCaretPosition(), text);
+                            }
+                        }
+                        else // "delete"
+                        {
+                            if(pos.equals("at start of line"))
+                            {
+                                int len = text.length();
+                                String toFind = textArea.getText().substring(0, len);
+                                
+                                if(toFind.equals(text))
+                                {
+                                    textArea.requestFocus();
+                                    textArea.deleteText(0, len);
+                                }
+                            }
+                            else // "at caret"
+                            {
+                                int len = text.length();
+                                int caretPos = textArea.getCaretPosition();
+                                String toFind = textArea.getText().substring(caretPos, len);
+                                
+                                if(toFind.equals(text))
+                                {
+                                    textArea.requestFocus();
+                                    textArea.deleteText(caretPos, len);
+                                }
+                            }
+                        }
+                    }
+                break;
+
+                case "shift+":
+                    if(shift && !ctrl && !alt && key == keyCode)
+                    {
+                        if(func.equals("insert"))
+                        {
+                            if(pos.equals("at start of line"))
+                            {
+                                textArea.requestFocus();
+                                textArea.insertText(0, text);
+                            }
+                            else // "at caret"
+                            {
+                                textArea.requestFocus();
+                                textArea.insertText(textArea.getCaretPosition(), text);
+                            }
+                        }
+                        else // "delete"
+                        {
+                            if(pos.equals("at start of line"))
+                            {
+                                int len = text.length();
+                                String toFind = textArea.getText().substring(0, len);
+                                
+                                if(toFind.equals(text))
+                                {
+                                    textArea.requestFocus();
+                                    textArea.deleteText(0, len);
+                                }
+                            }
+                        }
+                    }
+                break;
+
+                case "alt+":
+                    if(alt && !ctrl && !shift && key == keyCode)
+                    {
+                        if(func.equals("insert"))
+                        {
+                            if(pos.equals("at start of line"))
+                            {
+                                textArea.requestFocus();
+                                textArea.insertText(0, text);
+                            }
+                            else // "at caret"
+                            {
+                                textArea.requestFocus();
+                                textArea.insertText(textArea.getCaretPosition(), text);
+                            }
+                        }
+                        else // "delete"
+                        {
+                            if(pos.equals("at start of line"))
+                            {
+                                int len = text.length();
+                                String toFind = textArea.getText().substring(0, len);
+                                
+                                if(toFind.equals(text))
+                                {
+                                    textArea.requestFocus();
+                                    textArea.deleteText(0, len);
+                                }
+                            }
+                            else // "at caret"
+                            {
+                                int len = text.length();
+                                int caretPos = textArea.getCaretPosition();
+                                
+                                if(textArea.getText().length() >= len)
+                                {
+                                    String toFind = textArea.getText().substring(caretPos, len);
+                                    
+                                    if(toFind.equals(text))
+                                    {
+                                        System.out.println("Found");
+                                        textArea.requestFocus();
+                                        textArea.deleteText(caretPos, len);
+                                    }
+                                    else
+                                    {
+                                        System.out.println("Not found");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                break;
+
+                case "ctrl+shift+": case "shift+ctrl+":
+                    if(ctrl && shift & key == keyCode)
+                    {
+                        new Alert(
+                            Alert.AlertType.INFORMATION, 
+                            ("ctrl+shift+" + customKey), 
+                            ButtonType.OK).
+                            showAndWait();
+                    }
+                break;
+            }
+        }
+    }   
         
     private void pluginScriptDialog(ObservableList<String> list, ListView<String> listView)
     {
