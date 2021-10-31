@@ -1,7 +1,6 @@
 package texteditor.core;
 
 import java.io.IOException;
-import java.security.Key;
 import java.text.Normalizer;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -11,7 +10,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import texteditor.API.*;
-import javafx.application.Platform;
 import javafx.collections.*;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -20,9 +18,14 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
-
+/**
+ * Class dedicated to the presentation of the user interface. All textual buttons
+ * and descriptions will be represented in the specific language entered as 
+ * an CLI argument.
+ */
 public class MainUI implements API
 {
+    // CLASS FIELDS
     private Stage stage;
     private ResourceBundle bundle;
     private LoadSaveUI loadSaveUI;
@@ -32,6 +35,7 @@ public class MainUI implements API
     private ToolBar toolBar;
     private Callback hotKeyMethod;
 
+    // CONSTRUCTOR
     public MainUI(Stage stage, ResourceBundle bundle, LoadSaveUI loadSaveUI, TextArea textArea, KeymapParse keymap) 
     {
         this.stage = stage;
@@ -41,25 +45,32 @@ public class MainUI implements API
         this.keymap = keymap;
     }
 
+    /**
+     * Start parsing the keymap and generate a list of keybinds to be implemented
+     * @throws IOException
+     * @throws ParseException
+     */
     public void parseKeymap() throws IOException, ParseException
     {
         keybindList = keymap.startParse();
 
-        int i = 1;
-        for(Keybind keybind : keybindList)
+        // Output to terminal to verify parsed keybinding
+        for(int i = 0; i < keybindList.size(); i++)
         {
-            System.out.println("KEYBIND #" + i);
-            System.out.println("Keybind from obj: " + keybind.getMainKey() + keybind.getCustomKey());
-            System.out.println("Func from obj: " + keybind.getFunc());
-            System.out.println("Text from obj: " + keybind.getText());
-            System.out.println("Count space: " + keybind.getText().length());
-            System.out.println("Pos from obj: " + keybind.getPos());
-            System.out.println("\n");
+            Keybind keybind = keybindList.get(i);
 
-            i++;
+            System.out.println("KEYBIND #" + (i+1));
+            System.out.println("Keybind keys: " + keybind.getMainKey() + keybind.getCustomKey());
+            System.out.println("Function: " + keybind.getFunc());
+            System.out.println("Text: " + keybind.getText());
+            System.out.println("Text position: " + keybind.getPos());
+            System.out.println("\n");
         }
     }
 
+    /**
+     * Construct UI elements
+     */
     public void display()
     {
         stage.setTitle(bundle.getString("main_title"));
@@ -99,8 +110,9 @@ public class MainUI implements API
                                "; text is\n---\n" + newValue + "\n---\n");
         });
         
-        textArea.setPromptText("Enter text here...");
-        mainBox.requestFocus(); // Remove focus from textArea so prompt text can be displayed
+        // Remove focus from textArea so prompt text can be displayed
+        textArea.setPromptText(bundle.getString("textPrompt_txt"));
+        mainBox.requestFocus(); 
 
         
         // Example global keypress handler.
@@ -109,14 +121,10 @@ public class MainUI implements API
             // See the documentation for the KeyCode class to see all the available keys.
             
             KeyCode key = keyEvent.getCode();
-            boolean ctrl = keyEvent.isControlDown();
-            boolean shift = keyEvent.isShiftDown();
-            boolean alt = keyEvent.isAltDown();
 
-            setKeyBindings(keyEvent/*key, ctrl, shift, alt*/);
+            setKeyBindings(keyEvent);
 
-
-
+            // Specific keybinding saved for FindPlugin
             if(key == KeyCode.F3 && hotKeyMethod != null)
             {
                  hotKeyMethod.callback();
@@ -127,38 +135,20 @@ public class MainUI implements API
                 // which would capitalise a letter rather than activate keybind function
                 mainBox.requestFocus();
             }
-        
-            // if(key == KeyCode.F1)
-            // {
-            //     new Alert(Alert.AlertType.INFORMATION, "F1", ButtonType.OK).showAndWait();
-            // }
-            // else if(key == KeyCode.F3 && hotKeyMethod != null)
-            // {
-            //     hotKeyMethod.callback();
-            // }
-            // else if(ctrl && shift && key == KeyCode.B)
-            // {
-            //     new Alert(Alert.AlertType.INFORMATION, "ctrl+shift+b", ButtonType.OK).showAndWait();
-            // }
-            // else if(ctrl && key == KeyCode.B)
-            // {
-            //     new Alert(Alert.AlertType.INFORMATION, "ctrl+b", ButtonType.OK).showAndWait();
-            // }
-            // else if(alt && key == KeyCode.B)
-            // {
-            //     new Alert(Alert.AlertType.INFORMATION, "alt+b", ButtonType.OK).showAndWait();
-            // }
         });
-
-
         
         stage.setScene(scene);
         stage.sizeToScene();
         stage.show();
     }
 
-    private void setKeyBindings(KeyEvent keyEvent/*KeyCode key, Boolean ctrl, Boolean shift, Boolean alt*/)
+    /**
+     * Establish keybinding as parsed from the keymap file
+     * @param keyEvent
+     */
+    private void setKeyBindings(KeyEvent keyEvent)
     {
+        // Set up new keybinding with each iteration
         for(int i = 0; i < keybindList.size(); i++)
         {
             KeyCode key = keyEvent.getCode();
@@ -172,9 +162,7 @@ public class MainUI implements API
             String func = keybind.getFunc();
             String text = keybind.getText();
             String pos = keybind.getPos();
-            KeyBindDetails details = new KeyBindDetails(customKey);
-            KeyCode keyCode = details.getKeyCode();
-
+            KeyCode keyCode = new KeyBindDetails(customKey).getKeyCode();
             
             switch(mainKey)
             {
@@ -187,6 +175,8 @@ public class MainUI implements API
                             {
                                 textArea.requestFocus();
                                 textArea.insertText(0, text);
+
+                                //textArea.
                             }
                             else // "at caret"
                             {
@@ -211,12 +201,24 @@ public class MainUI implements API
                             {
                                 int len = text.length();
                                 int caretPos = textArea.getCaretPosition();
-                                String toFind = textArea.getText().substring(caretPos, len);
                                 
-                                if(toFind.equals(text))
+                                if(textArea.getText().length() >= len)
                                 {
-                                    textArea.requestFocus();
-                                    textArea.deleteText(caretPos, len);
+                                    String toFind = textArea.getText().substring(caretPos, len);
+                                    System.out.println("Text to find: " + text);
+                                    System.out.println("Caret: " + caretPos);
+                                    System.out.println("Text length: " + len);
+
+                                    if(toFind.equals(text))
+                                    {
+                                        System.out.println("Found");
+                                        textArea.requestFocus();
+                                        textArea.deleteText(caretPos, len);
+                                    }
+                                    else
+                                    {
+                                        System.out.println("Not found");
+                                    }
                                 }
                             }
                         }
@@ -250,6 +252,30 @@ public class MainUI implements API
                                 {
                                     textArea.requestFocus();
                                     textArea.deleteText(0, len);
+                                }
+                            }
+                            else // "at caret"
+                            {
+                                int len = text.length();
+                                int caretPos = textArea.getCaretPosition();
+                                
+                                if(textArea.getText().length() >= len)
+                                {
+                                    String toFind = textArea.getText().substring(caretPos, len);
+                                    System.out.println("Text to find: " + text);
+                                    System.out.println("Caret: " + caretPos);
+                                    System.out.println("Text length: " + len);
+
+                                    if(toFind.equals(text))
+                                    {
+                                        System.out.println("Found");
+                                        textArea.requestFocus();
+                                        textArea.deleteText(caretPos, len);
+                                    }
+                                    else
+                                    {
+                                        System.out.println("Not found");
+                                    }
                                 }
                             }
                         }
@@ -293,7 +319,10 @@ public class MainUI implements API
                                 if(textArea.getText().length() >= len)
                                 {
                                     String toFind = textArea.getText().substring(caretPos, len);
-                                    
+                                    System.out.println("Text to find: " + text);
+                                    System.out.println("Caret: " + caretPos);
+                                    System.out.println("Text length: " + len);
+
                                     if(toFind.equals(text))
                                     {
                                         System.out.println("Found");
@@ -311,19 +340,242 @@ public class MainUI implements API
                 break;
 
                 case "ctrl+shift+": case "shift+ctrl+":
-                    if(ctrl && shift & key == keyCode)
+                    if(ctrl && shift && !alt && key == keyCode)
                     {
-                        new Alert(
-                            Alert.AlertType.INFORMATION, 
-                            ("ctrl+shift+" + customKey), 
-                            ButtonType.OK).
-                            showAndWait();
+                        if(func.equals("insert"))
+                        {
+                            if(pos.equals("at start of line"))
+                            {
+                                textArea.requestFocus();
+                                textArea.insertText(0, text);
+                            }
+                            else // "at caret"
+                            {
+                                textArea.requestFocus();
+                                textArea.insertText(textArea.getCaretPosition(), text);
+                            }
+                        }
+                        else // "delete"
+                        {
+                            if(pos.equals("at start of line"))
+                            {
+                                int len = text.length();
+                                String toFind = textArea.getText().substring(0, len);
+                                
+                                if(toFind.equals(text))
+                                {
+                                    textArea.requestFocus();
+                                    textArea.deleteText(0, len);
+                                }
+                            }
+                            else // "at caret"
+                            {
+                                int len = text.length();
+                                int caretPos = textArea.getCaretPosition();
+                                
+                                if(textArea.getText().length() >= len)
+                                {
+                                    String toFind = textArea.getText().substring(caretPos, len);
+                                    System.out.println("Text to find: " + text);
+                                    System.out.println("Caret: " + caretPos);
+                                    System.out.println("Text length: " + len);
+
+                                    if(toFind.equals(text))
+                                    {
+                                        System.out.println("Found");
+                                        textArea.requestFocus();
+                                        textArea.deleteText(caretPos, len);
+                                    }
+                                    else
+                                    {
+                                        System.out.println("Not found");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                break;
+
+                case "ctrl+alt+": case "alt+ctrl+":
+                    if(ctrl && alt && !shift && key == keyCode)
+                    {
+                        if(func.equals("insert"))
+                        {
+                            if(pos.equals("at start of line"))
+                            {
+                                textArea.requestFocus();
+                                textArea.insertText(0, text);
+                            }
+                            else // "at caret"
+                            {
+                                textArea.requestFocus();
+                                textArea.insertText(textArea.getCaretPosition(), text);
+                            }
+                        }
+                        else // "delete"
+                        {
+                            if(pos.equals("at start of line"))
+                            {
+                                int len = text.length();
+                                String toFind = textArea.getText().substring(0, len);
+                                
+                                if(toFind.equals(text))
+                                {
+                                    textArea.requestFocus();
+                                    textArea.deleteText(0, len);
+                                }
+                            }
+                            else // "at caret"
+                            {
+                                int len = text.length();
+                                int caretPos = textArea.getCaretPosition();
+                                
+                                if(textArea.getText().length() >= len)
+                                {
+                                    String toFind = textArea.getText().substring(caretPos, len);
+                                    System.out.println("Text to find: " + text);
+                                    System.out.println("Caret: " + caretPos);
+                                    System.out.println("Text length: " + len);
+
+                                    if(toFind.equals(text))
+                                    {
+                                        System.out.println("Found");
+                                        textArea.requestFocus();
+                                        textArea.deleteText(caretPos, len);
+                                    }
+                                    else
+                                    {
+                                        System.out.println("Not found");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                break;
+
+                case "shift+alt+": case "alt+shift+":
+                    if(shift && alt && !ctrl && key == keyCode)
+                    {
+                        if(func.equals("insert"))
+                        {
+                            if(pos.equals("at start of line"))
+                            {
+                                textArea.requestFocus();
+                                textArea.insertText(0, text);
+                            }
+                            else // "at caret"
+                            {
+                                textArea.requestFocus();
+                                textArea.insertText(textArea.getCaretPosition(), text);
+                            }
+                        }
+                        else // "delete"
+                        {
+                            if(pos.equals("at start of line"))
+                            {
+                                int len = text.length();
+                                String toFind = textArea.getText().substring(0, len);
+                                
+                                if(toFind.equals(text))
+                                {
+                                    textArea.requestFocus();
+                                    textArea.deleteText(0, len);
+                                }
+                            }
+                            else // "at caret"
+                            {
+                                int len = text.length();
+                                int caretPos = textArea.getCaretPosition();
+                                
+                                if(textArea.getText().length() >= len)
+                                {
+                                    String toFind = textArea.getText().substring(caretPos, len);
+                                    System.out.println("Text to find: " + text);
+                                    System.out.println("Caret: " + caretPos);
+                                    System.out.println("Text length: " + len);
+
+                                    if(toFind.equals(text))
+                                    {
+                                        System.out.println("Found");
+                                        textArea.requestFocus();
+                                        textArea.deleteText(caretPos, len);
+                                    }
+                                    else
+                                    {
+                                        System.out.println("Not found");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                break;
+
+                case "ctrl+shift+alt+": case "ctrl+alt+shift+": case "shift+ctrl+alt+":
+                case "shift+alt+ctrl+": case "alt+ctrl+shift+": case "alt+shift+ctrl+":
+                    if(ctrl && shift && alt && key == keyCode)
+                    {
+                        if(func.equals("insert"))
+                        {
+                            if(pos.equals("at start of line"))
+                            {
+                                textArea.requestFocus();
+                                textArea.insertText(0, text);
+                            }
+                            else // "at caret"
+                            {
+                                textArea.requestFocus();
+                                textArea.insertText(textArea.getCaretPosition(), text);
+                            }
+                        }
+                        else // "delete"
+                        {
+                            if(pos.equals("at start of line"))
+                            {
+                                int len = text.length();
+                                String toFind = textArea.getText().substring(0, len);
+                                
+                                if(toFind.equals(text))
+                                {
+                                    textArea.requestFocus();
+                                    textArea.deleteText(0, len);
+                                }
+                            }
+                            else // "at caret"
+                            {
+                                int len = text.length();
+                                int caretPos = textArea.getCaretPosition();
+                                
+                                if(textArea.getText().length() >= len)
+                                {
+                                    String toFind = textArea.getText().substring(caretPos, len);
+                                    System.out.println("Text to find: " + text);
+                                    System.out.println("Caret: " + caretPos);
+                                    System.out.println("Text length: " + len);
+
+                                    if(toFind.equals(text))
+                                    {
+                                        System.out.println("Found");
+                                        textArea.requestFocus();
+                                        textArea.deleteText(caretPos, len);
+                                    }
+                                    else
+                                    {
+                                        System.out.println("Not found");
+                                    }
+                                }
+                            }
+                        }
                     }
                 break;
             }
         }
     }   
         
+    /**
+     * Dialog box for adding plugins and scripts
+     * @param list
+     * @param listView
+     */
     private void pluginScriptDialog(ObservableList<String> list, ListView<String> listView)
     {
         Button addPluginBtn = new Button(bundle.getString("addPlugin_btn"));
@@ -334,11 +586,7 @@ public class MainUI implements API
             bundle.getString("loadPlugin_txt"), 
             bundle.getString("enterClass_txt"),
             list));
-        
-        // addScriptBtn.setOnAction(event -> inputPlugin(
-        //     bundle.getString("loadScript_txt"), 
-        //     bundle.getString("enterClass_txt")));
-        
+                
         BorderPane box = new BorderPane();
         box.setTop(toolBar);
         box.setCenter(listView);
@@ -351,6 +599,12 @@ public class MainUI implements API
         dialog.showAndWait();
     }
 
+    /**
+     * Validate and load Plugins utilising Reflection
+     * @param title
+     * @param headerText
+     * @param list
+     */
     private void loadPlugin(String title, String headerText, ObservableList<String> list)
     {
         TextInputDialog dialog = new TextInputDialog();
@@ -372,7 +626,6 @@ public class MainUI implements API
             } 
             catch(ReflectionException e) 
             {
-                // Display error message
                 new Alert(
                     Alert.AlertType.INFORMATION, 
                     e.getMessage(),
@@ -381,6 +634,13 @@ public class MainUI implements API
         }
     }   
 
+/********************************************************************************
+* Methods to override from Api interface
+********************************************************************************/
+
+    /**
+     * Utilised by plugins to create their own button within the UI
+     */
     @Override
     public void createBtn(String btnName, Callback obj) 
     {        
@@ -391,12 +651,19 @@ public class MainUI implements API
         pluginBtn.setOnAction((event) -> obj.callback());
     }
 
+    /**
+     * Used by FindPlugin to establish it's own keybind
+     */
     @Override
     public void createHotKey(Callback callback)
     {
         hotKeyMethod = callback;
     }
 
+    /**
+     * Used by DatePlugin to output date to text area, based on language specific
+     * format
+     */
     @Override
     public void printDate()
     {

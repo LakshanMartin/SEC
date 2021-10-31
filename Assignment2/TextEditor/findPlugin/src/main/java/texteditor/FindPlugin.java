@@ -2,6 +2,9 @@ package texteditor;
 
 import texteditor.API.*;
 
+/**
+ * FindPlugin class to be added by the main application
+ */
 public class FindPlugin implements Plugin
 {
     public FindPlugin() {}

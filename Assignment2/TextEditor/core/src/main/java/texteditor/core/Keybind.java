@@ -1,13 +1,19 @@
 package texteditor.core;
 
+/**
+ * Class used to contain all the relevent information extracted from the Keymap
+ * file for each Keybinding.
+ */
 public class Keybind 
 {
+    // CLASS FIELDS
     private String mainKey;
     private String customKey;
     private String func;
     private String text;
     private String pos;
     
+    // CONSTRUCTOR
     public Keybind(String mainKey, String customKey, String func, String text, String pos)
     {
         this.mainKey = mainKey;
@@ -17,6 +23,7 @@ public class Keybind
         this.pos = pos;
     }
 
+    // ACCESSORS
     public String getMainKey()
     {
         return mainKey;
@@ -34,6 +41,7 @@ public class Keybind
 
     public String getText()
     {
+        // Remove quotation marks surrounding text
         return text.substring(1, text.length()-1);
     }
 

@@ -5,10 +5,20 @@ import java.lang.reflect.InvocationTargetException;
 
 import texteditor.API.API;
 
+/**
+ * Reflection class used to load Plugins using their fully-qualified class names
+ */
 public class Reflection 
 {
+    // EMPTY CONSTRUCTOR
     public Reflection(){}
 
+    /**
+     * Begins the reflection process and returns the reflected class object
+     * @param pluginName
+     * @return
+     * @throws ReflectionException
+     */
     public Object getReflection(String pluginName) throws ReflectionException
     {
         try
@@ -19,7 +29,7 @@ public class Reflection
             // Get Constructor
             Constructor<?> pluginConst = pluginClass.getConstructor();
 
-            // Create Class Object using IAPI parameter
+            // Create Class Object
             Object pluginObj = pluginConst.newInstance();
 
             // Get start() method
@@ -54,6 +64,14 @@ public class Reflection
         }
     }
 
+    /**
+     * Check if method of methodName exists. 
+     * @param pluginClass
+     * @param methodName
+     * @param api
+     * @throws NoSuchMethodException
+     * @throws SecurityException
+     */
     private void checkMethod(Class<?> pluginClass, String methodName, Class<API> api) throws NoSuchMethodException, SecurityException
     {
         try 

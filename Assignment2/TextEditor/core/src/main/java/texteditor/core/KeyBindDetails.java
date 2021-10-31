@@ -2,15 +2,26 @@ package texteditor.core;
 
 import javafx.scene.input.KeyCode;
 
+/**
+ * Simple class used to determine which alphabetic key to be used for custom
+ * keybind. Mainly used to separate the length switch statement from the rest
+ * of the main code.
+ */
 public class KeyBindDetails 
 {
+    // CLASS FIELDS
     private String customKey;
 
+    // CONSTRUCTOR
     public KeyBindDetails(String customKey)
     {
         this.customKey = customKey;
     }
 
+    /**
+     * Identify which KeyCode to use based on the customKey.
+     * @return
+     */
     public KeyCode getKeyCode()
     {
         KeyCode keyCode = null;

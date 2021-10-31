@@ -16,8 +16,12 @@ import javafx.scene.layout.FlowPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+/**
+ * Class used for loading and saving text files to be used by the text editor
+ */
 public class LoadSaveUI 
 {
+    // CLASS FIELDS
     private static final int SPACING = 8;
 
     private Stage stage;
@@ -27,6 +31,7 @@ public class LoadSaveUI
     private FileChooser fileDialog = new FileChooser();
     private Dialog<String> encodingDialog;
 
+    // CONSTRUCTOR
     public LoadSaveUI(Stage stage, ResourceBundle bundle, FileIO fileIO, TextArea textArea)
     {
         this.stage = stage;
@@ -66,6 +71,9 @@ public class LoadSaveUI
         return encodingDialog.showAndWait().orElse(null);
     }
 
+    /**
+     * Display dialog box used to select file to load
+     */
     public void load()
     {
         fileDialog.setTitle(bundle.getString("load_title"));
@@ -96,6 +104,9 @@ public class LoadSaveUI
         }
     }
 
+    /**
+     * Display dialog box used to save file
+     */
     public void save()
     {
         fileDialog.setTitle(bundle.getString("save_title"));

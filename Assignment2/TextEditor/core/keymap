@@ -8,4 +8,4 @@ alt+s        = delete "/*TODO*/" at caret
 ctrl+alt+g        = delete "/*FIXME*/" at caret
 alt+ctrl+g        = delete "/*FIXME*/" at caret
 alt+shift+ctrl+g        = delete "/*FIXME*/" at caret
-shift+alt+ctrl+g        = delete "/*HELP ME*/" at caret
+shift+alt+ctrl+g        = insert "/*HELP ME*/" at caret
