@@ -175,8 +175,6 @@ public class MainUI implements API
                             {
                                 textArea.requestFocus();
                                 textArea.insertText(0, text);
-
-                                //textArea.
                             }
                             else // "at caret"
                             {
@@ -204,16 +202,17 @@ public class MainUI implements API
                                 
                                 if(textArea.getText().length() >= len)
                                 {
-                                    String toFind = textArea.getText().substring(caretPos, len);
+                                    String toFind = textArea.getText().substring(caretPos, (caretPos+len));
                                     System.out.println("Text to find: " + text);
                                     System.out.println("Caret: " + caretPos);
                                     System.out.println("Text length: " + len);
+                                    System.out.println("Found: " + toFind);
 
                                     if(toFind.equals(text))
                                     {
                                         System.out.println("Found");
                                         textArea.requestFocus();
-                                        textArea.deleteText(caretPos, len);
+                                        textArea.deleteText(caretPos, (caretPos+len));
                                     }
                                     else
                                     {
@@ -261,16 +260,17 @@ public class MainUI implements API
                                 
                                 if(textArea.getText().length() >= len)
                                 {
-                                    String toFind = textArea.getText().substring(caretPos, len);
+                                    String toFind = textArea.getText().substring(caretPos, (caretPos+len));
                                     System.out.println("Text to find: " + text);
                                     System.out.println("Caret: " + caretPos);
                                     System.out.println("Text length: " + len);
+                                    System.out.println("Found: " + toFind);
 
                                     if(toFind.equals(text))
                                     {
                                         System.out.println("Found");
                                         textArea.requestFocus();
-                                        textArea.deleteText(caretPos, len);
+                                        textArea.deleteText(caretPos, (caretPos+len));
                                     }
                                     else
                                     {
@@ -318,16 +318,17 @@ public class MainUI implements API
                                 
                                 if(textArea.getText().length() >= len)
                                 {
-                                    String toFind = textArea.getText().substring(caretPos, len);
+                                    String toFind = textArea.getText().substring(caretPos, (caretPos+len));
                                     System.out.println("Text to find: " + text);
                                     System.out.println("Caret: " + caretPos);
                                     System.out.println("Text length: " + len);
+                                    System.out.println("Found: " + toFind);
 
                                     if(toFind.equals(text))
                                     {
                                         System.out.println("Found");
                                         textArea.requestFocus();
-                                        textArea.deleteText(caretPos, len);
+                                        textArea.deleteText(caretPos, (caretPos+len));
                                     }
                                     else
                                     {
@@ -375,16 +376,17 @@ public class MainUI implements API
                                 
                                 if(textArea.getText().length() >= len)
                                 {
-                                    String toFind = textArea.getText().substring(caretPos, len);
+                                    String toFind = textArea.getText().substring(caretPos, (caretPos+len));
                                     System.out.println("Text to find: " + text);
                                     System.out.println("Caret: " + caretPos);
                                     System.out.println("Text length: " + len);
+                                    System.out.println("Found: " + toFind);
 
                                     if(toFind.equals(text))
                                     {
                                         System.out.println("Found");
                                         textArea.requestFocus();
-                                        textArea.deleteText(caretPos, len);
+                                        textArea.deleteText(caretPos, (caretPos+len));
                                     }
                                     else
                                     {
@@ -432,16 +434,17 @@ public class MainUI implements API
                                 
                                 if(textArea.getText().length() >= len)
                                 {
-                                    String toFind = textArea.getText().substring(caretPos, len);
+                                    String toFind = textArea.getText().substring(caretPos, (caretPos+len));
                                     System.out.println("Text to find: " + text);
                                     System.out.println("Caret: " + caretPos);
                                     System.out.println("Text length: " + len);
+                                    System.out.println("Found: " + toFind);
 
                                     if(toFind.equals(text))
                                     {
                                         System.out.println("Found");
                                         textArea.requestFocus();
-                                        textArea.deleteText(caretPos, len);
+                                        textArea.deleteText(caretPos, (caretPos+len));
                                     }
                                     else
                                     {
@@ -489,16 +492,17 @@ public class MainUI implements API
                                 
                                 if(textArea.getText().length() >= len)
                                 {
-                                    String toFind = textArea.getText().substring(caretPos, len);
+                                    String toFind = textArea.getText().substring(caretPos, (caretPos+len));
                                     System.out.println("Text to find: " + text);
                                     System.out.println("Caret: " + caretPos);
                                     System.out.println("Text length: " + len);
+                                    System.out.println("Found: " + toFind);
 
                                     if(toFind.equals(text))
                                     {
                                         System.out.println("Found");
                                         textArea.requestFocus();
-                                        textArea.deleteText(caretPos, len);
+                                        textArea.deleteText(caretPos, (caretPos+len));
                                     }
                                     else
                                     {
@@ -547,16 +551,17 @@ public class MainUI implements API
                                 
                                 if(textArea.getText().length() >= len)
                                 {
-                                    String toFind = textArea.getText().substring(caretPos, len);
+                                    String toFind = textArea.getText().substring(caretPos, (caretPos+len));
                                     System.out.println("Text to find: " + text);
                                     System.out.println("Caret: " + caretPos);
                                     System.out.println("Text length: " + len);
+                                    System.out.println("Found: " + toFind);
 
                                     if(toFind.equals(text))
                                     {
                                         System.out.println("Found");
                                         textArea.requestFocus();
-                                        textArea.deleteText(caretPos, len);
+                                        textArea.deleteText(caretPos, (caretPos+len));
                                     }
                                     else
                                     {
