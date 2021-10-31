@@ -202,7 +202,7 @@ public class MainUI implements API
                                 int len = text.length();
                                 int caretPos = textArea.getCaretPosition();
                                 
-                                if(textArea.getText().length() >= len)
+                                if(textArea.getText().length() >= (caretPos+len))
                                 {
                                     String toFind = textArea.getText().substring(caretPos, (caretPos+len));
 
@@ -253,7 +253,7 @@ public class MainUI implements API
                                 int len = text.length();
                                 int caretPos = textArea.getCaretPosition();
                                 
-                                if(textArea.getText().length() >= len)
+                                if(textArea.getText().length() >= (caretPos+len))
                                 {
                                     String toFind = textArea.getText().substring(caretPos, (caretPos+len));
 
@@ -304,7 +304,7 @@ public class MainUI implements API
                                 int len = text.length();
                                 int caretPos = textArea.getCaretPosition();
                                 
-                                if(textArea.getText().length() >= len)
+                                if(textArea.getText().length() >= (caretPos+len))
                                 {
                                     String toFind = textArea.getText().substring(caretPos, (caretPos+len));
 
@@ -342,13 +342,12 @@ public class MainUI implements API
                             if(pos.equals("at start of line"))
                             {
                                 int len = text.length();
-                                int caretPos = getStartOfLine(textArea.getText());
-                                String toFind = textArea.getText().substring(caretPos, (caretPos+len));
+                                String toFind = textArea.getText().substring(0, len);
                                 
                                 if(toFind.equals(text))
                                 {
                                     textArea.requestFocus();
-                                    textArea.deleteText(caretPos, (caretPos+len));
+                                    textArea.deleteText(0, len);
                                 }
                             }
                             else // "at caret"
@@ -356,7 +355,7 @@ public class MainUI implements API
                                 int len = text.length();
                                 int caretPos = textArea.getCaretPosition();
                                 
-                                if(textArea.getText().length() >= len)
+                                if(textArea.getText().length() >= (caretPos+len))
                                 {
                                     String toFind = textArea.getText().substring(caretPos, (caretPos+len));
 
@@ -407,7 +406,7 @@ public class MainUI implements API
                                 int len = text.length();
                                 int caretPos = textArea.getCaretPosition();
                                 
-                                if(textArea.getText().length() >= len)
+                                if(textArea.getText().length() >= (caretPos+len))
                                 {
                                     String toFind = textArea.getText().substring(caretPos, (caretPos+len));
 
@@ -458,7 +457,7 @@ public class MainUI implements API
                                 int len = text.length();
                                 int caretPos = textArea.getCaretPosition();
                                 
-                                if(textArea.getText().length() >= len)
+                                if(textArea.getText().length() >= (caretPos+len))
                                 {
                                     String toFind = textArea.getText().substring(caretPos, (caretPos+len));
 
@@ -476,7 +475,7 @@ public class MainUI implements API
                 case "ctrl+shift+alt+": case "ctrl+alt+shift+": case "shift+ctrl+alt+":
                 case "shift+alt+ctrl+": case "alt+ctrl+shift+": case "alt+shift+ctrl+":
                     if(ctrl && shift && alt && key == keyCode)
-                    {
+                    {        
                         if(func.equals("insert"))
                         {
                             if(pos.equals("at start of line"))
@@ -510,7 +509,7 @@ public class MainUI implements API
                                 int len = text.length();
                                 int caretPos = textArea.getCaretPosition();
                                 
-                                if(textArea.getText().length() >= len)
+                                if(textArea.getText().length() >= (caretPos+len))
                                 {
                                     String toFind = textArea.getText().substring(caretPos, (caretPos+len));
 
@@ -528,6 +527,11 @@ public class MainUI implements API
         }
     }   
 
+    /**
+     * Identifies the start of a newline
+     * @param text
+     * @return
+     */
     private int getStartOfLine(String text)
     {
         int caretPos = textArea.getCaretPosition();
