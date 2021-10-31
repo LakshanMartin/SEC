@@ -173,8 +173,10 @@ public class MainUI implements API
                         {
                             if(pos.equals("at start of line"))
                             {
+                                int caretPos = getStartOfLine(textArea.getText());
+    
                                 textArea.requestFocus();
-                                textArea.insertText(0, text);
+                                textArea.insertText(caretPos, text);
                             }
                             else // "at caret"
                             {
@@ -203,20 +205,11 @@ public class MainUI implements API
                                 if(textArea.getText().length() >= len)
                                 {
                                     String toFind = textArea.getText().substring(caretPos, (caretPos+len));
-                                    System.out.println("Text to find: " + text);
-                                    System.out.println("Caret: " + caretPos);
-                                    System.out.println("Text length: " + len);
-                                    System.out.println("Found: " + toFind);
 
                                     if(toFind.equals(text))
                                     {
-                                        System.out.println("Found");
                                         textArea.requestFocus();
                                         textArea.deleteText(caretPos, (caretPos+len));
-                                    }
-                                    else
-                                    {
-                                        System.out.println("Not found");
                                     }
                                 }
                             }
@@ -231,8 +224,10 @@ public class MainUI implements API
                         {
                             if(pos.equals("at start of line"))
                             {
+                                int caretPos = getStartOfLine(textArea.getText());
+    
                                 textArea.requestFocus();
-                                textArea.insertText(0, text);
+                                textArea.insertText(caretPos, text);
                             }
                             else // "at caret"
                             {
@@ -261,20 +256,11 @@ public class MainUI implements API
                                 if(textArea.getText().length() >= len)
                                 {
                                     String toFind = textArea.getText().substring(caretPos, (caretPos+len));
-                                    System.out.println("Text to find: " + text);
-                                    System.out.println("Caret: " + caretPos);
-                                    System.out.println("Text length: " + len);
-                                    System.out.println("Found: " + toFind);
 
                                     if(toFind.equals(text))
                                     {
-                                        System.out.println("Found");
                                         textArea.requestFocus();
                                         textArea.deleteText(caretPos, (caretPos+len));
-                                    }
-                                    else
-                                    {
-                                        System.out.println("Not found");
                                     }
                                 }
                             }
@@ -289,8 +275,10 @@ public class MainUI implements API
                         {
                             if(pos.equals("at start of line"))
                             {
+                                int caretPos = getStartOfLine(textArea.getText());
+    
                                 textArea.requestFocus();
-                                textArea.insertText(0, text);
+                                textArea.insertText(caretPos, text);
                             }
                             else // "at caret"
                             {
@@ -319,20 +307,11 @@ public class MainUI implements API
                                 if(textArea.getText().length() >= len)
                                 {
                                     String toFind = textArea.getText().substring(caretPos, (caretPos+len));
-                                    System.out.println("Text to find: " + text);
-                                    System.out.println("Caret: " + caretPos);
-                                    System.out.println("Text length: " + len);
-                                    System.out.println("Found: " + toFind);
 
                                     if(toFind.equals(text))
                                     {
-                                        System.out.println("Found");
                                         textArea.requestFocus();
                                         textArea.deleteText(caretPos, (caretPos+len));
-                                    }
-                                    else
-                                    {
-                                        System.out.println("Not found");
                                     }
                                 }
                             }
@@ -347,8 +326,10 @@ public class MainUI implements API
                         {
                             if(pos.equals("at start of line"))
                             {
+                                int caretPos = getStartOfLine(textArea.getText());
+    
                                 textArea.requestFocus();
-                                textArea.insertText(0, text);
+                                textArea.insertText(caretPos, text);
                             }
                             else // "at caret"
                             {
@@ -361,12 +342,13 @@ public class MainUI implements API
                             if(pos.equals("at start of line"))
                             {
                                 int len = text.length();
-                                String toFind = textArea.getText().substring(0, len);
+                                int caretPos = getStartOfLine(textArea.getText());
+                                String toFind = textArea.getText().substring(caretPos, (caretPos+len));
                                 
                                 if(toFind.equals(text))
                                 {
                                     textArea.requestFocus();
-                                    textArea.deleteText(0, len);
+                                    textArea.deleteText(caretPos, (caretPos+len));
                                 }
                             }
                             else // "at caret"
@@ -377,20 +359,11 @@ public class MainUI implements API
                                 if(textArea.getText().length() >= len)
                                 {
                                     String toFind = textArea.getText().substring(caretPos, (caretPos+len));
-                                    System.out.println("Text to find: " + text);
-                                    System.out.println("Caret: " + caretPos);
-                                    System.out.println("Text length: " + len);
-                                    System.out.println("Found: " + toFind);
 
                                     if(toFind.equals(text))
                                     {
-                                        System.out.println("Found");
                                         textArea.requestFocus();
                                         textArea.deleteText(caretPos, (caretPos+len));
-                                    }
-                                    else
-                                    {
-                                        System.out.println("Not found");
                                     }
                                 }
                             }
@@ -405,8 +378,10 @@ public class MainUI implements API
                         {
                             if(pos.equals("at start of line"))
                             {
+                                int caretPos = getStartOfLine(textArea.getText());
+    
                                 textArea.requestFocus();
-                                textArea.insertText(0, text);
+                                textArea.insertText(caretPos, text);
                             }
                             else // "at caret"
                             {
@@ -435,20 +410,11 @@ public class MainUI implements API
                                 if(textArea.getText().length() >= len)
                                 {
                                     String toFind = textArea.getText().substring(caretPos, (caretPos+len));
-                                    System.out.println("Text to find: " + text);
-                                    System.out.println("Caret: " + caretPos);
-                                    System.out.println("Text length: " + len);
-                                    System.out.println("Found: " + toFind);
 
                                     if(toFind.equals(text))
                                     {
-                                        System.out.println("Found");
                                         textArea.requestFocus();
                                         textArea.deleteText(caretPos, (caretPos+len));
-                                    }
-                                    else
-                                    {
-                                        System.out.println("Not found");
                                     }
                                 }
                             }
@@ -463,8 +429,10 @@ public class MainUI implements API
                         {
                             if(pos.equals("at start of line"))
                             {
+                                int caretPos = getStartOfLine(textArea.getText());
+    
                                 textArea.requestFocus();
-                                textArea.insertText(0, text);
+                                textArea.insertText(caretPos, text);
                             }
                             else // "at caret"
                             {
@@ -493,20 +461,11 @@ public class MainUI implements API
                                 if(textArea.getText().length() >= len)
                                 {
                                     String toFind = textArea.getText().substring(caretPos, (caretPos+len));
-                                    System.out.println("Text to find: " + text);
-                                    System.out.println("Caret: " + caretPos);
-                                    System.out.println("Text length: " + len);
-                                    System.out.println("Found: " + toFind);
 
                                     if(toFind.equals(text))
                                     {
-                                        System.out.println("Found");
                                         textArea.requestFocus();
                                         textArea.deleteText(caretPos, (caretPos+len));
-                                    }
-                                    else
-                                    {
-                                        System.out.println("Not found");
                                     }
                                 }
                             }
@@ -522,8 +481,10 @@ public class MainUI implements API
                         {
                             if(pos.equals("at start of line"))
                             {
+                                int caretPos = getStartOfLine(textArea.getText());
+    
                                 textArea.requestFocus();
-                                textArea.insertText(0, text);
+                                textArea.insertText(caretPos, text);
                             }
                             else // "at caret"
                             {
@@ -552,29 +513,41 @@ public class MainUI implements API
                                 if(textArea.getText().length() >= len)
                                 {
                                     String toFind = textArea.getText().substring(caretPos, (caretPos+len));
-                                    System.out.println("Text to find: " + text);
-                                    System.out.println("Caret: " + caretPos);
-                                    System.out.println("Text length: " + len);
-                                    System.out.println("Found: " + toFind);
 
                                     if(toFind.equals(text))
                                     {
-                                        System.out.println("Found");
                                         textArea.requestFocus();
                                         textArea.deleteText(caretPos, (caretPos+len));
-                                    }
-                                    else
-                                    {
-                                        System.out.println("Not found");
                                     }
                                 }
                             }
                         }
-                    }
+                    }                   
                 break;
             }
         }
     }   
+
+    private int getStartOfLine(String text)
+    {
+        int caretPos = textArea.getCaretPosition();
+        int newLineMarker = 0;
+
+        for(int i = 0; i < caretPos; i++)
+        {
+            if(text.charAt(i) == ('\n'))
+            {
+                newLineMarker = i + 1;
+            }
+        }
+
+        if(newLineMarker == 1)
+        {
+            newLineMarker = 0;
+        }
+
+        return newLineMarker;
+    }
         
     /**
      * Dialog box for adding plugins and scripts

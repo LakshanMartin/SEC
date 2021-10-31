@@ -1,5 +1,5 @@
 ctrl+i       = insert "    " at start of line
-shift+i = delete "    " at start of line
+alt+shift+i = delete "    " at start of line
 ctrl+d       = insert "//" at start of line
 ctrl+shift+d = delete "//" at start of line
 alt+t        = insert "/*TODO*/" at caret
@@ -8,4 +8,4 @@ alt+s        = delete "/*TODO*/" at caret
 ctrl+alt+g        = delete "/*FIXME*/" at caret
 alt+ctrl+g        = delete "/*FIXME*/" at caret
 alt+shift+ctrl+g        = delete "/*FIXME*/" at caret
-shift+alt+ctrl+g        = insert "/*HELP ME*/" at caret
+shift+alt+ctrl+m        = insert "/*HELP ME*/" at caret
