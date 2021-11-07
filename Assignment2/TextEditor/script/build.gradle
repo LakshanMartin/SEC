@@ -10,35 +10,20 @@ plugins {
     // Apply the java plugin to add support for Java
     id 'java'
 
-    // Apply the application plugin to add support for building a CLI application
-    id 'application'
-
     // Apply the groovy plugin to also add support for Groovy (needed for Spock)
     id 'groovy'
 
     id 'org.openjfx.javafxplugin' version '0.0.10'
-
-    id 'com.intershop.gradle.javacc' version '4.0.1'
 }
 
 repositories {
     // Use jcenter for resolving dependencies.
     // You can declare any Maven/Ivy/file repository here.
     jcenter()
-    mavenCentral()
 }
 
 javafx {
     modules = [ 'javafx.controls' ]
-}
-
-javacc {
-    configs {
-        createmyparser {
-            inputFile = file('src/main/jj/parser.jj')
-            packageName = 'texteditor.core'
-        }
-    }
 }
 
 dependencies {
@@ -55,13 +40,4 @@ dependencies {
     implementation 'org.python:jython-standalone:2.7.1'
 
     implementation project(':api')
-    implementation project(':datePlugin')
-    implementation project(':findPlugin')
-    implementation project(':script')
 }
-
-application {
-    // Define the main class for the application
-    mainClassName = 'texteditor.core.App'
-}
-

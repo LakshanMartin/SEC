@@ -12,4 +12,6 @@ public interface API
     void printDate();
 
     void findTerm();
+
+    void runScript();
 }

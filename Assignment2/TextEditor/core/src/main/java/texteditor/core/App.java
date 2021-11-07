@@ -14,6 +14,7 @@
 package texteditor.core;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -46,6 +47,7 @@ public class App extends Application
     {
         ResourceBundle bundle;
         var localeString = getParameters().getNamed().get("locale");
+        List<Keybind> keybindList;
         
         if(localeString != null && localeString.contains("-"))
         {

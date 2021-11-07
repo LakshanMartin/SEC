@@ -1,0 +1,1 @@
+print("Emoji script is running")
